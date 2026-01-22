@@ -1,0 +1,608 @@
+openapi: 3.0.3
+info:
+  title: Volunteering Platform API
+  version: 0.1.0
+  description: Backend API for the volunteering platform
+paths:
+  /api/auth/login/:
+    post:
+      operationId: auth_login_create
+      description: Authenticate user and get JWT tokens.
+      summary: Login
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Login'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: Login successful
+        '400':
+          description: Invalid credentials
+  /api/auth/me/:
+    get:
+      operationId: auth_me_retrieve
+      description: Retrieve the authenticated user's profile.
+      summary: Get current user profile
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+        '401':
+          description: Unauthorized
+  /api/auth/me/update/:
+    put:
+      operationId: auth_me_update_update
+      description: Update the authenticated user's profile information.
+      summary: Update current user profile
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+        '400':
+          description: Validation error
+        '401':
+          description: Unauthorized
+    patch:
+      operationId: auth_me_update_partial_update
+      description: Update the authenticated user's profile information.
+      summary: Update current user profile
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+        '400':
+          description: Validation error
+        '401':
+          description: Unauthorized
+  /api/auth/register/organization/:
+    post:
+      operationId: auth_register_organization_create
+      description: Create a new organization account with profile information.
+      summary: Register a new organization
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationRegister'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrganizationRegister'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrganizationRegister'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          description: Organization registered successfully
+        '400':
+          description: Validation error
+  /api/auth/register/volunteer/:
+    post:
+      operationId: auth_register_volunteer_create
+      description: Create a new volunteer account with profile information.
+      summary: Register a new volunteer
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VolunteerRegister'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VolunteerRegister'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VolunteerRegister'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          description: Volunteer registered successfully
+        '400':
+          description: Validation error
+  /api/auth/token/refresh/:
+    post:
+      operationId: auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+components:
+  schemas:
+    Login:
+      type: object
+      description: Serializer for user login.
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+    OrganizationRegister:
+      type: object
+      description: Serializer for organization registration.
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+        password_confirm:
+          type: string
+          writeOnly: true
+        phone:
+          type: string
+          maxLength: 32
+        name:
+          type: string
+          maxLength: 255
+        organization_type:
+          $ref: '#/components/schemas/OrganizationTypeEnum'
+        description:
+          type: string
+        region:
+          type: string
+          maxLength: 255
+        contacts:
+          type: object
+          additionalProperties: {}
+      required:
+      - email
+      - name
+      - organization_type
+      - password
+      - password_confirm
+    OrganizationTypeEnum:
+      enum:
+      - ngo
+      - initiative_group
+      - government
+      type: string
+      description: |-
+        * `ngo` - NPO/NGO
+        * `initiative_group` - Initiative group
+        * `government` - Government
+    PatchedUserUpdate:
+      type: object
+      description: Serializer for updating user profile.
+      properties:
+        phone:
+          type: string
+          maxLength: 32
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        gender:
+          type: string
+          maxLength: 32
+        city:
+          type: string
+          maxLength: 255
+        region:
+          type: string
+          maxLength: 255
+        skills:
+          type: array
+          items:
+            type: string
+        interests:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+          maxLength: 255
+        organization_type:
+          $ref: '#/components/schemas/OrganizationTypeEnum'
+        description:
+          type: string
+        contacts:
+          type: object
+          additionalProperties: {}
+    RoleEnum:
+      enum:
+      - volunteer
+      - organization
+      - admin
+      type: string
+      description: |-
+        * `volunteer` - Volunteer
+        * `organization` - Organization
+        * `admin` - Admin
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    User:
+      type: object
+      description: Serializer for user profile.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        phone:
+          type: string
+          maxLength: 32
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        volunteer_profile:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+        organization_profile:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+      required:
+      - date_joined
+      - id
+      - is_active
+      - organization_profile
+      - username
+      - volunteer_profile
+    UserUpdate:
+      type: object
+      description: Serializer for updating user profile.
+      properties:
+        phone:
+          type: string
+          maxLength: 32
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        gender:
+          type: string
+          maxLength: 32
+        city:
+          type: string
+          maxLength: 255
+        region:
+          type: string
+          maxLength: 255
+        skills:
+          type: array
+          items:
+            type: string
+        interests:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+          maxLength: 255
+        organization_type:
+          $ref: '#/components/schemas/OrganizationTypeEnum'
+        description:
+          type: string
+        contacts:
+          type: object
+          additionalProperties: {}
+    VolunteerRegister:
+      type: object
+      description: Serializer for volunteer registration.
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+        password_confirm:
+          type: string
+          writeOnly: true
+        phone:
+          type: string
+          maxLength: 32
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        gender:
+          type: string
+          maxLength: 32
+        city:
+          type: string
+          maxLength: 255
+        region:
+          type: string
+          maxLength: 255
+        skills:
+          type: array
+          items:
+            type: string
+        interests:
+          type: array
+          items:
+            type: string
+      required:
+      - email
+      - password
+      - password_confirm
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
