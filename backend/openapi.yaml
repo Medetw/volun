@@ -191,6 +191,338 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenRefresh'
           description: ''
+  /api/categories/:
+    get:
+      operationId: categories_list
+      description: ViewSet for viewing categories (read-only).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - categories
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+          description: ''
+  /api/categories/{id}/:
+    get:
+      operationId: categories_retrieve
+      description: ViewSet for viewing categories (read-only).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this category.
+        required: true
+      tags:
+      - categories
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+  /api/projects/:
+    get:
+      operationId: projects_list
+      description: Get list of projects with filtering and search capabilities.
+      summary: List projects
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - hybrid
+          - offline
+          - online
+        description: |-
+          * `online` - Online
+          * `offline` - Offline
+          * `hybrid` - Hybrid
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: region
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - cancelled
+          - completed
+          - draft
+        description: |-
+          * `draft` - Draft
+          * `active` - Active
+          * `completed` - Completed
+          * `cancelled` - Cancelled
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProjectListList'
+          description: ''
+    post:
+      operationId: projects_create
+      description: Create a new project (organizations only).
+      summary: Create project
+      tags:
+      - projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreateUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProjectCreateUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProjectCreateUpdate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectCreateUpdate'
+          description: ''
+  /api/projects/{id}/:
+    get:
+      operationId: projects_retrieve
+      description: Retrieve detailed information about a project.
+      summary: Get project details
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this project.
+        required: true
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetail'
+          description: ''
+    put:
+      operationId: projects_update
+      description: Update project information (owner only).
+      summary: Update project
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this project.
+        required: true
+      tags:
+      - projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreateUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProjectCreateUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProjectCreateUpdate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectCreateUpdate'
+          description: ''
+    patch:
+      operationId: projects_partial_update
+      description: |-
+        ViewSet for projects.
+
+        - List: Public access, filtered by status, category, region, format
+        - Retrieve: Public access
+        - Create: Only for organizations
+        - Update/Delete: Only for project owner
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this project.
+        required: true
+      tags:
+      - projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectCreateUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectCreateUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectCreateUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectCreateUpdate'
+          description: ''
+    delete:
+      operationId: projects_destroy
+      description: Delete a project (owner only).
+      summary: Delete project
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this project.
+        required: true
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/projects/my/:
+    get:
+      operationId: projects_my_retrieve
+      description: Get current organization's projects.
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetail'
+          description: ''
+  /api/regions/:
+    get:
+      operationId: regions_list
+      description: ViewSet for viewing regions (read-only).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - regions
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Region'
+          description: ''
+  /api/regions/{id}/:
+    get:
+      operationId: regions_retrieve
+      description: ViewSet for viewing regions (read-only).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this region.
+        required: true
+      tags:
+      - regions
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Region'
+          description: ''
   /api/schema/:
     get:
       operationId: schema_retrieve
@@ -337,6 +669,36 @@ paths:
           description: ''
 components:
   schemas:
+    Category:
+      type: object
+      description: Serializer for Category model.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+    FormatEnum:
+      enum:
+      - online
+      - offline
+      - hybrid
+      type: string
+      description: |-
+        * `online` - Online
+        * `offline` - Offline
+        * `hybrid` - Hybrid
     Login:
       type: object
       description: Serializer for user login.
@@ -395,6 +757,64 @@ components:
         * `ngo` - NPO/NGO
         * `initiative_group` - Initiative group
         * `government` - Government
+    PaginatedProjectListList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectList'
+    PatchedProjectCreateUpdate:
+      type: object
+      description: Serializer for creating and updating projects.
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        category_id:
+          type: integer
+          writeOnly: true
+        format:
+          $ref: '#/components/schemas/FormatEnum'
+        region_id:
+          type: integer
+          writeOnly: true
+          nullable: true
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        volunteers_needed:
+          type: integer
+          minimum: 1
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        image:
+          type: string
+          format: uri
+          nullable: true
+        requirements:
+          type: string
+        contact_info: {}
     PatchedUserUpdate:
       type: object
       description: Serializer for updating user profile.
@@ -439,6 +859,203 @@ components:
         contacts:
           type: object
           additionalProperties: {}
+    ProjectCreateUpdate:
+      type: object
+      description: Serializer for creating and updating projects.
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        category_id:
+          type: integer
+          writeOnly: true
+        format:
+          $ref: '#/components/schemas/FormatEnum'
+        region_id:
+          type: integer
+          writeOnly: true
+          nullable: true
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        volunteers_needed:
+          type: integer
+          minimum: 1
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        image:
+          type: string
+          format: uri
+          nullable: true
+        requirements:
+          type: string
+        contact_info: {}
+      required:
+      - category_id
+      - description
+      - title
+    ProjectDetail:
+      type: object
+      description: Serializer for project detail view.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        category:
+          allOf:
+          - $ref: '#/components/schemas/Category'
+          readOnly: true
+        format:
+          $ref: '#/components/schemas/FormatEnum'
+        region:
+          allOf:
+          - $ref: '#/components/schemas/Region'
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        volunteers_needed:
+          type: integer
+          minimum: 1
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        organization:
+          type: object
+          additionalProperties: {}
+          description: Get organization profile information.
+          readOnly: true
+        volunteers_count:
+          type: integer
+          readOnly: true
+        volunteers_remaining:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        image:
+          type: string
+          format: uri
+          nullable: true
+        requirements:
+          type: string
+        contact_info: {}
+      required:
+      - category
+      - created_at
+      - description
+      - id
+      - organization
+      - region
+      - title
+      - updated_at
+      - volunteers_count
+      - volunteers_remaining
+    ProjectList:
+      type: object
+      description: Serializer for project list (short version).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        category:
+          allOf:
+          - $ref: '#/components/schemas/Category'
+          readOnly: true
+        format:
+          $ref: '#/components/schemas/FormatEnum'
+        region:
+          allOf:
+          - $ref: '#/components/schemas/Region'
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        volunteers_needed:
+          type: integer
+          minimum: 1
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        organization_name:
+          type: string
+          readOnly: true
+        volunteers_count:
+          type: integer
+          readOnly: true
+        volunteers_remaining:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        image:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - category
+      - created_at
+      - description
+      - id
+      - organization_name
+      - region
+      - title
+      - volunteers_count
+      - volunteers_remaining
+    Region:
+      type: object
+      description: Serializer for Region model.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        code:
+          type: string
+          maxLength: 32
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
     RoleEnum:
       enum:
       - volunteer
@@ -449,6 +1066,18 @@ components:
         * `volunteer` - Volunteer
         * `organization` - Organization
         * `admin` - Admin
+    StatusEnum:
+      enum:
+      - draft
+      - active
+      - completed
+      - cancelled
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `active` - Active
+        * `completed` - Completed
+        * `cancelled` - Cancelled
     TokenRefresh:
       type: object
       properties:
