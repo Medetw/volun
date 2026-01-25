@@ -22,6 +22,13 @@ class ProjectAdmin(admin.ModelAdmin):
     list_filter = ['status', 'category', 'format', 'created_at']
     search_fields = ['title', 'description', 'organization__username']
     readonly_fields = ['created_at', 'updated_at', 'volunteers_count']
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "organization":
+            # Фильтруем только пользователей с ролью organization
+            kwargs["queryset"] = db_field.related_model.objects.filter(role='organization')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
     fieldsets = (
         ('Основная информация', {
             'fields': ('title', 'description', 'category', 'organization')
