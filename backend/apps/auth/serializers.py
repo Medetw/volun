@@ -215,3 +215,70 @@ class UserUpdateSerializer(serializers.Serializer):
             instance.organization_profile.save()
         
         return instance
+
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    """Сериализатор для запроса сброса пароля."""
+    email = serializers.EmailField(required=True)
+
+    def validate_email(self, value):
+        """Проверяем существование email."""
+        if not User.objects.filter(email=value).exists():
+            # Не сообщаем о несуществующем email для безопасности
+            return value
+        return value
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    """Сериализатор для подтверждения сброса пароля."""
+    email = serializers.EmailField(required=True)
+    reset_code = serializers.CharField(required=True, min_length=6, max_length=6)
+    new_password = serializers.CharField(
+        required=True,
+        write_only=True,
+        validators=[validate_password],
+        min_length=8
+    )
+    new_password_confirm = serializers.CharField(required=True, write_only=True)
+
+    def validate(self, attrs):
+        """Проверяем совпадение паролей."""
+        if attrs['new_password'] != attrs['new_password_confirm']:
+            raise serializers.ValidationError({
+                'new_password_confirm': 'Пароли не совпадают'
+            })
+        return attrs
+
+
+class PasswordChangeSerializer(serializers.Serializer):
+    """Сериализатор для изменения пароля."""
+    current_password = serializers.CharField(required=True, write_only=True)
+    new_password = serializers.CharField(
+        required=True,
+        write_only=True,
+        validators=[validate_password],
+        min_length=8
+    )
+    new_password_confirm = serializers.CharField(required=True, write_only=True)
+
+    def validate_current_password(self, value):
+        """Проверяем текущий пароль."""
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError('Неверный текущий пароль')
+        return value
+
+    def validate(self, attrs):
+        """Проверяем совпадение новых паролей."""
+        if attrs['new_password'] != attrs['new_password_confirm']:
+            raise serializers.ValidationError({
+                'new_password_confirm': 'Новые пароли не совпадают'
+            })
+        return attrs
+
+    def save(self):
+        """Сохраняем новый пароль."""
+        user = self.context['request'].user
+        user.set_password(self.validated_data['new_password'])
+        user.save()
+        return user

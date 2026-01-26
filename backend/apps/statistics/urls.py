@@ -1,6 +1,6 @@
 from django.urls import path
-from apps.statistics.views_simple import StatisticsSimpleAPIView
+from apps.statistics.views import StatisticsAPIView
 
 urlpatterns = [
-    path('statistics/', StatisticsSimpleAPIView.as_view(), name='statistics'),
+    path('statistics/', StatisticsAPIView.as_view(), name='statistics'),
 ]

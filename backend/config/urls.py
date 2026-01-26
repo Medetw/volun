@@ -44,8 +44,14 @@ urlpatterns = [
     # News endpoints
     path("api/", include("apps.news.urls")),
     
-    # Statistics endpoints (temporarily disabled)
+    # Statistics endpoints
     path("api/", include("apps.statistics.urls")),
+    
+    # Notifications endpoints
+    path("api/", include("apps.notifications.urls")),
+    
+    # Reports endpoints
+    path("api/", include("apps.reports.urls")),
 ]
 
 # Serve media files in development

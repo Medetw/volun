@@ -17,6 +17,10 @@ class User(AbstractUser):
 
     role = models.CharField(max_length=32, choices=UserRole.choices, default=UserRole.VOLUNTEER)
     phone = models.CharField(max_length=32, blank=True, default="")
+    
+    # Password reset fields
+    password_reset_code = models.CharField(max_length=6, blank=True, null=True)
+    password_reset_expiry = models.DateTimeField(null=True, blank=True)
 
 
 class VolunteerProfile(models.Model):
