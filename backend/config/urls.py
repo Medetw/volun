@@ -37,6 +37,9 @@ urlpatterns = [
     
     # Projects endpoints
     path("api/", include("apps.projects.urls")),
+    
+    # Applications endpoints
+    path("api/", include("apps.applications.urls")),
 ]
 
 # Serve media files in development

@@ -84,9 +84,7 @@ class Project(models.Model):
     @property
     def volunteers_count(self) -> int:
         """Get current number of approved volunteers."""
-        # Will be implemented when applications app is ready
-        # return self.applications.filter(status='approved').count()
-        return 0
+        return self.applications.filter(status='approved').count()
 
     @property
     def volunteers_remaining(self) -> int:
