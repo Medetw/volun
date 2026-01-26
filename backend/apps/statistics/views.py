@@ -291,6 +291,9 @@ class StatisticsAPIView(views.APIView):
         # Оптимизированный запрос
         projects = Project.objects.filter(
             status=ProjectStatus.ACTIVE
+        ).annotate(
+            volunteers_count=Count('applications', filter=Q(applications__status=ApplicationStatus.APPROVED)),
+            volunteers_remaining=F('volunteers_needed') - Count('applications', filter=Q(applications__status=ApplicationStatus.APPROVED))
         ).filter(
             volunteers_remaining__gt=0
         )
@@ -307,7 +310,7 @@ class StatisticsAPIView(views.APIView):
         
         return list(
             projects[:5].values(
-                'id', 'title', 'excerpt', 'category__name', 
+                'id', 'title', 'description', 'category__name', 
                 'region__name', 'volunteers_remaining'
             )
         )
