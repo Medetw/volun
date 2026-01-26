@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.projects',
     'apps.applications',
+    'apps.news',
+    'apps.statistics',
 ]
 
 MIDDLEWARE = [
@@ -162,8 +164,22 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Cache configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'volunteer-platform-cache',
+    }
+}
+
 # Auth / Users
 AUTH_USER_MODEL = "users.User"
+
+# Custom authentication backends
+AUTHENTICATION_BACKENDS = [
+    'apps.auth.authentication.EmailAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # DRF / JWT / OpenAPI
 REST_FRAMEWORK = {
