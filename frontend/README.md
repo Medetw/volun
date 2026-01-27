@@ -1,11 +1,46 @@
-## Frontend (placeholder)
+# Волонтерская Платформа - Frontend
 
-Planned: Vue 3 (Vite) or React (Vite/Next) consuming the Django REST API.
+**Frontend: Vue 3 + TypeScript + Vite**  
+**Backend: Django + DRF**
 
-### Next steps
+## 🚀 Обзор
 
-- Choose framework (Vue or React)
-- Scaffold project (Vite)
-- Add auth flow (JWT) and API client
-- Implement pages: projects list, project details, profile, organization dashboard
+Современный веб-интерфейс для волонтерской платформы, построенный на Vue 3 с TypeScript, обеспечивающий удобное взаимодействие между волонтерами, организациями и администраторами.
 
+## 🛠 Технологический стек
+
+- **Framework**: Vue 3 + Composition API
+- **Language**: TypeScript
+- **Build Tool**: Vite
+- **UI**: Tailwind CSS + Headless UI
+- **State Management**: Pinia
+- **Routing**: Vue Router 4
+- **HTTP Client**: Axios
+- **Forms**: VueUse + VeeValidate
+- **Icons**: Heroicons
+- **Charts**: Chart.js + vue-chartjs
+- Firefox:
+  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
+  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+
+## Customize configuration
+
+See [Vite Configuration Reference](https://vite.dev/config/).
+
+## Project Setup
+
+```sh
+npm install
+```
+
+### Compile and Hot-Reload for Development
+
+```sh
+npm run dev
+```
+
+### Compile and Minify for Production
+
+```sh
+npm run build
+```
