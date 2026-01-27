@@ -292,9 +292,13 @@ class ApiService {
     await this.api.post('/notifications/mark_all_read/')
   }
 
-  async getNotificationStats(): Promise<{ total: number; unread: number }> {
+  async getNotificationStats(): Promise<{ total: number; unread: number; read: number; today: number }> {
     const response = await this.api.get('/notifications/stats/')
     return response.data
+  }
+
+  async deleteNotification(id: number): Promise<void> {
+    await this.api.delete(`/notifications/${id}/`)
   }
 
   async getNotificationPreferences(): Promise<NotificationPreference> {
@@ -308,7 +312,7 @@ class ApiService {
   }
 
   // Reports endpoints
-  async getReports(params?: { project?: number; status?: string }): Promise<PaginatedResponse<ProjectReport>> {
+  async getReports(params?: { project?: number; status?: string; type?: string; period?: string; search?: string }): Promise<PaginatedResponse<ProjectReport>> {
     const response: AxiosResponse<PaginatedResponse<ProjectReport>> = await this.api.get('/reports/', { params })
     return response.data
   }
@@ -326,6 +330,27 @@ class ApiService {
   async updateReport(id: number, data: Partial<ProjectReport>): Promise<ProjectReport> {
     const response: AxiosResponse<ProjectReport> = await this.api.patch(`/reports/${id}/`, data)
     return response.data
+  }
+
+  async generateReport(id: number): Promise<ProjectReport> {
+    const response: AxiosResponse<ProjectReport> = await this.api.post(`/reports/${id}/generate/`)
+    return response.data
+  }
+
+  async downloadReport(id: number): Promise<void> {
+    const response = await this.api.get(`/reports/${id}/download/`, { responseType: 'blob' })
+    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `report-${id}.pdf`)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(url)
+  }
+
+  async deleteReport(id: number): Promise<void> {
+    await this.api.delete(`/reports/${id}/`)
   }
 
   async submitReport(id: number): Promise<ProjectReport> {
