@@ -418,7 +418,6 @@ const getStatusBadgeClass = (status: string) => {
     active: 'badge-success',
     draft: 'badge-gray',
     completed: 'badge-primary',
-    cancelled: 'badge-danger',
     pending: 'badge-warning',
     approved: 'badge-success',
     rejected: 'badge-danger',
