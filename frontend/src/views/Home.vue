@@ -1,29 +1,70 @@
 <template>
   <div>
     <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-primary-600 to-primary-800 text-white">
-      <div class="container-custom py-20">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <section class="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-primary-800 text-white">
+      <div class="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-white/10 blur-2xl"></div>
+      <div class="absolute bottom-0 left-0 h-64 w-64 -translate-x-1/3 translate-y-1/3 rounded-full bg-primary-400/30 blur-2xl"></div>
+      <div class="container-custom relative py-24">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
           <div>
-            <h1 class="text-4xl lg:text-6xl font-bold mb-6">
-              Помогайте другим. 
-              <span class="text-primary-200">Меняйте мир.</span>
+            <div class="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-medium text-primary-50">
+              <span class="h-2 w-2 rounded-full bg-emerald-300"></span>
+              Более 500 проектов по Казахстану
+            </div>
+            <h1 class="mt-6 text-4xl lg:text-6xl font-bold leading-tight">
+              Добрые дела рядом.
+              <span class="block text-primary-100">Начните сегодня.</span>
             </h1>
-            <p class="text-xl mb-8 text-primary-100">
-              Присоединяйтесь к крупнейшей волонтерской платформе Казахстана. 
-              Найдите проекты, которые вам интересны, или создайте собственные.
+            <p class="mt-6 text-lg text-primary-100">
+              Найдите волонтёрские инициативы, вступайте в команды и следите за прогрессом в личном кабинете.
+              Для организаций — быстрый запуск проектов и набор волонтёров.
             </p>
-            <div class="flex flex-col sm:flex-row gap-4">
-              <router-link to="/register/volunteer" class="btn bg-white text-primary-600 hover:bg-gray-100 btn-lg">
+            <div class="mt-8 flex flex-col sm:flex-row gap-4">
+              <router-link to="/projects" class="btn bg-white text-primary-700 hover:bg-primary-50 btn-lg">
+                Найти проекты
+              </router-link>
+              <router-link to="/register/volunteer" class="btn btn-outline border-white text-white hover:bg-white hover:text-primary-700 btn-lg">
                 Стать волонтером
               </router-link>
-              <router-link to="/register/organization" class="btn btn-outline border-white text-white hover:bg-white hover:text-primary-600 btn-lg">
-                Для организаций
+              <router-link to="/register/organization" class="btn bg-primary-900/40 text-white hover:bg-primary-900/60 btn-lg">
+                Создать проект
               </router-link>
             </div>
           </div>
           <div class="hidden lg:block">
-            <img src="/api/placeholder/600/400" alt="Волонтеры" class="rounded-lg shadow-2xl" />
+            <div class="relative rounded-3xl border border-white/20 bg-white/10 p-8 backdrop-blur">
+              <div class="grid gap-6">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm uppercase text-primary-100">Волонтёр дня</p>
+                    <p class="text-2xl font-semibold">Айша Садыкова</p>
+                  </div>
+                  <span class="rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-100">+18 часов</span>
+                </div>
+                <div class="rounded-2xl bg-white/15 p-5">
+                  <p class="text-sm text-primary-100">Сейчас активны</p>
+                  <p class="mt-2 text-4xl font-bold">{{ stats.projects.active || stats.projects.total }}</p>
+                  <p class="text-sm text-primary-100">проектов</p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="rounded-2xl bg-white/10 p-4">
+                    <p class="text-sm text-primary-100">Новые заявки</p>
+                    <p class="mt-1 text-2xl font-semibold">{{ stats.applications.recent || stats.applications.total }}</p>
+                  </div>
+                  <div class="rounded-2xl bg-white/10 p-4">
+                    <p class="text-sm text-primary-100">Новые волонтеры</p>
+                    <p class="mt-1 text-2xl font-semibold">{{ stats.users.recent || stats.users.volunteers || stats.users.total }}</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3 rounded-2xl bg-white/10 p-4">
+                  <div class="h-10 w-10 rounded-full bg-primary-200/30"></div>
+                  <div>
+                    <p class="text-sm font-medium">Сделано вместе</p>
+                    <p class="text-xs text-primary-100">{{ stats.applications.total_hours }} часов помощи</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -140,9 +181,14 @@
                 ></div>
               </div>
               
-              <router-link :to="`/projects/${project.id}`" class="btn btn-primary w-full">
-                Подробнее
-              </router-link>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <router-link :to="`/projects/${project.id}`" class="btn btn-outline w-full">
+                  Подробнее
+                </router-link>
+                <button class="btn btn-primary w-full" @click="openApplication(project)">
+                  Подать заявку
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -205,20 +251,77 @@
           <router-link to="/register/volunteer" class="btn bg-white text-primary-600 hover:bg-gray-100 btn-lg">
             Стать волонтером
           </router-link>
-          <router-link to="/projects" class="btn btn-outline border-white text-white hover:bg-white hover:text-primary-600 btn-lg">
-            Найти проекты
+          <router-link to="/register/organization" class="btn btn-outline border-white text-white hover:bg-white hover:text-primary-600 btn-lg">
+            Создать проект
           </router-link>
         </div>
       </div>
     </section>
+
+    <teleport to="body">
+      <div v-if="showApplicationModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+        <div class="w-full max-w-xl rounded-2xl bg-white p-6 shadow-xl">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-gray-500">Заявка на проект</p>
+              <h3 class="text-xl font-semibold text-gray-900">
+                {{ selectedProject?.title }}
+              </h3>
+            </div>
+            <button class="text-gray-400 hover:text-gray-600" @click="closeApplication">
+              ✕
+            </button>
+          </div>
+          <p class="mt-2 text-sm text-gray-600">
+            Расскажите, как вы хотите помочь, и укажите количество часов.
+          </p>
+          <form class="mt-6 space-y-4" @submit.prevent="submitApplication">
+            <div>
+              <label class="form-label">Сопроводительное письмо</label>
+              <textarea
+                v-model="applicationForm.cover_letter"
+                rows="4"
+                class="form-input"
+                placeholder="Например: могу помогать по выходным, есть опыт в организации мероприятий..."
+              ></textarea>
+            </div>
+            <div>
+              <label class="form-label">Сколько часов готовы выделить</label>
+              <input
+                v-model.number="applicationForm.hours_committed"
+                type="number"
+                min="1"
+                class="form-input"
+                placeholder="5"
+              />
+            </div>
+            <p v-if="applicationError" class="text-sm text-red-600">
+              {{ applicationError }}
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3">
+              <button type="submit" class="btn btn-primary" :disabled="applicationLoading">
+                {{ applicationLoading ? 'Отправка...' : 'Отправить заявку' }}
+              </button>
+              <button type="button" class="btn btn-outline" @click="closeApplication">
+                Отмена
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </teleport>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import apiService from '@/services/api'
+import { useAuthStore } from '@/stores/auth'
 import type { Project, News } from '@/types/api'
 
+const router = useRouter()
+const authStore = useAuthStore()
 const projects = ref<Project[]>([])
 const news = ref<News[]>([])
 const projectsLoading = ref(true)
@@ -227,6 +330,14 @@ const stats = ref({
   users: { total: 0 },
   projects: { total: 0 },
   applications: { total: 0, total_hours: 0 }
+})
+const showApplicationModal = ref(false)
+const selectedProject = ref<Project | null>(null)
+const applicationLoading = ref(false)
+const applicationError = ref<string | null>(null)
+const applicationForm = ref({
+  cover_letter: '',
+  hours_committed: 4
 })
 
 onMounted(async () => {
@@ -267,6 +378,45 @@ const loadStats = async () => {
     stats.value = data
   } catch (error) {
     console.error('Failed to load stats:', error)
+  }
+}
+
+const openApplication = (project: Project) => {
+  if (!authStore.isAuthenticated) {
+    router.push({ name: 'Login', query: { redirect: `/projects/${project.id}` } })
+    return
+  }
+  selectedProject.value = project
+  applicationForm.value = {
+    cover_letter: '',
+    hours_committed: 4
+  }
+  applicationError.value = null
+  showApplicationModal.value = true
+}
+
+const closeApplication = () => {
+  showApplicationModal.value = false
+  selectedProject.value = null
+  applicationError.value = null
+}
+
+const submitApplication = async () => {
+  if (!selectedProject.value) return
+  try {
+    applicationLoading.value = true
+    applicationError.value = null
+    await apiService.createApplication({
+      project: selectedProject.value.id,
+      cover_letter: applicationForm.value.cover_letter || 'Готов(а) помочь проекту',
+      hours_committed: applicationForm.value.hours_committed || 4
+    })
+    closeApplication()
+    router.push({ name: 'MyApplications' })
+  } catch (error: any) {
+    applicationError.value = error?.response?.data?.detail || 'Не удалось отправить заявку'
+  } finally {
+    applicationLoading.value = false
   }
 }
 
