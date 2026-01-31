@@ -23,7 +23,7 @@
               <router-link to="/projects" class="btn bg-white text-primary-700 hover:bg-primary-50 btn-lg">
                 Найти проекты
               </router-link>
-              <router-link to="/register/volunteer" class="btn btn-outline border-white text-white hover:bg-white hover:text-primary-700 btn-lg">
+              <router-link to="/register/volunteer" class="btn border-2 border-white text-white hover:bg-white hover:text-primary-700 btn-lg">
                 Стать волонтером
               </router-link>
               <router-link to="/register/organization" class="btn bg-primary-900/40 text-white hover:bg-primary-900/60 btn-lg">
