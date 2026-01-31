@@ -26,8 +26,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl && \
 # Copy built app from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy optimized Nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Use default Nginx configuration
+# The nginx:bookworm image already has default configuration
 
 # Expose port
 EXPOSE 80
