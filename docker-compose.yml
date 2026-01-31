@@ -6,7 +6,7 @@ services:
     image: postgres:15-bookworm
     container_name: volunteering_db
     environment:
-      POSTGRES_DB: volunteering_platform
+      POSTGRES_DB: volunteering
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
@@ -39,7 +39,7 @@ services:
       dockerfile: Dockerfile
     container_name: volunteering_backend
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/volunteering_platform
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/volunteering
       - REDIS_URL=redis://redis:6379/1
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -72,7 +72,7 @@ services:
       dockerfile: Dockerfile
     container_name: volunteering_celery
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/volunteering_platform
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/volunteering
       - REDIS_URL=redis://redis:6379/1
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -98,7 +98,7 @@ services:
       dockerfile: Dockerfile
     container_name: volunteering_celery_beat
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/volunteering_platform
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/volunteering
       - REDIS_URL=redis://redis:6379/1
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
