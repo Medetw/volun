@@ -36,7 +36,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.simple
     container_name: volunteering_backend
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/volunteering
@@ -69,7 +69,7 @@ services:
   celery:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.simple
     container_name: volunteering_celery
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/volunteering
@@ -95,7 +95,7 @@ services:
   celery-beat:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.simple
     container_name: volunteering_celery_beat
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/volunteering
