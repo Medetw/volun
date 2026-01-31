@@ -140,7 +140,6 @@ services:
       - frontend
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./nginx/nginx-full.conf:/etc/nginx/nginx.conf:ro
       - static_files:/var/www/static:ro
       - media_files:/var/www/media:ro
       - ./logs/nginx:/var/log/nginx
