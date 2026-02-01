@@ -2,13 +2,13 @@
   <div>
     <!-- Hero Section -->
     <section class="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-primary-800 text-white">
-      <div class="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-white/10 blur-2xl"></div>
-      <div class="absolute bottom-0 left-0 h-64 w-64 -translate-x-1/3 translate-y-1/3 rounded-full bg-primary-400/30 blur-2xl"></div>
+      <div class="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
+      <div class="absolute bottom-0 left-0 h-64 w-64 -translate-x-1/3 translate-y-1/3 rounded-full bg-primary-400/30 blur-2xl" />
       <div class="container-custom relative py-24">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
           <div>
             <div class="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-medium text-primary-50">
-              <span class="h-2 w-2 rounded-full bg-emerald-300"></span>
+              <span class="h-2 w-2 rounded-full bg-emerald-300" />
               Более 500 проектов по Казахстану
             </div>
             <h1 class="mt-6 text-4xl lg:text-6xl font-bold leading-tight">
@@ -20,13 +20,22 @@
               Для организаций — быстрый запуск проектов и набор волонтёров.
             </p>
             <div class="mt-8 flex flex-col sm:flex-row gap-4">
-              <router-link to="/projects" class="btn bg-white text-primary-700 hover:bg-primary-50 btn-lg">
+              <router-link
+                to="/projects"
+                class="btn bg-white text-primary-700 hover:bg-primary-50 btn-lg"
+              >
                 Найти проекты
               </router-link>
-              <router-link to="/register/volunteer" class="btn border-2 border-white text-white hover:bg-white hover:text-primary-700 btn-lg">
+              <router-link
+                to="/register/volunteer"
+                class="btn border-2 border-white text-white hover:bg-white hover:text-primary-700 btn-lg"
+              >
                 Стать волонтером
               </router-link>
-              <router-link to="/register/organization" class="btn bg-primary-900/40 text-white hover:bg-primary-900/60 btn-lg">
+              <router-link
+                to="/register/organization"
+                class="btn bg-primary-900/40 text-white hover:bg-primary-900/60 btn-lg"
+              >
                 Создать проект
               </router-link>
             </div>
@@ -36,31 +45,53 @@
               <div class="grid gap-6">
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-sm uppercase text-primary-100">Волонтёр дня</p>
-                    <p class="text-2xl font-semibold">Айша Садыкова</p>
+                    <p class="text-sm uppercase text-primary-100">
+                      Волонтёр дня
+                    </p>
+                    <p class="text-2xl font-semibold">
+                      Айша Садыкова
+                    </p>
                   </div>
                   <span class="rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-100">+18 часов</span>
                 </div>
                 <div class="rounded-2xl bg-white/15 p-5">
-                  <p class="text-sm text-primary-100">Сейчас активны</p>
-                  <p class="mt-2 text-4xl font-bold">{{ stats.projects.active || stats.projects.total }}</p>
-                  <p class="text-sm text-primary-100">проектов</p>
+                  <p class="text-sm text-primary-100">
+                    Сейчас активны
+                  </p>
+                  <p class="mt-2 text-4xl font-bold">
+                    {{ stats.projects.active || stats.projects.total }}
+                  </p>
+                  <p class="text-sm text-primary-100">
+                    проектов
+                  </p>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                   <div class="rounded-2xl bg-white/10 p-4">
-                    <p class="text-sm text-primary-100">Новые заявки</p>
-                    <p class="mt-1 text-2xl font-semibold">{{ stats.applications.recent || stats.applications.total }}</p>
+                    <p class="text-sm text-primary-100">
+                      Новые заявки
+                    </p>
+                    <p class="mt-1 text-2xl font-semibold">
+                      {{ stats.applications.recent || stats.applications.total }}
+                    </p>
                   </div>
                   <div class="rounded-2xl bg-white/10 p-4">
-                    <p class="text-sm text-primary-100">Новые волонтеры</p>
-                    <p class="mt-1 text-2xl font-semibold">{{ stats.users.recent || stats.users.volunteers || stats.users.total }}</p>
+                    <p class="text-sm text-primary-100">
+                      Новые волонтеры
+                    </p>
+                    <p class="mt-1 text-2xl font-semibold">
+                      {{ stats.users.recent || stats.users.volunteers || stats.users.total }}
+                    </p>
                   </div>
                 </div>
                 <div class="flex items-center gap-3 rounded-2xl bg-white/10 p-4">
-                  <div class="h-10 w-10 rounded-full bg-primary-200/30"></div>
+                  <div class="h-10 w-10 rounded-full bg-primary-200/30" />
                   <div>
-                    <p class="text-sm font-medium">Сделано вместе</p>
-                    <p class="text-xs text-primary-100">{{ stats.applications.total_hours }} часов помощи</p>
+                    <p class="text-sm font-medium">
+                      Сделано вместе
+                    </p>
+                    <p class="text-xs text-primary-100">
+                      {{ stats.applications.total_hours }} часов помощи
+                    </p>
                   </div>
                 </div>
               </div>
@@ -75,20 +106,36 @@
       <div class="container-custom">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
           <div>
-            <div class="text-4xl font-bold text-primary-600 mb-2">{{ stats.users.total }}</div>
-            <div class="text-gray-600">Пользователей</div>
+            <div class="text-4xl font-bold text-primary-600 mb-2">
+              {{ stats.users.total }}
+            </div>
+            <div class="text-gray-600">
+              Пользователей
+            </div>
           </div>
           <div>
-            <div class="text-4xl font-bold text-primary-600 mb-2">{{ stats.projects.total }}</div>
-            <div class="text-gray-600">Проектов</div>
+            <div class="text-4xl font-bold text-primary-600 mb-2">
+              {{ stats.projects.total }}
+            </div>
+            <div class="text-gray-600">
+              Проектов
+            </div>
           </div>
           <div>
-            <div class="text-4xl font-bold text-primary-600 mb-2">{{ stats.applications.total }}</div>
-            <div class="text-gray-600">Заявок</div>
+            <div class="text-4xl font-bold text-primary-600 mb-2">
+              {{ stats.applications.total }}
+            </div>
+            <div class="text-gray-600">
+              Заявок
+            </div>
           </div>
           <div>
-            <div class="text-4xl font-bold text-primary-600 mb-2">{{ stats.applications.total_hours }}</div>
-            <div class="text-gray-600">Часов помощи</div>
+            <div class="text-4xl font-bold text-primary-600 mb-2">
+              {{ stats.applications.total_hours }}
+            </div>
+            <div class="text-gray-600">
+              Часов помощи
+            </div>
           </div>
         </div>
       </div>
@@ -98,39 +145,85 @@
     <section class="py-16 bg-gray-50">
       <div class="container-custom">
         <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-900 mb-4">Как это работает?</h2>
-          <p class="text-xl text-gray-600">Простые шаги для начала волонтерской деятельности</p>
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">
+            Как это работает?
+          </h2>
+          <p class="text-xl text-gray-600">
+            Простые шаги для начала волонтерской деятельности
+          </p>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div class="text-center">
             <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              <svg
+                class="w-8 h-8 text-primary-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
               </svg>
             </div>
-            <h3 class="text-xl font-semibold mb-2">Создайте профиль</h3>
-            <p class="text-gray-600">Зарегистрируйтесь как волонтер или организация</p>
+            <h3 class="text-xl font-semibold mb-2">
+              Создайте профиль
+            </h3>
+            <p class="text-gray-600">
+              Зарегистрируйтесь как волонтер или организация
+            </p>
           </div>
           
           <div class="text-center">
             <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                class="w-8 h-8 text-primary-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </div>
-            <h3 class="text-xl font-semibold mb-2">Найдите проекты</h3>
-            <p class="text-gray-600">Ищите интересные проекты или создавайте свои</p>
+            <h3 class="text-xl font-semibold mb-2">
+              Найдите проекты
+            </h3>
+            <p class="text-gray-600">
+              Ищите интересные проекты или создавайте свои
+            </p>
           </div>
           
           <div class="text-center">
             <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              <svg
+                class="w-8 h-8 text-primary-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
               </svg>
             </div>
-            <h3 class="text-xl font-semibold mb-2">Помогайте другим</h3>
-            <p class="text-gray-600">Участвуйте в проектах и делайте мир лучше</p>
+            <h3 class="text-xl font-semibold mb-2">
+              Помогайте другим
+            </h3>
+            <p class="text-gray-600">
+              Участвуйте в проектах и делайте мир лучше
+            </p>
           </div>
         </div>
       </div>
@@ -141,33 +234,61 @@
       <div class="container-custom">
         <div class="flex justify-between items-center mb-8">
           <div>
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">Активные проекты</h2>
-            <p class="text-gray-600">Участвуйте в текущих волонтерских инициативах</p>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">
+              Активные проекты
+            </h2>
+            <p class="text-gray-600">
+              Участвуйте в текущих волонтерских инициативах
+            </p>
           </div>
-          <router-link to="/projects" class="btn btn-primary">
+          <router-link
+            to="/projects"
+            class="btn btn-primary"
+          >
             Все проекты
           </router-link>
         </div>
         
-        <div v-if="projectsLoading" class="text-center py-8">
-          <div class="loading-spinner w-8 h-8 mx-auto mb-4"></div>
-          <p class="text-gray-600">Загрузка проектов...</p>
+        <div
+          v-if="projectsLoading"
+          class="text-center py-8"
+        >
+          <div class="loading-spinner w-8 h-8 mx-auto mb-4" />
+          <p class="text-gray-600">
+            Загрузка проектов...
+          </p>
         </div>
         
-        <div v-else-if="projects.length === 0" class="text-center py-8">
-          <p class="text-gray-600">Активных проектов пока нет</p>
+        <div
+          v-else-if="projects.length === 0"
+          class="text-center py-8"
+        >
+          <p class="text-gray-600">
+            Активных проектов пока нет
+          </p>
         </div>
         
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div v-for="project in projects" :key="project.id" class="card hover:shadow-lg transition-shadow">
+        <div
+          v-else
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          <div
+            v-for="project in projects"
+            :key="project.id"
+            class="card hover:shadow-lg transition-shadow"
+          >
             <div class="p-6">
               <div class="flex items-center justify-between mb-4">
                 <span class="badge badge-primary">{{ project.category.name }}</span>
                 <span class="status-active">{{ project.status }}</span>
               </div>
               
-              <h3 class="text-xl font-semibold mb-2">{{ project.title }}</h3>
-              <p class="text-gray-600 mb-4 line-clamp-2">{{ project.description }}</p>
+              <h3 class="text-xl font-semibold mb-2">
+                {{ project.title }}
+              </h3>
+              <p class="text-gray-600 mb-4 line-clamp-2">
+                {{ project.description }}
+              </p>
               
               <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
                 <span>{{ project.organization_name }}</span>
@@ -178,14 +299,20 @@
                 <div 
                   class="bg-primary-600 h-2 rounded-full" 
                   :style="{ width: `${((project.volunteers_needed - project.volunteers_remaining) / project.volunteers_needed) * 100}%` }"
-                ></div>
+                />
               </div>
               
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <router-link :to="`/projects/${project.id}`" class="btn btn-outline w-full">
+                <router-link
+                  :to="`/projects/${project.id}`"
+                  class="btn btn-outline w-full"
+                >
                   Подробнее
                 </router-link>
-                <button class="btn btn-primary w-full" @click="openApplication(project)">
+                <button
+                  class="btn btn-primary w-full"
+                  @click="openApplication(project)"
+                >
                   Подать заявку
                 </button>
               </div>
@@ -200,37 +327,68 @@
       <div class="container-custom">
         <div class="flex justify-between items-center mb-8">
           <div>
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">Последние новости</h2>
-            <p class="text-gray-600">Будьте в курсе событий платформы</p>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">
+              Последние новости
+            </h2>
+            <p class="text-gray-600">
+              Будьте в курсе событий платформы
+            </p>
           </div>
-          <router-link to="/news" class="btn btn-outline">
+          <router-link
+            to="/news"
+            class="btn btn-outline"
+          >
             Все новости
           </router-link>
         </div>
         
-        <div v-if="newsLoading" class="text-center py-8">
-          <div class="loading-spinner w-8 h-8 mx-auto mb-4"></div>
-          <p class="text-gray-600">Загрузка новостей...</p>
+        <div
+          v-if="newsLoading"
+          class="text-center py-8"
+        >
+          <div class="loading-spinner w-8 h-8 mx-auto mb-4" />
+          <p class="text-gray-600">
+            Загрузка новостей...
+          </p>
         </div>
         
-        <div v-else-if="news.length === 0" class="text-center py-8">
-          <p class="text-gray-600">Новостей пока нет</p>
+        <div
+          v-else-if="news.length === 0"
+          class="text-center py-8"
+        >
+          <p class="text-gray-600">
+            Новостей пока нет
+          </p>
         </div>
         
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <article v-for="item in news" :key="item.id" class="card hover:shadow-lg transition-shadow">
+        <div
+          v-else
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          <article
+            v-for="item in news"
+            :key="item.id"
+            class="card hover:shadow-lg transition-shadow"
+          >
             <div class="p-6">
               <div class="flex items-center justify-between mb-4">
                 <span class="badge badge-gray">{{ item.category_display }}</span>
                 <span class="text-sm text-gray-500">{{ formatDate(item.published_at) }}</span>
               </div>
               
-              <h3 class="text-xl font-semibold mb-2">{{ item.title }}</h3>
-              <p class="text-gray-600 mb-4 line-clamp-2">{{ item.excerpt }}</p>
+              <h3 class="text-xl font-semibold mb-2">
+                {{ item.title }}
+              </h3>
+              <p class="text-gray-600 mb-4 line-clamp-2">
+                {{ item.excerpt }}
+              </p>
               
               <div class="flex items-center justify-between">
                 <span class="text-sm text-gray-500">{{ item.author_name }}</span>
-                <router-link :to="`/news/${item.slug}`" class="text-primary-600 hover:text-primary-800">
+                <router-link
+                  :to="`/news/${item.slug}`"
+                  class="text-primary-600 hover:text-primary-800"
+                >
                   Читать далее →
                 </router-link>
               </div>
@@ -243,15 +401,23 @@
     <!-- CTA Section -->
     <section class="py-16 bg-primary-600 text-white">
       <div class="container-custom text-center">
-        <h2 class="text-3xl font-bold mb-4">Готовы начать?</h2>
+        <h2 class="text-3xl font-bold mb-4">
+          Готовы начать?
+        </h2>
         <p class="text-xl mb-8 text-primary-100">
           Присоединяйтесь к сообществу волонтеров и начинайте делать мир лучше уже сегодня
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <router-link to="/register/volunteer" class="btn bg-white text-primary-600 hover:bg-gray-100 btn-lg">
+          <router-link
+            to="/register/volunteer"
+            class="btn bg-white text-primary-600 hover:bg-gray-100 btn-lg"
+          >
             Стать волонтером
           </router-link>
-          <router-link to="/register/organization" class="btn btn-outline border-white text-white hover:bg-white hover:text-primary-600 btn-lg">
+          <router-link
+            to="/register/organization"
+            class="btn btn-outline border-white text-white hover:bg-white hover:text-primary-600 btn-lg"
+          >
             Создать проект
           </router-link>
         </div>
@@ -259,23 +425,34 @@
     </section>
 
     <teleport to="body">
-      <div v-if="showApplicationModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+      <div
+        v-if="showApplicationModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+      >
         <div class="w-full max-w-xl rounded-2xl bg-white p-6 shadow-xl">
           <div class="flex items-start justify-between">
             <div>
-              <p class="text-sm text-gray-500">Заявка на проект</p>
+              <p class="text-sm text-gray-500">
+                Заявка на проект
+              </p>
               <h3 class="text-xl font-semibold text-gray-900">
                 {{ selectedProject?.title }}
               </h3>
             </div>
-            <button class="text-gray-400 hover:text-gray-600" @click="closeApplication">
+            <button
+              class="text-gray-400 hover:text-gray-600"
+              @click="closeApplication"
+            >
               ✕
             </button>
           </div>
           <p class="mt-2 text-sm text-gray-600">
             Расскажите, как вы хотите помочь, и укажите количество часов.
           </p>
-          <form class="mt-6 space-y-4" @submit.prevent="submitApplication">
+          <form
+            class="mt-6 space-y-4"
+            @submit.prevent="submitApplication"
+          >
             <div>
               <label class="form-label">Сопроводительное письмо</label>
               <textarea
@@ -283,7 +460,7 @@
                 rows="4"
                 class="form-input"
                 placeholder="Например: могу помогать по выходным, есть опыт в организации мероприятий..."
-              ></textarea>
+              />
             </div>
             <div>
               <label class="form-label">Сколько часов готовы выделить</label>
@@ -293,16 +470,27 @@
                 min="1"
                 class="form-input"
                 placeholder="5"
-              />
+              >
             </div>
-            <p v-if="applicationError" class="text-sm text-red-600">
+            <p
+              v-if="applicationError"
+              class="text-sm text-red-600"
+            >
               {{ applicationError }}
             </p>
             <div class="flex flex-col sm:flex-row gap-3">
-              <button type="submit" class="btn btn-primary" :disabled="applicationLoading">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                :disabled="applicationLoading"
+              >
                 {{ applicationLoading ? 'Отправка...' : 'Отправить заявку' }}
               </button>
-              <button type="button" class="btn btn-outline" @click="closeApplication">
+              <button
+                type="button"
+                class="btn btn-outline"
+                @click="closeApplication"
+              >
                 Отмена
               </button>
             </div>

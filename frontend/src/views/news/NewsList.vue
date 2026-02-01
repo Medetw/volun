@@ -5,8 +5,12 @@
       <div class="container-custom py-6">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Новости</h1>
-            <p class="text-gray-600 mt-1">Будьте в курсе событий платформы</p>
+            <h1 class="text-2xl font-bold text-gray-900">
+              Новости
+            </h1>
+            <p class="text-gray-600 mt-1">
+              Будьте в курсе событий платформы
+            </p>
           </div>
         </div>
       </div>
@@ -19,9 +23,19 @@
         <div class="flex flex-wrap items-center gap-4">
           <div>
             <label class="form-label text-sm">Категория</label>
-            <select v-model="filters.category" @change="loadNews" class="form-input">
-              <option value="">Все категории</option>
-              <option v-for="category in categories" :key="category.id" :value="category.id">
+            <select
+              v-model="filters.category"
+              class="form-input"
+              @change="loadNews"
+            >
+              <option value="">
+                Все категории
+              </option>
+              <option
+                v-for="category in categories"
+                :key="category.id"
+                :value="category.id"
+              >
                 {{ category.name }}
               </option>
             </select>
@@ -29,11 +43,23 @@
           
           <div>
             <label class="form-label text-sm">Сортировка</label>
-            <select v-model="filters.ordering" @change="loadNews" class="form-input">
-              <option value="-published_at">Новые сначала</option>
-              <option value="published_at">Старые сначала</option>
-              <option value="-title">По алфавиту (А-Я)</option>
-              <option value="title">По алфавиту (Я-А)</option>
+            <select
+              v-model="filters.ordering"
+              class="form-input"
+              @change="loadNews"
+            >
+              <option value="-published_at">
+                Новые сначала
+              </option>
+              <option value="published_at">
+                Старые сначала
+              </option>
+              <option value="-title">
+                По алфавиту (А-Я)
+              </option>
+              <option value="title">
+                По алфавиту (Я-А)
+              </option>
             </select>
           </div>
           
@@ -41,18 +67,23 @@
             <label class="form-label text-sm">Поиск</label>
             <input
               v-model="filters.search"
-              @input="debouncedSearch"
               type="text"
               placeholder="Поиск по заголовку или содержимому..."
               class="form-input"
-            />
+              @input="debouncedSearch"
+            >
           </div>
         </div>
       </div>
 
       <!-- Featured News -->
-      <div v-if="featuredNews.length > 0" class="mb-8">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">Избранные новости</h2>
+      <div
+        v-if="featuredNews.length > 0"
+        class="mb-8"
+      >
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          Избранные новости
+        </h2>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div
             v-for="news in featuredNews"
@@ -66,10 +97,23 @@
                 :src="news.image"
                 :alt="news.title"
                 class="w-full h-full object-cover"
-              />
-              <div v-else class="w-full h-full flex items-center justify-center">
-                <svg class="w-16 h-16 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+              >
+              <div
+                v-else
+                class="w-full h-full flex items-center justify-center"
+              >
+                <svg
+                  class="w-16 h-16 text-white opacity-50"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                  />
                 </svg>
               </div>
               
@@ -110,24 +154,47 @@
       <!-- News List -->
       <div class="bg-white rounded-lg shadow">
         <!-- Loading State -->
-        <div v-if="loading" class="text-center py-12">
-          <div class="loading-spinner w-8 h-8 mx-auto mb-4"></div>
-          <p class="text-gray-600">Загрузка новостей...</p>
+        <div
+          v-if="loading"
+          class="text-center py-12"
+        >
+          <div class="loading-spinner w-8 h-8 mx-auto mb-4" />
+          <p class="text-gray-600">
+            Загрузка новостей...
+          </p>
         </div>
 
         <!-- Empty State -->
-        <div v-else-if="news.length === 0" class="text-center py-12">
-          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+        <div
+          v-else-if="news.length === 0"
+          class="text-center py-12"
+        >
+          <svg
+            class="mx-auto h-12 w-12 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+            />
           </svg>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">Новостей пока нет</h3>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">
+            Новостей пока нет
+          </h3>
           <p class="mt-1 text-sm text-gray-500">
             Следите за обновлениями, чтобы быть в курсе событий
           </p>
         </div>
 
         <!-- News Grid -->
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+        <div
+          v-else
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6"
+        >
           <article
             v-for="item in news"
             :key="item.id"
@@ -142,10 +209,23 @@
                   :src="item.image"
                   :alt="item.title"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                />
-                <div v-else class="w-full h-full bg-gradient-to-r from-primary-500 to-primary-600 flex items-center justify-center">
-                  <svg class="w-12 h-12 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                >
+                <div
+                  v-else
+                  class="w-full h-full bg-gradient-to-r from-primary-500 to-primary-600 flex items-center justify-center"
+                >
+                  <svg
+                    class="w-12 h-12 text-white opacity-50"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                    />
                   </svg>
                 </div>
                 
@@ -157,7 +237,10 @@
                 </div>
                 
                 <!-- Important Badge -->
-                <div v-if="item.is_important" class="absolute top-2 right-2">
+                <div
+                  v-if="item.is_important"
+                  class="absolute top-2 right-2"
+                >
                   <span class="badge bg-red-500 text-white text-xs">
                     Важно
                   </span>
@@ -197,7 +280,10 @@
         </div>
         
         <!-- Pagination -->
-        <div v-if="pagination.totalPages > 1" class="px-6 py-4 border-t border-gray-200">
+        <div
+          v-if="pagination.totalPages > 1"
+          class="px-6 py-4 border-t border-gray-200"
+        >
           <div class="flex items-center justify-between">
             <div class="text-sm text-gray-700">
               Показано {{ pagination.start }}-{{ pagination.end }} из {{ pagination.total }} новостей
@@ -205,10 +291,10 @@
             
             <div class="flex space-x-2">
               <button
-                @click="goToPage(pagination.currentPage - 1)"
                 :disabled="pagination.currentPage === 1"
                 class="btn btn-outline"
                 :class="{ 'opacity-50 cursor-not-allowed': pagination.currentPage === 1 }"
+                @click="goToPage(pagination.currentPage - 1)"
               >
                 ←
               </button>
@@ -217,23 +303,23 @@
                 <button
                   v-for="page in pagination.pages"
                   :key="page"
-                  @click="goToPage(page)"
                   :class="[
                     'btn',
                     page === pagination.currentPage
                       ? 'btn-primary'
                       : 'btn-outline'
                   ]"
+                  @click="goToPage(page)"
                 >
                   {{ page }}
                 </button>
               </div>
               
               <button
-                @click="goToPage(pagination.currentPage + 1)"
                 :disabled="pagination.currentPage === pagination.totalPages"
                 class="btn btn-outline"
                 :class="{ 'opacity-50 cursor-not-allowed': pagination.currentPage === pagination.totalPages }"
+                @click="goToPage(pagination.currentPage + 1)"
               >
                 →
               </button>

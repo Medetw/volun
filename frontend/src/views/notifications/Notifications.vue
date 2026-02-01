@@ -5,15 +5,19 @@
       <div class="container-custom py-6">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Уведомления</h1>
-            <p class="text-gray-600 mt-1">Будьте в курсе важных событий</p>
+            <h1 class="text-2xl font-bold text-gray-900">
+              Уведомления
+            </h1>
+            <p class="text-gray-600 mt-1">
+              Будьте в курсе важных событий
+            </p>
           </div>
           
           <div class="flex items-center space-x-4">
             <button
-              @click="markAllAsRead"
               :disabled="markingAll"
               class="btn btn-outline"
+              @click="markAllAsRead"
             >
               {{ markingAll ? 'Обработка...' : 'Отметить все прочитанными' }}
             </button>
@@ -29,13 +33,27 @@
         <div class="bg-white p-6 rounded-lg shadow">
           <div class="flex items-center">
             <div class="p-3 bg-blue-100 rounded-full">
-              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              <svg
+                class="w-6 h-6 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
               </svg>
             </div>
             <div>
-              <div class="text-2xl font-bold text-gray-900">{{ stats.total }}</div>
-              <div class="text-sm text-gray-600">Всего уведомлений</div>
+              <div class="text-2xl font-bold text-gray-900">
+                {{ stats.total }}
+              </div>
+              <div class="text-sm text-gray-600">
+                Всего уведомлений
+              </div>
             </div>
           </div>
         </div>
@@ -43,13 +61,27 @@
         <div class="bg-white p-6 rounded-lg shadow">
           <div class="flex items-center">
             <div class="p-3 bg-yellow-100 rounded-full">
-              <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              <svg
+                class="w-6 h-6 text-yellow-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
               </svg>
             </div>
             <div>
-              <div class="text-2xl font-bold text-gray-900">{{ stats.unread }}</div>
-              <div class="text-sm text-gray-600">Непрочитанных</div>
+              <div class="text-2xl font-bold text-gray-900">
+                {{ stats.unread }}
+              </div>
+              <div class="text-sm text-gray-600">
+                Непрочитанных
+              </div>
             </div>
           </div>
         </div>
@@ -57,13 +89,27 @@
         <div class="bg-white p-6 rounded-lg shadow">
           <div class="flex items-center">
             <div class="p-3 bg-green-100 rounded-full">
-              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                class="w-6 h-6 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div>
-              <div class="text-2xl font-bold text-gray-900">{{ stats.read }}</div>
-              <div class="text-sm text-gray-600">Прочитанных</div>
+              <div class="text-2xl font-bold text-gray-900">
+                {{ stats.read }}
+              </div>
+              <div class="text-sm text-gray-600">
+                Прочитанных
+              </div>
             </div>
           </div>
         </div>
@@ -71,13 +117,27 @@
         <div class="bg-white p-6 rounded-lg shadow">
           <div class="flex items-center">
             <div class="p-3 bg-purple-100 rounded-full">
-              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14l7-7v10h4.5" />
+              <svg
+                class="w-6 h-6 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14l7-7v10h4.5"
+                />
               </svg>
             </div>
             <div>
-              <div class="text-2xl font-bold text-gray-900">{{ stats.today }}</div>
-              <div class="text-sm text-gray-600">Сегодня</div>
+              <div class="text-2xl font-bold text-gray-900">
+                {{ stats.today }}
+              </div>
+              <div class="text-sm text-gray-600">
+                Сегодня
+              </div>
             </div>
           </div>
         </div>
@@ -88,31 +148,67 @@
         <div class="flex flex-wrap items-center gap-4">
           <div>
             <label class="form-label text-sm">Тип</label>
-            <select v-model="filters.type" @change="loadNotifications" class="form-input">
-              <option value="">Все типы</option>
-              <option value="application">Заявки</option>
-              <option value="project">Проекты</option>
-              <option value="system">Системные</option>
-              <option value="news">Новости</option>
-              <option value="reminder">Напоминания</option>
+            <select
+              v-model="filters.type"
+              class="form-input"
+              @change="loadNotifications"
+            >
+              <option value="">
+                Все типы
+              </option>
+              <option value="application">
+                Заявки
+              </option>
+              <option value="project">
+                Проекты
+              </option>
+              <option value="system">
+                Системные
+              </option>
+              <option value="news">
+                Новости
+              </option>
+              <option value="reminder">
+                Напоминания
+              </option>
             </select>
           </div>
           
           <div>
             <label class="form-label text-sm">Статус</label>
-            <select v-model="filters.is_read" @change="loadNotifications" class="form-input">
-              <option value="">Все статусы</option>
-              <option value="false">Непрочитанные</option>
-              <option value="true">Прочитанные</option>
+            <select
+              v-model="filters.is_read"
+              class="form-input"
+              @change="loadNotifications"
+            >
+              <option value="">
+                Все статусы
+              </option>
+              <option value="false">
+                Непрочитанные
+              </option>
+              <option value="true">
+                Прочитанные
+              </option>
             </select>
           </div>
           
           <div>
             <label class="form-label text-sm">Сортировка</label>
-            <select v-model="filters.ordering" @change="loadNotifications" class="form-input">
-              <option value="-created_at">Новые сначала</option>
-              <option value="created_at">Старые сначала</option>
-              <option value="-read_at">Недавно прочитанные</option>
+            <select
+              v-model="filters.ordering"
+              class="form-input"
+              @change="loadNotifications"
+            >
+              <option value="-created_at">
+                Новые сначала
+              </option>
+              <option value="created_at">
+                Старые сначала
+              </option>
+              <option value="-read_at">
+                Недавно прочитанные
+              </option>
             </select>
           </div>
           
@@ -120,11 +216,11 @@
             <label class="form-label text-sm">Поиск</label>
             <input
               v-model="filters.search"
-              @input="debouncedSearch"
               type="text"
               placeholder="Поиск по заголовку или содержимому..."
               class="form-input"
-            />
+              @input="debouncedSearch"
+            >
           </div>
         </div>
       </div>
@@ -132,24 +228,47 @@
       <!-- Notifications List -->
       <div class="bg-white rounded-lg shadow">
         <!-- Loading State -->
-        <div v-if="loading" class="text-center py-12">
-          <div class="loading-spinner w-8 h-8 mx-auto mb-4"></div>
-          <p class="text-gray-600">Загрузка уведомлений...</p>
+        <div
+          v-if="loading"
+          class="text-center py-12"
+        >
+          <div class="loading-spinner w-8 h-8 mx-auto mb-4" />
+          <p class="text-gray-600">
+            Загрузка уведомлений...
+          </p>
         </div>
 
         <!-- Empty State -->
-        <div v-else-if="notifications.length === 0" class="text-center py-12">
-          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        <div
+          v-else-if="notifications.length === 0"
+          class="text-center py-12"
+        >
+          <svg
+            class="mx-auto h-12 w-12 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+            />
           </svg>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">Уведомлений пока нет</h3>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">
+            Уведомлений пока нет
+          </h3>
           <p class="mt-1 text-sm text-gray-500">
             Вы будете получать уведомления о важных событиях
           </p>
         </div>
 
         <!-- Notifications Grid -->
-        <div v-else class="divide-y divide-gray-200">
+        <div
+          v-else
+          class="divide-y divide-gray-200"
+        >
           <div
             v-for="notification in notifications"
             :key="notification.id"
@@ -163,8 +282,18 @@
               <div class="flex items-start space-x-4 flex-1">
                 <!-- Icon -->
                 <div :class="getNotificationIconClass(notification.type)">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14l7-7v10h4.5" />
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 10V3L4 14l7-7v10h4.5"
+                    />
                   </svg>
                 </div>
                 
@@ -175,7 +304,10 @@
                       {{ notification.title }}
                     </h3>
                     <div class="flex items-center space-x-2">
-                      <span v-if="!notification.is_read" class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      <span
+                        v-if="!notification.is_read"
+                        class="w-2 h-2 bg-blue-500 rounded-full"
+                      />
                       <span class="text-sm text-gray-500">
                         {{ formatDate(notification.created_at) }}
                       </span>
@@ -187,7 +319,10 @@
                   </p>
                   
                   <!-- Action Button -->
-                  <div v-if="notification.action_url" class="mt-3">
+                  <div
+                    v-if="notification.action_url"
+                    class="mt-3"
+                  >
                     <router-link
                       :to="notification.action_url"
                       class="btn btn-primary text-sm"
@@ -203,24 +338,44 @@
               <div class="flex items-center space-x-2 ml-4">
                 <button
                   v-if="!notification.is_read"
-                  @click.stop="markAsRead(notification.id)"
                   :disabled="marking"
                   class="btn btn-outline text-sm"
                   title="Отметить как прочитанное"
+                  @click.stop="markAsRead(notification.id)"
                 >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </button>
                 
                 <button
-                  @click.stop="deleteNotification(notification.id)"
                   :disabled="deleting"
                   class="btn btn-outline text-sm text-red-600 hover:text-red-700"
                   title="Удалить"
+                  @click.stop="deleteNotification(notification.id)"
                 >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
                   </svg>
                 </button>
               </div>
@@ -229,7 +384,10 @@
         </div>
         
         <!-- Pagination -->
-        <div v-if="pagination.totalPages > 1" class="px-6 py-4 border-t border-gray-200">
+        <div
+          v-if="pagination.totalPages > 1"
+          class="px-6 py-4 border-t border-gray-200"
+        >
           <div class="flex items-center justify-between">
             <div class="text-sm text-gray-700">
               Показано {{ pagination.start }}-{{ pagination.end }} из {{ pagination.total }} уведомлений
@@ -237,10 +395,10 @@
             
             <div class="flex space-x-2">
               <button
-                @click="goToPage(pagination.currentPage - 1)"
                 :disabled="pagination.currentPage === 1"
                 class="btn btn-outline"
                 :class="{ 'opacity-50 cursor-not-allowed': pagination.currentPage === 1 }"
+                @click="goToPage(pagination.currentPage - 1)"
               >
                 ←
               </button>
@@ -249,23 +407,23 @@
                 <button
                   v-for="page in pagination.pages"
                   :key="page"
-                  @click="goToPage(page)"
                   :class="[
                     'btn',
                     page === pagination.currentPage
                       ? 'btn-primary'
                       : 'btn-outline'
                   ]"
+                  @click="goToPage(page)"
                 >
                   {{ page }}
                 </button>
               </div>
               
               <button
-                @click="goToPage(pagination.currentPage + 1)"
                 :disabled="pagination.currentPage === pagination.totalPages"
                 class="btn btn-outline"
                 :class="{ 'opacity-50 cursor-not-allowed': pagination.currentPage === pagination.totalPages }"
+                @click="goToPage(pagination.currentPage + 1)"
               >
                 →
               </button>

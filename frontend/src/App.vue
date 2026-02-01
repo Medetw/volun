@@ -13,7 +13,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div id="app" class="min-h-screen flex flex-col">
+  <div
+    id="app"
+    class="min-h-screen flex flex-col"
+  >
     <AppHeader />
     
     <main class="flex-grow">

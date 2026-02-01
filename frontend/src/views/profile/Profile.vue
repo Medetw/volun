@@ -2,18 +2,28 @@
   <div class="min-h-screen bg-gray-50 py-8">
     <div class="container-custom max-w-4xl">
       <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Профиль</h1>
-        <p class="text-gray-600 mt-2">Управление личной информацией</p>
+        <h1 class="text-3xl font-bold text-gray-900">
+          Профиль
+        </h1>
+        <p class="text-gray-600 mt-2">
+          Управление личной информацией
+        </p>
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="flex items-center justify-center py-20">
-        <div class="loading-spinner w-8 h-8 mr-3"></div>
+      <div
+        v-if="loading"
+        class="flex items-center justify-center py-20"
+      >
+        <div class="loading-spinner w-8 h-8 mr-3" />
         <span class="text-gray-600">Загрузка профиля...</span>
       </div>
 
       <!-- Profile Content -->
-      <div v-else class="space-y-6">
+      <div
+        v-else
+        class="space-y-6"
+      >
         <!-- Profile Header -->
         <div class="bg-white p-6 rounded-lg shadow">
           <div class="flex items-center space-x-6">
@@ -24,16 +34,35 @@
                 </span>
               </div>
               <button class="absolute bottom-0 right-0 bg-primary-600 text-white p-2 rounded-full hover:bg-primary-700">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
                 </svg>
               </button>
             </div>
             
             <div class="flex-1">
-              <h2 class="text-2xl font-bold text-gray-900">{{ getUserDisplayName() }}</h2>
-              <p class="text-gray-600">{{ getUserEmail() }}</p>
+              <h2 class="text-2xl font-bold text-gray-900">
+                {{ getUserDisplayName() }}
+              </h2>
+              <p class="text-gray-600">
+                {{ getUserEmail() }}
+              </p>
               <span :class="getRoleBadgeClass()">
                 {{ getRoleDisplay() }}
               </span>
@@ -43,22 +72,39 @@
 
         <!-- Profile Form -->
         <div class="bg-white p-6 rounded-lg shadow">
-          <h3 class="text-xl font-semibold text-gray-900 mb-6">Личная информация</h3>
+          <h3 class="text-xl font-semibold text-gray-900 mb-6">
+            Личная информация
+          </h3>
           
           <!-- Success Message -->
-          <div v-if="successMessage" class="bg-green-50 border border-green-200 rounded-md p-4 mb-6">
-            <div class="text-sm text-green-600">{{ successMessage }}</div>
+          <div
+            v-if="successMessage"
+            class="bg-green-50 border border-green-200 rounded-md p-4 mb-6"
+          >
+            <div class="text-sm text-green-600">
+              {{ successMessage }}
+            </div>
           </div>
 
           <!-- Error Message -->
-          <div v-if="errorMessage" class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
-            <div class="text-sm text-red-600">{{ errorMessage }}</div>
+          <div
+            v-if="errorMessage"
+            class="bg-red-50 border border-red-200 rounded-md p-4 mb-6"
+          >
+            <div class="text-sm text-red-600">
+              {{ errorMessage }}
+            </div>
           </div>
 
-          <form @submit.prevent="handleUpdateProfile" class="space-y-6">
+          <form
+            class="space-y-6"
+            @submit.prevent="handleUpdateProfile"
+          >
             <!-- Basic Information -->
             <div class="space-y-4">
-              <h4 class="text-lg font-medium text-gray-900">Основная информация</h4>
+              <h4 class="text-lg font-medium text-gray-900">
+                Основная информация
+              </h4>
               
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -68,7 +114,7 @@
                     type="text"
                     class="form-input"
                     placeholder="Иван"
-                  />
+                  >
                 </div>
                 
                 <div>
@@ -78,7 +124,7 @@
                     type="text"
                     class="form-input"
                     placeholder="Иванов"
-                  />
+                  >
                 </div>
               </div>
 
@@ -89,7 +135,7 @@
                   type="email"
                   class="form-input"
                   placeholder="your@email.com"
-                />
+                >
               </div>
 
               <div>
@@ -99,13 +145,18 @@
                   type="tel"
                   class="form-input"
                   placeholder="+7 (777) 123-45-67"
-                />
+                >
               </div>
             </div>
 
             <!-- Volunteer Specific Fields -->
-            <div v-if="authStore.isVolunteer" class="space-y-4 border-t pt-6">
-              <h4 class="text-lg font-medium text-gray-900">Информация о волонтере</h4>
+            <div
+              v-if="authStore.isVolunteer"
+              class="space-y-4 border-t pt-6"
+            >
+              <h4 class="text-lg font-medium text-gray-900">
+                Информация о волонтере
+              </h4>
               
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -114,16 +165,27 @@
                     v-model="form.birth_date"
                     type="date"
                     class="form-input"
-                  />
+                  >
                 </div>
                 
                 <div>
                   <label class="form-label">Пол</label>
-                  <select v-model="form.gender" class="form-input">
-                    <option value="">Выберите</option>
-                    <option value="male">Мужской</option>
-                    <option value="female">Женский</option>
-                    <option value="other">Другой</option>
+                  <select
+                    v-model="form.gender"
+                    class="form-input"
+                  >
+                    <option value="">
+                      Выберите
+                    </option>
+                    <option value="male">
+                      Мужской
+                    </option>
+                    <option value="female">
+                      Женский
+                    </option>
+                    <option value="other">
+                      Другой
+                    </option>
                   </select>
                 </div>
               </div>
@@ -136,7 +198,7 @@
                     type="text"
                     class="form-input"
                     placeholder="Алматы"
-                  />
+                  >
                 </div>
                 
                 <div>
@@ -146,7 +208,7 @@
                     type="text"
                     class="form-input"
                     placeholder="Алматинская область"
-                  />
+                  >
                 </div>
               </div>
 
@@ -157,7 +219,7 @@
                   rows="3"
                   class="form-input"
                   placeholder="Например: программирование, дизайн, организация мероприятий"
-                ></textarea>
+                />
               </div>
 
               <div>
@@ -167,13 +229,18 @@
                   rows="3"
                   class="form-input"
                   placeholder="Например: экология, образование, помощь животным"
-                ></textarea>
+                />
               </div>
             </div>
 
             <!-- Organization Specific Fields -->
-            <div v-if="authStore.isOrganization" class="space-y-4 border-t pt-6">
-              <h4 class="text-lg font-medium text-gray-900">Информация об организации</h4>
+            <div
+              v-if="authStore.isOrganization"
+              class="space-y-4 border-t pt-6"
+            >
+              <h4 class="text-lg font-medium text-gray-900">
+                Информация об организации
+              </h4>
               
               <div>
                 <label class="form-label">Название организации</label>
@@ -182,21 +249,42 @@
                   type="text"
                   class="form-input"
                   placeholder="ООО 'Добрые дела'"
-                />
+                >
               </div>
 
               <div>
                 <label class="form-label">Тип организации</label>
-                <select v-model="form.organization_type" class="form-input">
-                  <option value="">Выберите тип</option>
-                  <option value="ngo">НКО</option>
-                  <option value="foundation">Фонд</option>
-                  <option value="association">Ассоциация</option>
-                  <option value="corporate">Корпорация</option>
-                  <option value="government">Государственная</option>
-                  <option value="educational">Образовательная</option>
-                  <option value="religious">Религиозная</option>
-                  <option value="other">Другое</option>
+                <select
+                  v-model="form.organization_type"
+                  class="form-input"
+                >
+                  <option value="">
+                    Выберите тип
+                  </option>
+                  <option value="ngo">
+                    НКО
+                  </option>
+                  <option value="foundation">
+                    Фонд
+                  </option>
+                  <option value="association">
+                    Ассоциация
+                  </option>
+                  <option value="corporate">
+                    Корпорация
+                  </option>
+                  <option value="government">
+                    Государственная
+                  </option>
+                  <option value="educational">
+                    Образовательная
+                  </option>
+                  <option value="religious">
+                    Религиозная
+                  </option>
+                  <option value="other">
+                    Другое
+                  </option>
                 </select>
               </div>
 
@@ -207,7 +295,7 @@
                   rows="4"
                   class="form-input"
                   placeholder="Опишите основную деятельность вашей организации..."
-                ></textarea>
+                />
               </div>
 
               <div>
@@ -217,7 +305,7 @@
                   type="url"
                   class="form-input"
                   placeholder="https://example.com"
-                />
+                >
               </div>
 
               <div>
@@ -227,7 +315,7 @@
                   type="text"
                   class="form-input"
                   placeholder="г. Алматы, ул. Абая 123, офис 456"
-                />
+                >
               </div>
             </div>
 
@@ -235,8 +323,8 @@
             <div class="flex justify-end space-x-4 border-t pt-6">
               <button
                 type="button"
-                @click="resetForm"
                 class="btn btn-outline"
+                @click="resetForm"
               >
                 Отмена
               </button>
@@ -253,9 +341,14 @@
 
         <!-- Change Password -->
         <div class="bg-white p-6 rounded-lg shadow">
-          <h3 class="text-xl font-semibold text-gray-900 mb-6">Изменение пароля</h3>
+          <h3 class="text-xl font-semibold text-gray-900 mb-6">
+            Изменение пароля
+          </h3>
           
-          <form @submit.prevent="handleChangePassword" class="space-y-4">
+          <form
+            class="space-y-4"
+            @submit.prevent="handleChangePassword"
+          >
             <div>
               <label class="form-label">Текущий пароль</label>
               <input
@@ -264,7 +357,7 @@
                 class="form-input"
                 placeholder="••••••••"
                 required
-              />
+              >
             </div>
 
             <div>
@@ -275,7 +368,7 @@
                 class="form-input"
                 placeholder="••••••••"
                 required
-              />
+              >
             </div>
 
             <div>
@@ -286,7 +379,7 @@
                 class="form-input"
                 placeholder="••••••••"
                 required
-              />
+              >
             </div>
 
             <div class="flex justify-end">

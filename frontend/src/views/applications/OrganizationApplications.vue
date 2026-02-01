@@ -5,11 +5,18 @@
       <div class="container-custom py-6">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Заявки на проекты</h1>
-            <p class="text-gray-600 mt-1">Управление заявками волонтеров на ваши проекты</p>
+            <h1 class="text-2xl font-bold text-gray-900">
+              Заявки на проекты
+            </h1>
+            <p class="text-gray-600 mt-1">
+              Управление заявками волонтеров на ваши проекты
+            </p>
           </div>
           
-          <router-link to="/dashboard/organization" class="btn btn-primary">
+          <router-link
+            to="/dashboard/organization"
+            class="btn btn-primary"
+          >
             Мои проекты
           </router-link>
         </div>
@@ -23,13 +30,27 @@
         <div class="bg-white p-6 rounded-lg shadow">
           <div class="flex items-center">
             <div class="p-3 bg-blue-100 rounded-full">
-              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2z" />
+              <svg
+                class="w-6 h-6 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2z"
+                />
               </svg>
             </div>
             <div>
-              <div class="text-2xl font-bold text-gray-900">{{ stats.total }}</div>
-              <div class="text-sm text-gray-600">Всего заявок</div>
+              <div class="text-2xl font-bold text-gray-900">
+                {{ stats.total }}
+              </div>
+              <div class="text-sm text-gray-600">
+                Всего заявок
+              </div>
             </div>
           </div>
         </div>
@@ -37,13 +58,27 @@
         <div class="bg-white p-6 rounded-lg shadow">
           <div class="flex items-center">
             <div class="p-3 bg-yellow-100 rounded-full">
-              <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3v-4m0 6h.01M12 12v4m0 6h.01" />
+              <svg
+                class="w-6 h-6 text-yellow-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3v-4m0 6h.01M12 12v4m0 6h.01"
+                />
               </svg>
             </div>
             <div>
-              <div class="text-2xl font-bold text-gray-900">{{ stats.pending }}</div>
-              <div class="text-sm text-gray-600">На рассмотрении</div>
+              <div class="text-2xl font-bold text-gray-900">
+                {{ stats.pending }}
+              </div>
+              <div class="text-sm text-gray-600">
+                На рассмотрении
+              </div>
             </div>
           </div>
         </div>
@@ -51,13 +86,27 @@
         <div class="bg-white p-6 rounded-lg shadow">
           <div class="flex items-center">
             <div class="p-3 bg-green-100 rounded-full">
-              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                class="w-6 h-6 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div>
-              <div class="text-2xl font-bold text-gray-900">{{ stats.approved }}</div>
-              <div class="text-sm text-gray-600">Одобрено</div>
+              <div class="text-2xl font-bold text-gray-900">
+                {{ stats.approved }}
+              </div>
+              <div class="text-sm text-gray-600">
+                Одобрено
+              </div>
             </div>
           </div>
         </div>
@@ -65,13 +114,27 @@
         <div class="bg-white p-6 rounded-lg shadow">
           <div class="flex items-center">
             <div class="p-3 bg-red-100 rounded-full">
-              <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                class="w-6 h-6 text-red-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </div>
             <div>
-              <div class="text-2xl font-bold text-gray-900">{{ stats.rejected }}</div>
-              <div class="text-sm text-gray-600">Отклонено</div>
+              <div class="text-2xl font-bold text-gray-900">
+                {{ stats.rejected }}
+              </div>
+              <div class="text-sm text-gray-600">
+                Отклонено
+              </div>
             </div>
           </div>
         </div>
@@ -82,20 +145,44 @@
         <div class="flex flex-wrap items-center gap-4">
           <div>
             <label class="form-label text-sm">Статус</label>
-            <select v-model="filters.status" @change="loadApplications" class="form-input">
-              <option value="">Все статусы</option>
-              <option value="pending">На рассмотрении</option>
-              <option value="approved">Одобрено</option>
-              <option value="rejected">Отклонено</option>
-              <option value="cancelled">Отменено</option>
+            <select
+              v-model="filters.status"
+              class="form-input"
+              @change="loadApplications"
+            >
+              <option value="">
+                Все статусы
+              </option>
+              <option value="pending">
+                На рассмотрении
+              </option>
+              <option value="approved">
+                Одобрено
+              </option>
+              <option value="rejected">
+                Отклонено
+              </option>
+              <option value="cancelled">
+                Отменено
+              </option>
             </select>
           </div>
           
           <div>
             <label class="form-label text-sm">Проект</label>
-            <select v-model="filters.project" @change="loadApplications" class="form-input">
-              <option value="">Все проекты</option>
-              <option v-for="project in projects" :key="project.id" :value="project.id">
+            <select
+              v-model="filters.project"
+              class="form-input"
+              @change="loadApplications"
+            >
+              <option value="">
+                Все проекты
+              </option>
+              <option
+                v-for="project in projects"
+                :key="project.id"
+                :value="project.id"
+              >
                 {{ project.title }}
               </option>
             </select>
@@ -103,10 +190,20 @@
           
           <div>
             <label class="form-label text-sm">Сортировка</label>
-            <select v-model="filters.ordering" @change="loadApplications" class="form-input">
-              <option value="-created_at">Новые сначала</option>
-              <option value="created_at">Старые сначала</option>
-              <option value="-updated_at">Недавно обновленные</option>
+            <select
+              v-model="filters.ordering"
+              class="form-input"
+              @change="loadApplications"
+            >
+              <option value="-created_at">
+                Новые сначала
+              </option>
+              <option value="created_at">
+                Старые сначала
+              </option>
+              <option value="-updated_at">
+                Недавно обновленные
+              </option>
             </select>
           </div>
           
@@ -114,11 +211,11 @@
             <label class="form-label text-sm">Поиск</label>
             <input
               v-model="filters.search"
-              @input="debouncedSearch"
               type="text"
               placeholder="Поиск по волонтеру или проекту..."
               class="form-input"
-            />
+              @input="debouncedSearch"
+            >
           </div>
         </div>
       </div>
@@ -126,29 +223,55 @@
       <!-- Applications List -->
       <div class="bg-white rounded-lg shadow">
         <!-- Loading State -->
-        <div v-if="loading" class="text-center py-12">
-          <div class="loading-spinner w-8 h-8 mx-auto mb-4"></div>
-          <p class="text-gray-600">Загрузка заявок...</p>
+        <div
+          v-if="loading"
+          class="text-center py-12"
+        >
+          <div class="loading-spinner w-8 h-8 mx-auto mb-4" />
+          <p class="text-gray-600">
+            Загрузка заявок...
+          </p>
         </div>
 
         <!-- Empty State -->
-        <div v-else-if="applications.length === 0" class="text-center py-12">
-          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2z" />
+        <div
+          v-else-if="applications.length === 0"
+          class="text-center py-12"
+        >
+          <svg
+            class="mx-auto h-12 w-12 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2z"
+            />
           </svg>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">Заявок пока нет</h3>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">
+            Заявок пока нет
+          </h3>
           <p class="mt-1 text-sm text-gray-500">
             Волонтеры еще не подали заявки на ваши проекты
           </p>
           <div class="mt-6">
-            <router-link to="/projects/create" class="btn btn-primary">
+            <router-link
+              to="/projects/create"
+              class="btn btn-primary"
+            >
               Создать проект
             </router-link>
           </div>
         </div>
 
         <!-- Applications Grid -->
-        <div v-else class="divide-y divide-gray-200">
+        <div
+          v-else
+          class="divide-y divide-gray-200"
+        >
           <div
             v-for="application in applications"
             :key="application.id"
@@ -164,7 +287,10 @@
                   <span class="text-sm text-gray-500">
                     Подано: {{ formatDate(application.created_at) }}
                   </span>
-                  <span v-if="application.updated_at !== application.created_at" class="text-sm text-gray-500">
+                  <span
+                    v-if="application.updated_at !== application.created_at"
+                    class="text-sm text-gray-500"
+                  >
                     Обновлено: {{ formatDate(application.updated_at) }}
                   </span>
                 </div>
@@ -180,14 +306,19 @@
                     <h4 class="text-lg font-medium text-gray-900">
                       {{ application.volunteer.username }}
                     </h4>
-                    <p class="text-sm text-gray-500">{{ application.volunteer.email }}</p>
+                    <p class="text-sm text-gray-500">
+                      {{ application.volunteer.email }}
+                    </p>
                   </div>
                 </div>
                 
                 <!-- Project Info -->
                 <div class="bg-gray-50 p-3 rounded-md mb-3">
                   <h3 class="text-lg font-medium text-gray-900 mb-2">
-                    <router-link :to="`/projects/${application.project.id}`" class="hover:text-primary-600">
+                    <router-link
+                      :to="`/projects/${application.project.id}`"
+                      class="hover:text-primary-600"
+                    >
                       {{ application.project.title }}
                     </router-link>
                   </h3>
@@ -202,25 +333,34 @@
                 
                 <!-- Cover Letter -->
                 <div class="mb-3">
-                  <h4 class="text-sm font-medium text-gray-900 mb-2">Сопроводительное письмо:</h4>
-                  <p class="text-gray-600 text-sm">{{ application.cover_letter }}</p>
+                  <h4 class="text-sm font-medium text-gray-900 mb-2">
+                    Сопроводительное письмо:
+                  </h4>
+                  <p class="text-gray-600 text-sm">
+                    {{ application.cover_letter }}
+                  </p>
                 </div>
                 
                 <!-- Review Section -->
-                <div v-if="application.status === 'pending'" class="bg-blue-50 p-4 rounded-md">
-                  <h4 class="text-sm font-medium text-gray-900 mb-3">Действия с заявкой:</h4>
+                <div
+                  v-if="application.status === 'pending'"
+                  class="bg-blue-50 p-4 rounded-md"
+                >
+                  <h4 class="text-sm font-medium text-gray-900 mb-3">
+                    Действия с заявкой:
+                  </h4>
                   <div class="flex space-x-3">
                     <button
-                      @click="approveApplication(application.id)"
                       :disabled="processing"
                       class="btn btn-success text-sm"
+                      @click="approveApplication(application.id)"
                     >
                       {{ processing ? 'Обработка...' : 'Одобрить' }}
                     </button>
                     <button
-                      @click="showRejectModal(application)"
                       :disabled="processing"
                       class="btn btn-danger text-sm"
+                      @click="showRejectModal(application)"
                     >
                       {{ processing ? 'Обработка...' : 'Отклонить' }}
                     </button>
@@ -228,10 +368,23 @@
                 </div>
                 
                 <!-- Review Info -->
-                <div v-else-if="application.reviewed_by" class="bg-gray-50 p-3 rounded-md">
+                <div
+                  v-else-if="application.reviewed_by"
+                  class="bg-gray-50 p-3 rounded-md"
+                >
                   <div class="flex items-center text-sm">
-                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      class="w-4 h-4 mr-2 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                     <span class="text-gray-600">
                       Рассмотрено: {{ application.reviewed_by.username }}
@@ -240,7 +393,10 @@
                       {{ formatDate(application.reviewed_at) }}
                     </span>
                   </div>
-                  <p v-if="application.review_comment" class="text-sm text-gray-600 mt-2">
+                  <p
+                    v-if="application.review_comment"
+                    class="text-sm text-gray-600 mt-2"
+                  >
                     <strong>Комментарий:</strong> {{ application.review_comment }}
                   </p>
                 </div>
@@ -260,7 +416,10 @@
         </div>
         
         <!-- Pagination -->
-        <div v-if="pagination.totalPages > 1" class="px-6 py-4 border-t border-gray-200">
+        <div
+          v-if="pagination.totalPages > 1"
+          class="px-6 py-4 border-t border-gray-200"
+        >
           <div class="flex items-center justify-between">
             <div class="text-sm text-gray-700">
               Показано {{ pagination.start }}-{{ pagination.end }} из {{ pagination.total }} заявок
@@ -268,10 +427,10 @@
             
             <div class="flex space-x-2">
               <button
-                @click="goToPage(pagination.currentPage - 1)"
                 :disabled="pagination.currentPage === 1"
                 class="btn btn-outline"
                 :class="{ 'opacity-50 cursor-not-allowed': pagination.currentPage === 1 }"
+                @click="goToPage(pagination.currentPage - 1)"
               >
                 ←
               </button>
@@ -280,23 +439,23 @@
                 <button
                   v-for="page in pagination.pages"
                   :key="page"
-                  @click="goToPage(page)"
                   :class="[
                     'btn',
                     page === pagination.currentPage
                       ? 'btn-primary'
                       : 'btn-outline'
                   ]"
+                  @click="goToPage(page)"
                 >
                   {{ page }}
                 </button>
               </div>
               
               <button
-                @click="goToPage(pagination.currentPage + 1)"
                 :disabled="pagination.currentPage === pagination.totalPages"
                 class="btn btn-outline"
                 :class="{ 'opacity-50 cursor-not-allowed': pagination.currentPage === pagination.totalPages }"
+                @click="goToPage(pagination.currentPage + 1)"
               >
                 →
               </button>
@@ -307,10 +466,15 @@
     </div>
 
     <!-- Reject Modal -->
-    <div v-if="showRejectModalFlag" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div
+      v-if="showRejectModalFlag"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+    >
       <div class="relative min-h-screen flex items-center justify-center p-4">
         <div class="bg-white rounded-lg max-w-md w-full p-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Отклонить заявку</h3>
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            Отклонить заявку
+          </h3>
           
           <form @submit.prevent="handleReject">
             <div class="mb-4">
@@ -321,7 +485,7 @@
                 class="form-input"
                 placeholder="Укажите причину отклонения заявки..."
                 required
-              ></textarea>
+              />
             </div>
             
             <div class="flex space-x-3">
@@ -334,8 +498,8 @@
               </button>
               <button
                 type="button"
-                @click="showRejectModalFlag = false"
                 class="btn btn-outline flex-1"
+                @click="showRejectModalFlag = false"
               >
                 Отмена
               </button>

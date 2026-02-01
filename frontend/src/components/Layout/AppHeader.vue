@@ -3,10 +3,23 @@
     <div class="container-custom">
       <div class="flex justify-between items-center h-16">
         <!-- Logo -->
-        <router-link to="/" class="flex items-center space-x-2">
+        <router-link
+          to="/"
+          class="flex items-center space-x-2"
+        >
           <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            <svg
+              class="w-5 h-5 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+              />
             </svg>
           </div>
           <span class="text-xl font-bold text-gray-900">Волонтер</span>
@@ -14,13 +27,25 @@
 
         <!-- Navigation -->
         <nav class="hidden md:flex space-x-8">
-          <router-link to="/" class="nav-link" :class="{ 'nav-link-active': $route.name === 'Home' }">
+          <router-link
+            to="/"
+            class="nav-link"
+            :class="{ 'nav-link-active': $route.name === 'Home' }"
+          >
             Главная
           </router-link>
-          <router-link to="/projects" class="nav-link" :class="{ 'nav-link-active': $route.name === 'ProjectsList' }">
+          <router-link
+            to="/projects"
+            class="nav-link"
+            :class="{ 'nav-link-active': $route.name === 'ProjectsList' }"
+          >
             Проекты
           </router-link>
-          <router-link to="/news" class="nav-link" :class="{ 'nav-link-active': $route.name === 'NewsList' }">
+          <router-link
+            to="/news"
+            class="nav-link"
+            :class="{ 'nav-link-active': $route.name === 'NewsList' }"
+          >
             Новости
           </router-link>
         </nav>
@@ -28,36 +53,73 @@
         <!-- User menu -->
         <div class="flex items-center space-x-4">
           <!-- Notifications -->
-          <div v-if="authStore.isAuthenticated" class="relative">
+          <div
+            v-if="authStore.isAuthenticated"
+            class="relative"
+          >
             <button
-              @click="showNotifications = !showNotifications"
               class="relative p-2 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-full"
+              @click="showNotifications = !showNotifications"
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
               </svg>
-              <span v-if="unreadCount > 0" class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400"></span>
+              <span
+                v-if="unreadCount > 0"
+                class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400"
+              />
             </button>
             
             <!-- Notifications dropdown -->
-            <div v-if="showNotifications" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+            <div
+              v-if="showNotifications"
+              class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+            >
               <div class="p-4 border-b border-gray-200">
-                <h3 class="text-sm font-medium text-gray-900">Уведомления</h3>
+                <h3 class="text-sm font-medium text-gray-900">
+                  Уведомления
+                </h3>
               </div>
               <div class="max-h-64 overflow-y-auto">
-                <div v-if="notifications.length === 0" class="p-4 text-center text-gray-500">
+                <div
+                  v-if="notifications.length === 0"
+                  class="p-4 text-center text-gray-500"
+                >
                   Нет уведомлений
                 </div>
                 <div v-else>
-                  <div v-for="notification in notifications" :key="notification.id" class="p-4 hover:bg-gray-50 border-b border-gray-100">
-                    <p class="text-sm font-medium text-gray-900">{{ notification.title }}</p>
-                    <p class="text-sm text-gray-600">{{ notification.message }}</p>
-                    <p class="text-xs text-gray-400 mt-1">{{ formatDate(notification.created_at) }}</p>
+                  <div
+                    v-for="notification in notifications"
+                    :key="notification.id"
+                    class="p-4 hover:bg-gray-50 border-b border-gray-100"
+                  >
+                    <p class="text-sm font-medium text-gray-900">
+                      {{ notification.title }}
+                    </p>
+                    <p class="text-sm text-gray-600">
+                      {{ notification.message }}
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1">
+                      {{ formatDate(notification.created_at) }}
+                    </p>
                   </div>
                 </div>
               </div>
               <div class="p-4 border-t border-gray-200">
-                <router-link to="/notifications" class="text-sm text-primary-600 hover:text-primary-800">
+                <router-link
+                  to="/notifications"
+                  class="text-sm text-primary-600 hover:text-primary-800"
+                >
                   Все уведомления
                 </router-link>
               </div>
@@ -65,37 +127,63 @@
           </div>
 
           <!-- User menu -->
-          <div v-if="authStore.isAuthenticated" class="relative">
+          <div
+            v-if="authStore.isAuthenticated"
+            class="relative"
+          >
             <button
-              @click="showUserMenu = !showUserMenu"
               class="flex items-center space-x-2 text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-full p-1"
+              @click="showUserMenu = !showUserMenu"
             >
               <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                 <span class="text-sm font-medium text-gray-700">
                   {{ getUserInitials() }}
                 </span>
               </div>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
             <!-- User dropdown -->
-            <div v-if="showUserMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+            <div
+              v-if="showUserMenu"
+              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+            >
               <div class="p-4 border-b border-gray-200">
-                <p class="text-sm font-medium text-gray-900">{{ getUserDisplayName() }}</p>
-                <p class="text-xs text-gray-500">{{ getUserRole() }}</p>
+                <p class="text-sm font-medium text-gray-900">
+                  {{ getUserDisplayName() }}
+                </p>
+                <p class="text-xs text-gray-500">
+                  {{ getUserRole() }}
+                </p>
               </div>
               <div class="py-2">
-                <router-link to="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <router-link
+                  to="/profile"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
                   Профиль
                 </router-link>
-                <router-link to="/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <router-link
+                  to="/dashboard"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
                   Личный кабинет
                 </router-link>
                 <button
-                  @click="handleLogout"
                   class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  @click="handleLogout"
                 >
                   Выйти
                 </button>
@@ -104,46 +192,86 @@
           </div>
 
           <!-- Auth buttons -->
-          <div v-else class="flex items-center space-x-4">
-            <router-link to="/login" class="btn btn-ghost">
+          <div
+            v-else
+            class="flex items-center space-x-4"
+          >
+            <router-link
+              to="/login"
+              class="btn btn-ghost"
+            >
               Войти
             </router-link>
-            <router-link to="/register/volunteer" class="btn btn-primary">
+            <router-link
+              to="/register/volunteer"
+              class="btn btn-primary"
+            >
               Стать волонтером
             </router-link>
           </div>
 
           <!-- Mobile menu button -->
           <button
-            @click="showMobileMenu = !showMobileMenu"
             class="md:hidden p-2 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-md"
+            @click="showMobileMenu = !showMobileMenu"
           >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
         </div>
       </div>
 
       <!-- Mobile menu -->
-      <div v-if="showMobileMenu" class="md:hidden border-t border-gray-200">
+      <div
+        v-if="showMobileMenu"
+        class="md:hidden border-t border-gray-200"
+      >
         <div class="px-2 pt-2 pb-3 space-y-1">
-          <router-link to="/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+          <router-link
+            to="/"
+            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+          >
             Главная
           </router-link>
-          <router-link to="/projects" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+          <router-link
+            to="/projects"
+            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+          >
             Проекты
           </router-link>
-          <router-link to="/news" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+          <router-link
+            to="/news"
+            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+          >
             Новости
           </router-link>
         </div>
-        <div v-if="!authStore.isAuthenticated" class="pt-4 pb-3 border-t border-gray-200">
+        <div
+          v-if="!authStore.isAuthenticated"
+          class="pt-4 pb-3 border-t border-gray-200"
+        >
           <div class="px-2 space-y-1">
-            <router-link to="/login" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+            <router-link
+              to="/login"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            >
               Войти
             </router-link>
-            <router-link to="/register/volunteer" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+            <router-link
+              to="/register/volunteer"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            >
               Стать волонтером
             </router-link>
           </div>

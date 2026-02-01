@@ -5,11 +5,18 @@
       <div class="container-custom py-6">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Мои заявки</h1>
-            <p class="text-gray-600 mt-1">Управление вашими заявками на участие в проектах</p>
+            <h1 class="text-2xl font-bold text-gray-900">
+              Мои заявки
+            </h1>
+            <p class="text-gray-600 mt-1">
+              Управление вашими заявками на участие в проектах
+            </p>
           </div>
           
-          <router-link to="/projects" class="btn btn-primary">
+          <router-link
+            to="/projects"
+            class="btn btn-primary"
+          >
             Найти проекты
           </router-link>
         </div>
@@ -23,21 +30,45 @@
         <div class="flex flex-wrap items-center gap-4">
           <div>
             <label class="form-label text-sm">Статус</label>
-            <select v-model="filters.status" @change="loadApplications" class="form-input">
-              <option value="">Все статусы</option>
-              <option value="pending">На рассмотрении</option>
-              <option value="approved">Одобрено</option>
-              <option value="rejected">Отклонено</option>
-              <option value="cancelled">Отменено</option>
+            <select
+              v-model="filters.status"
+              class="form-input"
+              @change="loadApplications"
+            >
+              <option value="">
+                Все статусы
+              </option>
+              <option value="pending">
+                На рассмотрении
+              </option>
+              <option value="approved">
+                Одобрено
+              </option>
+              <option value="rejected">
+                Отклонено
+              </option>
+              <option value="cancelled">
+                Отменено
+              </option>
             </select>
           </div>
           
           <div>
             <label class="form-label text-sm">Сортировка</label>
-            <select v-model="filters.ordering" @change="loadApplications" class="form-input">
-              <option value="-created_at">Новые сначала</option>
-              <option value="created_at">Старые сначала</option>
-              <option value="-updated_at">Недавно обновленные</option>
+            <select
+              v-model="filters.ordering"
+              class="form-input"
+              @change="loadApplications"
+            >
+              <option value="-created_at">
+                Новые сначала
+              </option>
+              <option value="created_at">
+                Старые сначала
+              </option>
+              <option value="-updated_at">
+                Недавно обновленные
+              </option>
             </select>
           </div>
           
@@ -45,11 +76,11 @@
             <label class="form-label text-sm">Поиск</label>
             <input
               v-model="filters.search"
-              @input="debouncedSearch"
               type="text"
               placeholder="Поиск по названию проекта..."
               class="form-input"
-            />
+              @input="debouncedSearch"
+            >
           </div>
         </div>
       </div>
@@ -57,29 +88,55 @@
       <!-- Applications List -->
       <div class="bg-white rounded-lg shadow">
         <!-- Loading State -->
-        <div v-if="loading" class="text-center py-12">
-          <div class="loading-spinner w-8 h-8 mx-auto mb-4"></div>
-          <p class="text-gray-600">Загрузка заявок...</p>
+        <div
+          v-if="loading"
+          class="text-center py-12"
+        >
+          <div class="loading-spinner w-8 h-8 mx-auto mb-4" />
+          <p class="text-gray-600">
+            Загрузка заявок...
+          </p>
         </div>
 
         <!-- Empty State -->
-        <div v-else-if="applications.length === 0" class="text-center py-12">
-          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2z" />
+        <div
+          v-else-if="applications.length === 0"
+          class="text-center py-12"
+        >
+          <svg
+            class="mx-auto h-12 w-12 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2z"
+            />
           </svg>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">У вас пока нет заявок</h3>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">
+            У вас пока нет заявок
+          </h3>
           <p class="mt-1 text-sm text-gray-500">
             Подайте заявку на интересующий проект, чтобы начать помогать
           </p>
           <div class="mt-6">
-            <router-link to="/projects" class="btn btn-primary">
+            <router-link
+              to="/projects"
+              class="btn btn-primary"
+            >
               Найти проекты
             </router-link>
           </div>
         </div>
 
         <!-- Applications Grid -->
-        <div v-else class="divide-y divide-gray-200">
+        <div
+          v-else
+          class="divide-y divide-gray-200"
+        >
           <div
             v-for="application in applications"
             :key="application.id"
@@ -95,14 +152,20 @@
                   <span class="text-sm text-gray-500">
                     Подано: {{ formatDate(application.created_at) }}
                   </span>
-                  <span v-if="application.updated_at !== application.created_at" class="text-sm text-gray-500">
+                  <span
+                    v-if="application.updated_at !== application.created_at"
+                    class="text-sm text-gray-500"
+                  >
                     Обновлено: {{ formatDate(application.updated_at) }}
                   </span>
                 </div>
                 
                 <!-- Project Info -->
                 <h3 class="text-lg font-medium text-gray-900 mb-2">
-                  <router-link :to="`/projects/${application.project.id}`" class="hover:text-primary-600">
+                  <router-link
+                    :to="`/projects/${application.project.id}`"
+                    class="hover:text-primary-600"
+                  >
                     {{ application.project.title }}
                   </router-link>
                 </h3>
@@ -114,32 +177,75 @@
                 <!-- Project Details -->
                 <div class="flex items-center space-x-4 text-sm text-gray-500 mb-3">
                   <div class="flex items-center">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    <svg
+                      class="w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                      />
                     </svg>
                     {{ application.project.organization_name }}
                   </div>
                   
                   <div class="flex items-center">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314-1.314l4.242 4.242a1.998 1.998 0 010 2.828z" />
+                    <svg
+                      class="w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314-1.314l4.242 4.242a1.998 1.998 0 010 2.828z"
+                      />
                     </svg>
                     {{ application.project.region?.name || 'Онлайн' }}
                   </div>
                   
                   <div class="flex items-center">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3v-4m0 6h.01M12 12v4m0 6h.01" />
+                    <svg
+                      class="w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4l3 3m6-3v-4m0 6h.01M12 12v4m0 6h.01"
+                      />
                     </svg>
                     {{ application.hours_committed }} часов
                   </div>
                 </div>
                 
                 <!-- Review Info -->
-                <div v-if="application.reviewed_by" class="bg-gray-50 p-3 rounded-md">
+                <div
+                  v-if="application.reviewed_by"
+                  class="bg-gray-50 p-3 rounded-md"
+                >
                   <div class="flex items-center text-sm">
-                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      class="w-4 h-4 mr-2 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                     <span class="text-gray-600">
                       Рассмотрено: {{ application.reviewed_by.username }}
@@ -148,7 +254,10 @@
                       {{ formatDate(application.reviewed_at) }}
                     </span>
                   </div>
-                  <p v-if="application.review_comment" class="text-sm text-gray-600 mt-1">
+                  <p
+                    v-if="application.review_comment"
+                    class="text-sm text-gray-600 mt-1"
+                  >
                     {{ application.review_comment }}
                   </p>
                 </div>
@@ -165,9 +274,9 @@
                 
                 <button
                   v-if="application.status === 'pending'"
-                  @click="cancelApplication(application.id)"
                   :disabled="cancelling"
                   class="btn btn-outline text-sm text-red-600 hover:text-red-700"
+                  @click="cancelApplication(application.id)"
                 >
                   {{ cancelling ? 'Отмена...' : 'Отменить' }}
                 </button>
@@ -177,7 +286,10 @@
         </div>
         
         <!-- Pagination -->
-        <div v-if="pagination.totalPages > 1" class="px-6 py-4 border-t border-gray-200">
+        <div
+          v-if="pagination.totalPages > 1"
+          class="px-6 py-4 border-t border-gray-200"
+        >
           <div class="flex items-center justify-between">
             <div class="text-sm text-gray-700">
               Показано {{ pagination.start }}-{{ pagination.end }} из {{ pagination.total }} заявок
@@ -185,10 +297,10 @@
             
             <div class="flex space-x-2">
               <button
-                @click="goToPage(pagination.currentPage - 1)"
                 :disabled="pagination.currentPage === 1"
                 class="btn btn-outline"
                 :class="{ 'opacity-50 cursor-not-allowed': pagination.currentPage === 1 }"
+                @click="goToPage(pagination.currentPage - 1)"
               >
                 ←
               </button>
@@ -197,23 +309,23 @@
                 <button
                   v-for="page in pagination.pages"
                   :key="page"
-                  @click="goToPage(page)"
                   :class="[
                     'btn',
                     page === pagination.currentPage
                       ? 'btn-primary'
                       : 'btn-outline'
                   ]"
+                  @click="goToPage(page)"
                 >
                   {{ page }}
                 </button>
               </div>
               
               <button
-                @click="goToPage(pagination.currentPage + 1)"
                 :disabled="pagination.currentPage === pagination.totalPages"
                 class="btn btn-outline"
                 :class="{ 'opacity-50 cursor-not-allowed': pagination.currentPage === pagination.totalPages }"
+                @click="goToPage(pagination.currentPage + 1)"
               >
                 →
               </button>

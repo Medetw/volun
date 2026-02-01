@@ -4,14 +4,24 @@
       <div class="container-custom py-6">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Панель волонтера</h1>
-            <p class="text-gray-600 mt-1">Добро пожаловать, {{ getUserDisplayName() }}!</p>
+            <h1 class="text-2xl font-bold text-gray-900">
+              Панель волонтера
+            </h1>
+            <p class="text-gray-600 mt-1">
+              Добро пожаловать, {{ getUserDisplayName() }}!
+            </p>
           </div>
           <div class="flex items-center space-x-4">
-            <router-link to="/profile" class="btn btn-outline">
+            <router-link
+              to="/profile"
+              class="btn btn-outline"
+            >
               Профиль
             </router-link>
-            <router-link to="/notifications" class="btn btn-outline relative">
+            <router-link
+              to="/notifications"
+              class="btn btn-outline relative"
+            >
               Уведомления
               <span
                 v-if="unreadCount > 0"
@@ -30,13 +40,27 @@
         <div class="bg-white p-6 rounded-lg shadow">
           <div class="flex items-center">
             <div class="p-3 bg-blue-100 rounded-full">
-              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              <svg
+                class="w-6 h-6 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                />
               </svg>
             </div>
             <div class="ml-4">
-              <div class="text-2xl font-bold text-gray-900">{{ stats.total_applications }}</div>
-              <div class="text-sm text-gray-600">Мои заявки</div>
+              <div class="text-2xl font-bold text-gray-900">
+                {{ stats.total_applications }}
+              </div>
+              <div class="text-sm text-gray-600">
+                Мои заявки
+              </div>
             </div>
           </div>
         </div>
@@ -44,13 +68,27 @@
         <div class="bg-white p-6 rounded-lg shadow">
           <div class="flex items-center">
             <div class="p-3 bg-green-100 rounded-full">
-              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              <svg
+                class="w-6 h-6 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </div>
             <div class="ml-4">
-              <div class="text-2xl font-bold text-gray-900">{{ stats.approved_applications }}</div>
-              <div class="text-sm text-gray-600">Одобрено</div>
+              <div class="text-2xl font-bold text-gray-900">
+                {{ stats.approved_applications }}
+              </div>
+              <div class="text-sm text-gray-600">
+                Одобрено
+              </div>
             </div>
           </div>
         </div>
@@ -58,13 +96,27 @@
         <div class="bg-white p-6 rounded-lg shadow">
           <div class="flex items-center">
             <div class="p-3 bg-purple-100 rounded-full">
-              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h8M8 16h8M8 8h8M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <svg
+                class="w-6 h-6 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 12h8M8 16h8M8 8h8M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
             </div>
             <div class="ml-4">
-              <div class="text-2xl font-bold text-gray-900">{{ stats.hours_committed }}</div>
-              <div class="text-sm text-gray-600">Часов обещано</div>
+              <div class="text-2xl font-bold text-gray-900">
+                {{ stats.hours_committed }}
+              </div>
+              <div class="text-sm text-gray-600">
+                Часов обещано
+              </div>
             </div>
           </div>
         </div>
@@ -72,31 +124,64 @@
 
       <div class="bg-white rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 class="text-xl font-semibold text-gray-900">Мои заявки</h2>
-          <router-link to="/applications/my" class="btn btn-outline">
+          <h2 class="text-xl font-semibold text-gray-900">
+            Мои заявки
+          </h2>
+          <router-link
+            to="/applications/my"
+            class="btn btn-outline"
+          >
             Все заявки
           </router-link>
         </div>
         <div class="p-6">
-          <div v-if="applicationsLoading" class="text-center py-8">
-            <div class="loading-spinner w-8 h-8 mx-auto mb-4"></div>
-            <p class="text-gray-600">Загрузка заявок...</p>
+          <div
+            v-if="applicationsLoading"
+            class="text-center py-8"
+          >
+            <div class="loading-spinner w-8 h-8 mx-auto mb-4" />
+            <p class="text-gray-600">
+              Загрузка заявок...
+            </p>
           </div>
 
-          <div v-else-if="applications.length === 0" class="text-center py-8">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2z" />
+          <div
+            v-else-if="applications.length === 0"
+            class="text-center py-8"
+          >
+            <svg
+              class="mx-auto h-12 w-12 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2z"
+              />
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">Заявок пока нет</h3>
-            <p class="mt-1 text-sm text-gray-500">Вы еще не подали заявки на проекты</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">
+              Заявок пока нет
+            </h3>
+            <p class="mt-1 text-sm text-gray-500">
+              Вы еще не подали заявки на проекты
+            </p>
             <div class="mt-6">
-              <router-link to="/projects" class="btn btn-primary">
+              <router-link
+                to="/projects"
+                class="btn btn-primary"
+              >
                 Найти проекты
               </router-link>
             </div>
           </div>
 
-          <div v-else class="space-y-4">
+          <div
+            v-else
+            class="space-y-4"
+          >
             <div
               v-for="application in applications"
               :key="application.id"
