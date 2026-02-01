@@ -1,0 +1,103 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+*.md
+docs/
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Cache and temp
+.cache/
+.temp/
+*.tmp
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Frontend build
+dist/
+build/
+
+# Database
+*.sqlite3
+*.db
+
+# SSL certificates
+ssl/
+*.pem
+*.key
+*.crt
+
+# Backup files (keep directory)
+backups/*
+!backups/.gitkeep
+
+# Docker
+.dockerignore
+Dockerfile*
+docker-compose*.yml
+!docker-compose.prod.yml
+
+# Scripts
+deploy.sh
+start.sh
+server-status.sh
+
+# Development files
+.devcontainer/
+.github/workflows/

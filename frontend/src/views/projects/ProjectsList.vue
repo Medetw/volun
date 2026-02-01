@@ -136,7 +136,7 @@
                   {{ project.title }}
                 </h3>
               </div>
-              <span class="status-active text-xs">
+              <span class="status-active badge text-xs">
                 {{ getStatusDisplay(project.status) }}
               </span>
             </div>

@@ -283,3 +283,273 @@ MIT License - см. [LICENSE](LICENSE) файл
 
 **🎉 Спасибо за использование Волонтёрской Платформы!**
 
+#### Уведомления
+```
+GET    /api/notifications/            # Уведомления
+POST   /api/notifications/mark_all_read/ # Прочитать все
+GET    /api/notification-preferences/ # Волонтерская платформа
+
+Современная платформа для соединения волонтеров с организациями, которые нуждаются в помощи.
+
+## 🚀 Быстрый старт
+
+### Требования
+- Docker и Docker Compose
+- Git
+
+### Установка и запуск
+
+```bash
+# Клонировать репозиторий
+git clone <repository-url>
+cd volunteering-platform
+
+# Запустить все сервисы
+make dev
+
+# Или вручную:
+docker-compose up --build -d
+
+# Проверить статус
+make status
+```
+
+### Доступ к сервисам
+- 🌐 **Фронтенд**: http://localhost/
+- 🔧 **Backend API**: http://localhost/api/
+- 🗄️ **База данных**: localhost:5432
+- 📦 **Redis**: localhost:6379
+
+## 📋 Команды управления
+
+### Разработка
+```bash
+make dev      # Запустить с hot reload
+make dev-up   # Запустить в фоне
+make dev-down # Остановить
+make dev-logs # Посмотреть логи
+```
+
+### Продакшен
+```bash
+make prod     # Собрать и запустить продакшен
+make prod-up  # Запустить продакшен
+make prod-down# Остановить продакшен
+make prod-logs# Логи продакшена
+```
+
+### Утилиты
+```bash
+make build    # Собрать все образы
+make clean    # Очистить Docker
+make backup   # Бэкап БД
+make deploy   # Деплой на продакшен
+make status   # Статус сервисов
+```
+
+## 🏗️ Архитектура
+
+### Технологический стек
+- **Frontend**: Vue 3 + TypeScript + Tailwind CSS + Vite
+- **Backend**: Django + Django REST Framework + Celery
+- **База данных**: PostgreSQL 15
+- **Кэш**: Redis 7
+- **Прокси**: Nginx
+- **Контейнеризация**: Docker + Docker Compose
+
+### Структура проекта
+```
+volunteering-platform/
+├── backend/                 # Django бэкенд
+│   ├── apps/               # Django приложения
+│   ├── config/             # Конфигурация Django
+│   ├── Dockerfile.simple   # Dockerfile для бэкенда
+│   └── requirements.txt    # Python зависимости
+├── frontend/               # Vue.js фронтенд
+│   ├── src/               # Исходный код Vue
+│   ├── Dockerfile         # Dockerfile для фронтенда
+│   └── nginx.conf         # Nginx конфигурация
+├── nginx/                 # Nginx конфигурации
+│   └── default.conf       # Reverse proxy конфиг
+├── logs/                  # Логи приложений
+├── backups/               # Бэкапы БД
+├── docker-compose.yml     # Основная конфигурация
+├── docker-compose.prod.yml # Продакшен конфигурация
+├── Makefile              # Управляющие команды
+├── .env.example          # Шаблон переменных окружения
+└── README.md             # Этот файл
+```
+
+## 🔧 Конфигурация
+
+### Переменные окружения
+Скопируйте `.env.example` в `.env` и настройте:
+
+```bash
+cp .env.example .env
+```
+
+**Основные переменные:**
+- `POSTGRES_PASSWORD` - пароль PostgreSQL
+- `DJANGO_SECRET_KEY` - секретный ключ Django
+- `DEBUG` - режим отладки (False для продакшена)
+- `ALLOWED_HOSTS` - разрешенные хосты
+- `CORS_ALLOWED_ORIGINS` - разрешенные origins для CORS
+
+### Продакшен конфигурация
+Для продакшена используется `docker-compose.prod.yml` с:
+- 🔐 Улучшенной безопасностью
+- 📊 Health checks для всех сервисов
+- 💾 Отдельными volumes для продакшена
+- 🚀 Оптимизированной конфигурацией
+
+## 📝 API документация
+
+### Endpoints
+- `GET /api/` - Корень API
+- `POST /api/auth/register/volunteer/` - Регистрация волонтера
+- `POST /api/auth/register/organization/` - Регистрация организации
+- `POST /api/auth/login/` - Вход
+- `GET /api/projects/` - Список проектов
+- `POST /api/projects/` - Создание проекта
+
+### Аутентификация
+Используется JWT токены. Заголовок:
+```
+Authorization: Bearer <token>
+```
+
+## 🚀 Деплой
+
+### Автоматический деплой
+```bash
+make deploy
+```
+
+### Ручной деплой
+```bash
+# 1. Настроить .env для продакшена
+cp .env.example .env
+# редактировать .env с реальными значениями
+
+# 2. Запустить продакшен
+docker-compose -f docker-compose.prod.yml up -d --build
+
+# 3. Выполнить миграции
+docker-compose -f docker-compose.prod.yml exec backend python manage.py migrate
+
+# 4. Собрать статику
+docker-compose -f docker-compose.prod.yml exec backend python manage.py collectstatic --noinput
+```
+
+### SSL/HTTPS
+Для настройки SSL:
+```bash
+# Установить certbot
+sudo apt update && sudo apt install certbot python3-certbot-nginx
+
+# Получить сертификаты
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+```
+
+## 🔍 Мониторинг
+
+### Health checks
+Все сервисы имеют health checks:
+```bash
+curl http://localhost/health
+```
+
+### Логи
+```bash
+# Все логи
+docker-compose logs
+
+# Конкретный сервис
+docker-compose logs backend
+docker-compose logs nginx
+```
+
+### Статус
+```bash
+docker-compose ps
+```
+
+## 🛠️ Разработка
+
+### Локальная разработка бэкенда
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py runserver
+```
+
+### Локальная разработка фронтенда
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Миграции
+```bash
+# Создать миграцию
+docker-compose exec backend python manage.py makemigrations
+
+# Применить миграции
+docker-compose exec backend python manage.py migrate
+```
+
+## 📦 Бэкапы
+
+### Создать бэкап
+```bash
+make backup
+```
+
+### Восстановить бэкап
+```bash
+docker-compose exec db psql -U postgres -d volunteering < backup.sql
+```
+
+## 🐛 Траблшутинг
+
+### Частые проблемы
+
+1. **Порт занят**
+   ```bash
+   sudo systemctl stop postgresql  # Остановить системный PostgreSQL
+   ```
+
+2. **Permission denied**
+   ```bash
+   sudo chown -R $USER:$USER ./logs ./backups
+   ```
+
+3. **Контейнеры не стартуют**
+   ```bash
+   docker-compose down --volumes --remove-orphans
+   docker system prune -a -f
+   docker-compose up --build
+   ```
+
+4. **Vue Router 404 ошибки**
+   - Убедитесь что `frontend/nginx.conf` содержит `try_files $uri $uri/ /index.html;`
+
+## 📄 Лицензия
+
+MIT License
+
+## 🤝 Вклад
+
+1. Fork проекта
+2. Создать feature branch
+3. Сделать коммиты
+4. Push в branch
+5. Создать Pull Request
+
+---
+
+**🎉 Спасибо за использование волонтерской платформы!**

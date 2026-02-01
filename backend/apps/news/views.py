@@ -18,7 +18,15 @@ from apps.news.serializers_v2 import (
 
 class NewsViewSet(viewsets.ModelViewSet):
     """ViewSet для управления новостями с оптимизацией."""
-    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_permissions(self):
+        """Разные права для разных действий."""
+        if self.action in ['list', 'retrieve']:
+            self.permission_classes = [permissions.AllowAny]
+        else:
+            self.permission_classes = [permissions.IsAuthenticated]
+        return super().get_permissions()
+    
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['category', 'status', 'featured']
     search_fields = ['title', 'content', 'excerpt']
@@ -35,7 +43,12 @@ class NewsViewSet(viewsets.ModelViewSet):
         # Базовый queryset с оптимизацией
         queryset = News.objects.select_related('author').all()
         
-        if user.role == 'admin':
+        # Для анонимных пользователей показываем только опубликованные новости
+        if not user.is_authenticated:
+            return queryset.filter(status=NewsStatus.PUBLISHED)
+        
+        # Для админов показываем все новости
+        if user.is_authenticated and hasattr(user, 'role') and user.role == 'admin':
             return queryset
         else:
             return queryset.filter(status=NewsStatus.PUBLISHED)
