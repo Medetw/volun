@@ -75,6 +75,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'apps.core.middleware.RateLimitMiddleware',  # Custom rate limiting
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -253,16 +254,14 @@ CELERY_ENABLE_UTC = True
 # Celery Beat Settings
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
+# Rate Limiting Settings
+RATELIMIT_ENABLE = True
+RATELIMIT_USE_CACHE = 'default'  # Use Redis for rate limiting
+
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Для разработки
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@volunteer-platform.com")
 SITE_URL = os.getenv("SITE_URL", "http://localhost:8000")
-
-# Rate Limiting
-REST_FRAMEWORK['DEFAULT_THROTTLE_CLASSES'] = [
-    'rest_framework.throttling.AnonRateThrottle',
-    'rest_framework.throttling.UserRateThrottle'
-]
 REST_FRAMEWORK['DEFAULT_THROTTLE_RATES'] = {
     'anon': '100/hour',
     'user': '1000/hour'
