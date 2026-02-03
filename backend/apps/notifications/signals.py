@@ -51,8 +51,12 @@ def application_status_changed(sender, instance, created, **kwargs):
             object_id=instance.id
         )
         
-        # Отправляем email асинхронно
-        send_notification_email.delay(notification.id)
+        # Отправляем email асинхронно, если Celery доступен
+        try:
+            send_notification_email.delay(notification.id)
+        except Exception as e:
+            # Если Celery недоступен, логируем ошибку, но не прерываем процесс
+            print(f"Warning: Could not send notification email: {e}")
 
 
 @receiver(post_save, sender=Project)
@@ -100,10 +104,16 @@ def project_created_or_updated(sender, instance, created, **kwargs):
             try:
                 preferences = notification.recipient.notification_preferences
                 if preferences.email_new_projects:
-                    send_notification_email.delay(notification.id)
+                    try:
+                        send_notification_email.delay(notification.id)
+                    except Exception as e:
+                        print(f"Warning: Could not send notification email: {e}")
             except NotificationPreference.DoesNotExist:
                 # Если настроек нет, создаем их с настройками по умолчанию
                 from apps.notifications.models import NotificationPreference
                 NotificationPreference.objects.create(user=notification.recipient)
                 if notification.recipient.notification_preferences.email_new_projects:
-                    send_notification_email.delay(notification.id)
+                    try:
+                        send_notification_email.delay(notification.id)
+                    except Exception as e:
+                        print(f"Warning: Could not send notification email: {e}")

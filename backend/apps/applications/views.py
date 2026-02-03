@@ -67,18 +67,24 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         
         if application.status != ApplicationStatus.PENDING:
             return Response(
-                {'error': 'Можно одобрить только заявку со статусом "Ожидает рассмотрения".'},
+                {'error': f'Нельзя одобрить заявку со статусом "{application.get_status_display()}". Заявка уже рассмотрена.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        serializer = self.get_serializer(application, data={'status': ApplicationStatus.APPROVED}, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(
-            reviewed_by=request.user,
-            reviewed_at=timezone.now()
-        )
-        
-        return Response(ApplicationSerializer(application).data)
+        try:
+            serializer = self.get_serializer(application, data={'status': ApplicationStatus.APPROVED}, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(
+                reviewed_by=request.user,
+                reviewed_at=timezone.now()
+            )
+            
+            return Response(ApplicationSerializer(application).data)
+        except Exception as e:
+            return Response(
+                {'error': f'Ошибка при одобрении заявки: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def reject(self, request, pk=None):
@@ -94,19 +100,25 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         
         if application.status != ApplicationStatus.PENDING:
             return Response(
-                {'error': 'Можно отклонить только заявку со статусом "Ожидает рассмотрения".'},
+                {'error': f'Нельзя отклонить заявку со статусом "{application.get_status_display()}". Заявка уже рассмотрена.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        serializer = self.get_serializer(application, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(
-            status=ApplicationStatus.REJECTED,
-            reviewed_by=request.user,
-            reviewed_at=timezone.now()
-        )
-        
-        return Response(ApplicationSerializer(application).data)
+        try:
+            serializer = self.get_serializer(application, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(
+                status=ApplicationStatus.REJECTED,
+                reviewed_by=request.user,
+                reviewed_at=timezone.now()
+            )
+            
+            return Response(ApplicationSerializer(application).data)
+        except Exception as e:
+            return Response(
+                {'error': f'Ошибка при отклонении заявки: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def cancel(self, request, pk=None):
