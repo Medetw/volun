@@ -35,6 +35,9 @@ urlpatterns = [
     # JWT token refresh
     path("api/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     
+    # Admin endpoints
+    path("api/admin/", include("apps.admin.urls")),
+    
     # Projects endpoints
     path("api/", include("apps.projects.urls")),
     

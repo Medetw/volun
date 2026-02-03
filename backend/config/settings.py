@@ -52,14 +52,15 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "django_celery_results",
     # local apps
-    "apps.auth",
-    "apps.users",
-    "apps.projects",
-    "apps.applications",
-    "apps.news",
-    "apps.statistics",
-    "apps.notifications",
-    "apps.reports",
+    'apps.auth',
+    'apps.users',
+    'apps.projects',
+    'apps.applications',
+    'apps.news',
+    'apps.notifications',
+    'apps.reports',
+    'apps.statistics',
+    'apps.admin',
 ]
 
 MIDDLEWARE = [
