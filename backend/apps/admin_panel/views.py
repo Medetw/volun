@@ -1,11 +1,12 @@
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import permissions, status, viewsets
+from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
-from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
+from rest_framework.filters import SearchFilter, OrderingFilter
 
-from apps.users.serializers import UserAdminSerializer, UserSerializer
+from apps.admin_panel.serializers import UserAdminSerializer
+from apps.users.serializers import UserSerializer
 
 User = get_user_model()
 

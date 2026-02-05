@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'apps.notifications',
     'apps.reports',
     'apps.statistics',
-    'apps.admin',
+    'apps.admin_panel',
 ]
 
 MIDDLEWARE = [

@@ -36,25 +36,25 @@ urlpatterns = [
     path("api/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     
     # Admin endpoints
-    path("api/admin/", include("apps.admin.urls")),
+    path("api/admin/", include("apps.admin_panel.urls")),
     
     # Projects endpoints
-    path("api/", include("apps.projects.urls")),
+    path("api/projects/", include("apps.projects.urls")),
     
     # Applications endpoints
-    path("api/", include("apps.applications.urls")),
+    path("api/applications/", include("apps.applications.urls")),
     
     # News endpoints
-    path("api/", include("apps.news.urls")),
+    path("api/news/", include("apps.news.urls")),
     
     # Statistics endpoints
-    path("api/", include("apps.statistics.urls")),
+    path("api/statistics/", include("apps.statistics.urls")),
     
     # Notifications endpoints
-    path("api/", include("apps.notifications.urls")),
+    path("api/notifications/", include("apps.notifications.urls")),
     
     # Reports endpoints
-    path("api/", include("apps.reports.urls")),
+    path("api/reports/", include("apps.reports.urls")),
 ]
 
 # Serve media files in development
