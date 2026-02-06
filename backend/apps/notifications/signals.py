@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from apps.applications.models import Application, ApplicationStatus
 from apps.projects.models import Project
-from apps.notifications.models import Notification, NotificationType
+from apps.notifications.models import Notification, NotificationType, NotificationPreference
 from apps.notifications.tasks import send_notification_email
 
 
@@ -110,7 +110,6 @@ def project_created_or_updated(sender, instance, created, **kwargs):
                         print(f"Warning: Could not send notification email: {e}")
             except NotificationPreference.DoesNotExist:
                 # Если настроек нет, создаем их с настройками по умолчанию
-                from apps.notifications.models import NotificationPreference
                 NotificationPreference.objects.create(user=notification.recipient)
                 if notification.recipient.notification_preferences.email_new_projects:
                     try:

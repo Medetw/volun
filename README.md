@@ -195,14 +195,29 @@ CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
 ## 🧪 Тестирование
 
 ```bash
+cd backend
+
 # Запуск всех тестов
 python manage.py test
+
+# Запуск с pytest
+pytest
+
+# Запуск с покрытием кода
+pytest --cov=apps
+
+# Запуск с использованием скрипта
+./run_tests.sh
 
 # Тесты конкретного приложения
 python manage.py test apps.notifications
 python manage.py test apps.reports
 python manage.py test apps.statistics
 ```
+
+### CI/CD
+
+Проект настроен на GitHub Actions с автоматическим запуском тестов при пуше и PR.
 
 ## 📦 Структура проекта
 
