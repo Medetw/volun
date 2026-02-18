@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-white shadow-sm border-b border-gray-200">
+  <header class="bg-white shadow-sm border-b border-yellow-200">
     <div class="container-custom">
       <div class="flex justify-between items-center h-16">
         <!-- Logo -->
@@ -7,22 +7,10 @@
           to="/"
           class="flex items-center space-x-2"
         >
-          <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-            <svg
-              class="w-5 h-5 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-              />
-            </svg>
+          <div class="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center">
+            <img src="@/assets/logo_Newman.jpeg" alt="Logo" class="w-8 h-8 object-cover rounded-lg" />
           </div>
-          <span class="text-xl font-bold text-gray-900">Волонтер</span>
+          <span class="text-xl font-bold text-gray-900">NEWMAN</span>
         </router-link>
 
         <!-- Navigation -->
@@ -235,42 +223,42 @@
       <!-- Mobile menu -->
       <div
         v-if="showMobileMenu"
-        class="md:hidden border-t border-gray-200"
+        class="md:hidden border-t border-yellow-200"
       >
         <div class="px-2 pt-2 pb-3 space-y-1">
           <router-link
             to="/"
-            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-yellow-50"
           >
             Главная
           </router-link>
           <router-link
             to="/projects"
-            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-yellow-50"
           >
             Проекты
           </router-link>
           <router-link
             to="/news"
-            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-yellow-50"
           >
             Новости
           </router-link>
         </div>
         <div
           v-if="!authStore.isAuthenticated"
-          class="pt-4 pb-3 border-t border-gray-200"
+          class="pt-4 pb-3 border-t border-yellow-200"
         >
           <div class="px-2 space-y-1">
             <router-link
               to="/login"
-              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-yellow-50"
             >
               Войти
             </router-link>
             <router-link
               to="/register/volunteer"
-              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-yellow-50"
             >
               Стать волонтером
             </router-link>

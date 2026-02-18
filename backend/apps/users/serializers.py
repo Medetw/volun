@@ -35,3 +35,16 @@ class OrganizationProfileSerializer(serializers.ModelSerializer):
             'id', 'user', 'name', 'organization_type', 'organization_type_display',
             'description', 'region', 'contacts', 'is_verified'
         ]
+
+
+class UserAdminSerializer(serializers.ModelSerializer):
+    """Сериализатор для администрирования пользователей."""
+    role_display = serializers.CharField(source='get_role_display', read_only=True)
+    
+    class Meta:
+        model = User
+        fields = [
+            'id', 'username', 'email', 'first_name', 'last_name', 'role', 'role_display', 
+            'is_active', 'date_joined', 'last_login'
+        ]
+        read_only_fields = ['id', 'date_joined', 'last_login']
