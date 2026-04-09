@@ -14,6 +14,7 @@ from apps.notifications.serializers import (
     NotificationPreferenceSerializer,
     NotificationStatsSerializer
 )
+from apps.core.logging import logger
 
 
 class NotificationViewSet(viewsets.ModelViewSet):
@@ -205,7 +206,11 @@ class NotificationAdminViewSet(viewsets.ModelViewSet):
         
         # Массовое создание
         Notification.objects.bulk_create(notifications)
-        
+        logger.user_action(
+            action="NOTIFICATION_BROADCAST",
+            user_id=request.user.id,
+            details={'recipients_count': len(notifications), 'title': title}
+        )
         return Response({
             'message': f'Рассылка создана для {len(notifications)} пользователей'
         })

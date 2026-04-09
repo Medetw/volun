@@ -7,6 +7,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 
 from apps.admin_panel.serializers import UserAdminSerializer
 from apps.users.serializers import UserSerializer
+from apps.core.logging import security_logger
 
 User = get_user_model()
 
@@ -53,7 +54,11 @@ class AdminUserViewSet(viewsets.ModelViewSet):
 
         user.is_active = False
         user.save(update_fields=["is_active"])
-
+        security_logger.security_event(
+            event="USER_BLOCKED",
+            user_id=request.user.id,
+            details={'target_user_id': user.id, 'target_username': user.username}
+        )
         return Response({
             'message': (
                 f'Пользователь {user.username} заблокирован'
@@ -75,7 +80,11 @@ class AdminUserViewSet(viewsets.ModelViewSet):
         user = self.get_object()
         user.is_active = True
         user.save(update_fields=["is_active"])
-
+        security_logger.security_event(
+            event="USER_UNBLOCKED",
+            user_id=request.user.id,
+            details={'target_user_id': user.id, 'target_username': user.username}
+        )
         return Response(
             {
                 "message": f"Пользователь {user.username} разблокирован",
@@ -104,7 +113,11 @@ class AdminUserViewSet(viewsets.ModelViewSet):
         if hasattr(user, "organization_profile"):
             user.organization_profile.is_verified = True
             user.organization_profile.save(update_fields=["is_verified"])
-
+            security_logger.security_event(
+                event="ORG_VERIFIED",
+                user_id=request.user.id,
+                details={'org_user_id': user.id, 'org_name': user.organization_profile.name}
+            )
             return Response({
                 'message': (
                     f'Организация {user.organization_profile.name} верифицирована'
@@ -138,7 +151,11 @@ class AdminUserViewSet(viewsets.ModelViewSet):
         if hasattr(user, "organization_profile"):
             user.organization_profile.is_verified = False
             user.organization_profile.save(update_fields=["is_verified"])
-
+            security_logger.security_event(
+                event="ORG_VERIFICATION_REVOKED",
+                user_id=request.user.id,
+                details={'org_user_id': user.id, 'org_name': user.organization_profile.name}
+            )
             return Response(
                 {
                     "message": (

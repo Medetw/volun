@@ -14,6 +14,7 @@ from apps.projects.serializers import (
     RegionSerializer,
 )
 from apps.projects.permissions import IsOrganizationOrReadOnly, IsProjectOwnerOrReadOnly
+from apps.core.logging import logger
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
@@ -109,6 +110,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
+        logger.user_action(
+            action="PROJECT_CREATED",
+            user_id=request.user.id,
+            details={'project_id': serializer.instance.id, 'title': serializer.instance.title}
+        )
         return Response(
             ProjectDetailSerializer(serializer.instance).data,
             status=status.HTTP_201_CREATED,
@@ -126,6 +132,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
+        logger.user_action(
+            action="PROJECT_UPDATED",
+            user_id=request.user.id,
+            details={'project_id': instance.id, 'title': instance.title}
+        )
         return Response(ProjectDetailSerializer(serializer.instance).data)
 
     @extend_schema(
@@ -134,6 +145,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
     )
     def destroy(self, request, *args, **kwargs):
         """Delete project."""
+        instance = self.get_object()
+        logger.user_action(
+            action="PROJECT_DELETED",
+            user_id=request.user.id,
+            details={'project_id': instance.id, 'title': instance.title}
+        )
         return super().destroy(request, *args, **kwargs)
 
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])

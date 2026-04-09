@@ -173,12 +173,22 @@ MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # Cache configuration
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "volunteer-platform-cache",
+REDIS_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1")
+
+if REDIS_URL:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": REDIS_URL,
+        }
     }
-}
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "volunteer-platform-cache",
+        }
+    }
 
 # Auth / Users
 AUTH_USER_MODEL = "users.User"
@@ -266,3 +276,82 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # Для ра�
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@volunteer-platform.com")
 SITE_URL = os.getenv("SITE_URL", "http://localhost:8000")
 REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {"anon": "100/hour", "user": "1000/hour"}
+
+# Logging Configuration
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{asctime} [{levelname}] [{name}] {message}",
+            "style": "{",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+        "simple": {
+            "format": "{asctime} [{levelname}] {message}",
+            "style": "{",
+            "datefmt": "%H:%M:%S",
+        },
+        "detailed": {
+            "format": "{asctime} [{levelname}] [{name}:{lineno}] {message}",
+            "style": "{",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "logs", "volunteering_platform.log"),
+            "maxBytes": 10 * 1024 * 1024,  # 10MB
+            "backupCount": 5,
+            "formatter": "detailed",
+            "encoding": "utf-8",
+        },
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "error_file": {
+            "level": "ERROR",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "logs", "errors.log"),
+            "maxBytes": 5 * 1024 * 1024,  # 5MB
+            "backupCount": 3,
+            "formatter": "detailed",
+            "encoding": "utf-8",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file", "console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["file", "error_file"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        "apps": {
+            "handlers": ["file", "console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "rest_framework": {
+            "handlers": ["file", "console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "celery": {
+            "handlers": ["file", "console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "root": {
+            "handlers": ["file", "console"],
+            "level": "INFO",
+        },
+    },
+}

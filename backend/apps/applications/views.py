@@ -7,11 +7,12 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 
 from apps.applications.models import Application, ApplicationStatus
 from apps.applications.serializers import (
-    ApplicationSerializer, 
+    ApplicationSerializer,
     ApplicationCreateSerializer,
     ApplicationReviewSerializer,
     ApplicationListSerializer
 )
+from apps.core.logging import logger
 
 
 class ApplicationViewSet(viewsets.ModelViewSet):
@@ -51,7 +52,12 @@ class ApplicationViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """При создании заявки устанавливаем волонтера."""
-        serializer.save(volunteer=self.request.user)
+        instance = serializer.save(volunteer=self.request.user)
+        logger.user_action(
+            action="APPLICATION_CREATED",
+            user_id=self.request.user.id,
+            details={'application_id': instance.id, 'project_id': instance.project_id}
+        )
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def approve(self, request, pk=None):
@@ -78,9 +84,14 @@ class ApplicationViewSet(viewsets.ModelViewSet):
                 reviewed_by=request.user,
                 reviewed_at=timezone.now()
             )
-            
+            logger.user_action(
+                action="APPLICATION_APPROVED",
+                user_id=request.user.id,
+                details={'application_id': application.id, 'project_id': application.project_id}
+            )
             return Response(ApplicationSerializer(application).data)
         except Exception as e:
+            logger.error(f"Error approving application {application.id}", exception=e)
             return Response(
                 {'error': f'Ошибка при одобрении заявки: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -112,9 +123,14 @@ class ApplicationViewSet(viewsets.ModelViewSet):
                 reviewed_by=request.user,
                 reviewed_at=timezone.now()
             )
-            
+            logger.user_action(
+                action="APPLICATION_REJECTED",
+                user_id=request.user.id,
+                details={'application_id': application.id, 'project_id': application.project_id}
+            )
             return Response(ApplicationSerializer(application).data)
         except Exception as e:
+            logger.error(f"Error rejecting application {application.id}", exception=e)
             return Response(
                 {'error': f'Ошибка при отклонении заявки: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -140,5 +156,9 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         
         application.status = ApplicationStatus.CANCELLED
         application.save()
-        
+        logger.user_action(
+            action="APPLICATION_CANCELLED",
+            user_id=request.user.id,
+            details={'application_id': application.id, 'project_id': application.project_id}
+        )
         return Response(ApplicationSerializer(application).data)

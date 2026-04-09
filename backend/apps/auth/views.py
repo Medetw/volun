@@ -1,6 +1,7 @@
 from rest_framework import status, generics
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_spectacular.utils import extend_schema, OpenApiResponse
@@ -11,6 +12,7 @@ from apps.auth.serializers import (
     UserSerializer,
     UserUpdateSerializer,
 )
+from apps.core.logging import logger, log_authentication_attempt
 
 
 @extend_schema(
@@ -24,12 +26,26 @@ from apps.auth.serializers import (
 )
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@parser_classes([MultiPartParser, FormParser, JSONParser])
 def register_volunteer(request):
     """Register a new volunteer."""
+    logger.info(f"New volunteer registration attempt from {request.META.get('REMOTE_ADDR')}")
+
     serializer = VolunteerRegisterSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
+        # Сохраняем аватар если загружен
+        if 'avatar' in request.FILES:
+            user.avatar = request.FILES['avatar']
+            user.save(update_fields=['avatar'])
         refresh = RefreshToken.for_user(user)
+        
+        logger.user_action(
+            action="VOLUNTEER_REGISTERED",
+            user_id=user.id,
+            details={'email': user.email, 'username': user.username}
+        )
+        
         return Response({
             'user': UserSerializer(user).data,
             'tokens': {
@@ -37,6 +53,8 @@ def register_volunteer(request):
                 'access': str(refresh.access_token),
             }
         }, status=status.HTTP_201_CREATED)
+    
+    logger.warning(f"Volunteer registration failed: {serializer.errors}")
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -51,12 +69,26 @@ def register_volunteer(request):
 )
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@parser_classes([MultiPartParser, FormParser, JSONParser])
 def register_organization(request):
     """Register a new organization."""
+    logger.info(f"New organization registration attempt from {request.META.get('REMOTE_ADDR')}")
+
     serializer = OrganizationRegisterSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
+        # Сохраняем аватар если загружен
+        if 'avatar' in request.FILES:
+            user.avatar = request.FILES['avatar']
+            user.save(update_fields=['avatar'])
         refresh = RefreshToken.for_user(user)
+
+        logger.user_action(
+            action="ORGANIZATION_REGISTERED",
+            user_id=user.id,
+            details={'email': user.email, 'username': user.username}
+        )
+
         return Response({
             'user': UserSerializer(user).data,
             'tokens': {
@@ -64,6 +96,8 @@ def register_organization(request):
                 'access': str(refresh.access_token),
             }
         }, status=status.HTTP_201_CREATED)
+
+    logger.warning(f"Organization registration failed: {serializer.errors}")
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -80,10 +114,21 @@ def register_organization(request):
 @permission_classes([AllowAny])
 def login(request):
     """Login user and return JWT tokens."""
+    email = request.data.get('email', '')
+    logger.info(f"Login attempt for {email} from {request.META.get('REMOTE_ADDR')}")
+    
     serializer = LoginSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.validated_data['user']
         refresh = RefreshToken.for_user(user)
+        
+        log_authentication_attempt(request, success=True, username=email)
+        logger.user_action(
+            action="LOGIN_SUCCESS",
+            user_id=user.id,
+            details={'email': user.email, 'role': user.role}
+        )
+        
         return Response({
             'user': UserSerializer(user).data,
             'tokens': {
@@ -91,6 +136,9 @@ def login(request):
                 'access': str(refresh.access_token),
             }
         }, status=status.HTTP_200_OK)
+    
+    log_authentication_attempt(request, success=False, username=email)
+    logger.warning(f"Login failed for {email}: {serializer.errors}")
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -122,11 +170,21 @@ def get_current_user(request):
 )
 @api_view(['PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser, JSONParser])
 def update_current_user(request):
     """Update current authenticated user profile."""
     serializer = UserUpdateSerializer(request.user, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
+        # Обновляем аватар если загружен
+        if 'avatar' in request.FILES:
+            request.user.avatar = request.FILES['avatar']
+            request.user.save(update_fields=['avatar'])
+        logger.user_action(
+            action="PROFILE_UPDATED",
+            user_id=request.user.id,
+            details={'updated_fields': list(request.data.keys())}
+        )
         return Response(UserSerializer(request.user).data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -148,6 +206,12 @@ def logout(request):
         if refresh_token:
             token = RefreshToken(refresh_token)
             token.blacklist()
+        logger.user_action(
+            action="LOGOUT",
+            user_id=request.user.id,
+            details={'email': request.user.email}
+        )
         return Response({"message": "Successfully logged out."}, status=status.HTTP_200_OK)
     except Exception as e:
+        logger.warning(f"Logout failed for user {request.user.id}: {e}")
         return Response({"error": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)

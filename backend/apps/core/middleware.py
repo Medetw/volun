@@ -3,12 +3,24 @@ from django_ratelimit.core import is_ratelimited
 from rest_framework import status
 from rest_framework.response import Response
 
+from apps.core.logging import security_logger, get_client_ip
+
 
 class RateLimitMiddleware:
     """Middleware to apply rate limiting to API endpoints."""
 
     def __init__(self, get_response):
         self.get_response = get_response
+
+    def _log_rate_limit(self, request, group):
+        """Log rate limit violation."""
+        ip = get_client_ip(request)
+        security_logger.security_event(
+            event="RATE_LIMIT_EXCEEDED",
+            user_id=getattr(request.user, 'id', None) if hasattr(request, 'user') and hasattr(request.user, 'id') else None,
+            ip_address=ip,
+            details={'path': request.path, 'method': request.method, 'group': group}
+        )
 
     def __call__(self, request):
         # Apply rate limiting to API endpoints
@@ -27,6 +39,7 @@ class RateLimitMiddleware:
                         increment=True,
                         group='auth_login_register'
                     ):
+                        self._log_rate_limit(request, 'auth_login_register')
                         return Response(
                             {
                                 'error': 'Too many authentication attempts. '
@@ -44,6 +57,7 @@ class RateLimitMiddleware:
                         increment=True,
                         group='auth_other'
                     ):
+                        self._log_rate_limit(request, 'auth_other')
                         return Response(
                             {'error': 'Rate limit exceeded for auth endpoints.'},
                             status=status.HTTP_429_TOO_MANY_REQUESTS
@@ -60,6 +74,7 @@ class RateLimitMiddleware:
                         increment=True,
                         group='applications_create'
                     ):
+                        self._log_rate_limit(request, 'applications_create')
                         return Response(
                             {
                                 'error': 'Too many applications submitted. '
@@ -79,6 +94,7 @@ class RateLimitMiddleware:
                         increment=True,
                         group='projects_create'
                     ):
+                        self._log_rate_limit(request, 'projects_create')
                         return Response(
                             {
                                 'error': 'Too many projects created. '
@@ -97,6 +113,7 @@ class RateLimitMiddleware:
                     increment=True,
                     group='api_general'
                 ):
+                    self._log_rate_limit(request, 'api_general')
                     return Response(
                         {
                             'error': 'Rate limit exceeded. '

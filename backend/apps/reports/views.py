@@ -15,6 +15,7 @@ from apps.reports.serializers import (
     ReportStatsSerializer,
     VolunteerContributionSerializer
 )
+from apps.core.logging import logger
 
 
 class ProjectReportViewSet(viewsets.ModelViewSet):
@@ -72,6 +73,11 @@ class ProjectReportViewSet(viewsets.ModelViewSet):
             )
         
         report.submit()
+        logger.user_action(
+            action="REPORT_SUBMITTED",
+            user_id=request.user.id,
+            details={'report_id': report.id, 'project_id': report.project_id}
+        )
         return Response({'message': 'Отчет отправлен на модерацию'})
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
@@ -91,7 +97,11 @@ class ProjectReportViewSet(viewsets.ModelViewSet):
         
         comment = serializer.validated_data.get('review_comment', '')
         report.approve(request.user, comment)
-        
+        logger.user_action(
+            action="REPORT_APPROVED",
+            user_id=request.user.id,
+            details={'report_id': report.id, 'project_id': report.project_id}
+        )
         return Response({'message': 'Отчет одобрен'})
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
@@ -117,7 +127,11 @@ class ProjectReportViewSet(viewsets.ModelViewSet):
             )
         
         report.reject(request.user, comment)
-        
+        logger.user_action(
+            action="REPORT_REJECTED",
+            user_id=request.user.id,
+            details={'report_id': report.id, 'project_id': report.project_id}
+        )
         return Response({'message': 'Отчет отклонен'})
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
