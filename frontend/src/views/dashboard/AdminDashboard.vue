@@ -445,27 +445,27 @@ const loadStats = async () => {
 const loadRecentActivity = async () => {
   try {
     activityLoading.value = true
-    // Mock data for now - replace with actual API call
+    // TODO: Заменить на реальный API-вызов когда эндпоинт будет готов
     recentActivity.value = [
       {
         id: 1,
-        user: 'Иван Иванов',
+        user: 'Новый волонтёр',
         type: 'user_registered',
         description: 'зарегистрировался как волонтер',
         created_at: new Date().toISOString()
       },
       {
         id: 2,
-        user: 'ООО "Добрые дела"',
+        user: 'Организация',
         type: 'project_created',
-        description: 'создал проект "Помощь животным"',
+        description: 'создала новый проект',
         created_at: new Date(Date.now() - 3600000).toISOString()
       },
       {
         id: 3,
-        user: 'Мария Петрова',
+        user: 'Волонтёр',
         type: 'application_submitted',
-        description: 'подала заявку на проект "Экологическая акция"',
+        description: 'подал заявку на проект',
         created_at: new Date(Date.now() - 7200000).toISOString()
       }
     ]

@@ -577,6 +577,7 @@ const validateForm = () => {
 }
 
 const handleRegister = async () => {
+  authStore.clearError()
   if (!validateForm()) {
     return
   }
@@ -584,8 +585,17 @@ const handleRegister = async () => {
   try {
     await authStore.registerOrganization(form)
     router.push('/dashboard')
-  } catch (error) {
-    console.error('Registration error:', error)
+  } catch (error: any) {
+    // Показываем детальные ошибки от сервера
+    if (error.response?.data) {
+      const data = error.response.data
+      if (typeof data === 'object' && !Array.isArray(data)) {
+        const messages = Object.entries(data)
+          .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(', ') : val}`)
+          .join('; ')
+        authStore.error = messages || 'Ошибка регистрации'
+      }
+    }
   }
 }
 </script>

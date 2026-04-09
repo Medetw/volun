@@ -64,7 +64,7 @@
                 required
                 class="form-input"
                 :class="{ 'border-red-500': errors.first_name }"
-                placeholder="Иван"
+                placeholder="Введите имя"
               >
               <div
                 v-if="errors.first_name"
@@ -87,7 +87,7 @@
                 required
                 class="form-input"
                 :class="{ 'border-red-500': errors.last_name }"
-                placeholder="Иванов"
+                placeholder="Введите фамилию"
               >
               <div
                 v-if="errors.last_name"
@@ -488,6 +488,7 @@ const validateForm = () => {
 }
 
 const handleRegister = async () => {
+  authStore.clearError()
   if (!validateForm()) {
     return
   }
@@ -495,8 +496,17 @@ const handleRegister = async () => {
   try {
     await authStore.registerVolunteer(form)
     router.push('/dashboard')
-  } catch (error) {
-    console.error('Registration error:', error)
+  } catch (error: any) {
+    // Показываем детальные ошибки от сервера
+    if (error.response?.data) {
+      const data = error.response.data
+      if (typeof data === 'object' && !Array.isArray(data)) {
+        const messages = Object.entries(data)
+          .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(', ') : val}`)
+          .join('; ')
+        authStore.error = messages || 'Ошибка регистрации'
+      }
+    }
   }
 }
 </script>
