@@ -17,7 +17,8 @@ class User(AbstractUser):
 
     role = models.CharField(max_length=32, choices=UserRole.choices, default=UserRole.VOLUNTEER)
     phone = models.CharField(max_length=32, blank=True, default="")
-    
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, verbose_name="Аватар")
+
     # Password reset fields
     password_reset_code = models.CharField(max_length=6, blank=True, null=True)
     password_reset_expiry = models.DateTimeField(null=True, blank=True)
@@ -57,4 +58,25 @@ class OrganizationProfile(models.Model):
     def __str__(self) -> str:
         return f"OrganizationProfile(id={self.id}, name={self.name})"
 
-# Create your models here.
+class VolunteerCertificate(models.Model):
+    """Сертификаты волонтёра."""
+    volunteer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='certificates')
+    title = models.CharField(max_length=255, verbose_name="Название")
+    description = models.TextField(blank=True, default="", verbose_name="Описание")
+    file = models.FileField(upload_to='certificates/', verbose_name="Файл сертификата")
+    project = models.ForeignKey(
+        'projects.Project', on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='certificates',
+        verbose_name="Связанный проект"
+    )
+    issued_by = models.CharField(max_length=255, blank=True, default="", verbose_name="Кем выдан")
+    issued_at = models.DateField(null=True, blank=True, verbose_name="Дата выдачи")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Загружено")
+
+    class Meta:
+        verbose_name = "Сертификат"
+        verbose_name_plural = "Сертификаты"
+        ordering = ['-created_at']
+
+    def __str__(self) -> str:
+        return f"{self.title} — {self.volunteer.username}"

@@ -28,12 +28,24 @@
         <div class="bg-white p-6 rounded-lg shadow">
           <div class="flex items-center space-x-6">
             <div class="relative">
-              <div class="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
-                <span class="text-2xl font-medium text-gray-700">
+              <div class="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
+                <img
+                  v-if="authStore.user?.avatar"
+                  :src="authStore.user.avatar"
+                  alt="Аватар"
+                  class="w-full h-full object-cover"
+                >
+                <span
+                  v-else
+                  class="text-2xl font-medium text-gray-700"
+                >
                   {{ getUserInitials() }}
                 </span>
               </div>
-              <button class="absolute bottom-0 right-0 bg-primary-600 text-white p-2 rounded-full hover:bg-primary-700">
+              <button
+                class="absolute bottom-0 right-0 bg-primary-600 text-white p-2 rounded-full hover:bg-primary-700"
+                @click="triggerAvatarUpload"
+              >
                 <svg
                   class="w-4 h-4"
                   fill="none"
@@ -54,6 +66,13 @@
                   />
                 </svg>
               </button>
+              <input
+                ref="avatarInput"
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="handleAvatarUpload"
+              >
             </div>
             
             <div class="flex-1">
@@ -113,7 +132,7 @@
                     v-model="form.first_name"
                     type="text"
                     class="form-input"
-                    placeholder="Иван"
+                    placeholder="Введите имя"
                   >
                 </div>
                 
@@ -123,7 +142,7 @@
                     v-model="form.last_name"
                     type="text"
                     class="form-input"
-                    placeholder="Иванов"
+                    placeholder="Введите фамилию"
                   >
                 </div>
               </div>
@@ -401,9 +420,11 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import apiService from '@/services/api'
 import type { User } from '@/types/api'
 
 const authStore = useAuthStore()
+const avatarInput = ref<HTMLInputElement | null>(null)
 
 const loading = ref(true)
 const submitting = ref(false)
@@ -543,6 +564,26 @@ const handleChangePassword = async () => {
 
 const resetForm = () => {
   loadProfile()
+}
+
+const triggerAvatarUpload = () => {
+  avatarInput.value?.click()
+}
+
+const handleAvatarUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  try {
+    await apiService.uploadAvatar(file)
+    await authStore.fetchCurrentUser()
+    successMessage.value = 'Аватар обновлён'
+    setTimeout(() => { successMessage.value = '' }, 3000)
+  } catch (error) {
+    errorMessage.value = 'Ошибка загрузки аватара'
+    setTimeout(() => { errorMessage.value = '' }, 3000)
+  }
 }
 
 const getUserInitials = () => {

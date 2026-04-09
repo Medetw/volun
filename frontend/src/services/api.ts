@@ -1,13 +1,14 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
-import type { 
-  User, 
-  Project, 
-  Application, 
-  News, 
+import type {
+  User,
+  Project,
+  Application,
+  News,
   Statistics,
   Notification,
   NotificationPreference,
   ProjectReport,
+  VolunteerCertificate,
   LoginRequest,
   LoginResponse,
   RegisterVolunteerRequest,
@@ -366,6 +367,33 @@ class ApiService {
   async rejectReport(id: number, data: { review_comment?: string }): Promise<ProjectReport> {
     const response: AxiosResponse<ProjectReport> = await this.api.post(`/reports/${id}/reject/`, data)
     return response.data
+  }
+
+  // Avatar upload
+  async uploadAvatar(file: File): Promise<User> {
+    const formData = new FormData()
+    formData.append('avatar', file)
+    const response: AxiosResponse<User> = await this.api.patch('/auth/me/update/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    return response.data
+  }
+
+  // Certificates endpoints
+  async getCertificates(): Promise<PaginatedResponse<VolunteerCertificate>> {
+    const response: AxiosResponse<PaginatedResponse<VolunteerCertificate>> = await this.api.get('/users/certificates/')
+    return response.data
+  }
+
+  async uploadCertificate(data: FormData): Promise<VolunteerCertificate> {
+    const response: AxiosResponse<VolunteerCertificate> = await this.api.post('/users/certificates/', data, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    return response.data
+  }
+
+  async deleteCertificate(id: number): Promise<void> {
+    await this.api.delete(`/users/certificates/${id}/`)
   }
 }
 

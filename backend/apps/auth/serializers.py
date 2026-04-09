@@ -136,10 +136,10 @@ class UserSerializer(serializers.ModelSerializer):
     """Serializer for user profile."""
     volunteer_profile = serializers.SerializerMethodField()
     organization_profile = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = User
-        fields = ['id', 'email', 'username', 'role', 'phone', 'date_joined', 'is_active',
+        fields = ['id', 'email', 'username', 'role', 'phone', 'avatar', 'date_joined', 'is_active',
                   'volunteer_profile', 'organization_profile']
         read_only_fields = ['id', 'date_joined', 'is_active']
 

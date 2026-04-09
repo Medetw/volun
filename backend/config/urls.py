@@ -55,6 +55,9 @@ urlpatterns = [
     
     # Reports endpoints
     path("api/reports/", include("apps.reports.urls")),
+
+    # Users endpoints (certificates, etc.)
+    path("api/users/", include("apps.users.urls")),
 ]
 
 # Serve media files in development

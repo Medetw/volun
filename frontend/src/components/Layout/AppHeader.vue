@@ -123,8 +123,17 @@
               class="flex items-center space-x-2 text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-full p-1"
               @click="showUserMenu = !showUserMenu"
             >
-              <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                <span class="text-sm font-medium text-gray-700">
+              <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
+                <img
+                  v-if="authStore.user?.avatar"
+                  :src="authStore.user.avatar"
+                  alt="Аватар"
+                  class="w-full h-full object-cover"
+                >
+                <span
+                  v-else
+                  class="text-sm font-medium text-gray-700"
+                >
                   {{ getUserInitials() }}
                 </span>
               </div>
@@ -317,14 +326,16 @@ const loadNotifications = async () => {
 
 const getUserInitials = () => {
   if (!authStore.user) return '?'
-  
+
   const user = authStore.user
   if (user.volunteer_profile) {
-    return `${user.volunteer_profile.first_name[0]}${user.volunteer_profile.last_name[0]}`.toUpperCase()
+    const first = (user.volunteer_profile.first_name || '').charAt(0)
+    const last = (user.volunteer_profile.last_name || '').charAt(0)
+    return (first + last).toUpperCase() || '?'
   } else if (user.organization_profile) {
-    return user.organization_profile.name[0].toUpperCase()
+    return (user.organization_profile.name || '').charAt(0).toUpperCase() || '?'
   }
-  return user.email[0].toUpperCase()
+  return (user.email || '').charAt(0).toUpperCase() || '?'
 }
 
 const getUserDisplayName = () => {

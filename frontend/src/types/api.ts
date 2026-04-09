@@ -5,6 +5,7 @@ export interface User {
   username: string
   role: 'volunteer' | 'organization' | 'admin'
   phone: string
+  avatar?: string
   date_joined: string
   is_active: boolean
   volunteer_profile?: VolunteerProfile
@@ -21,6 +22,19 @@ export interface VolunteerProfile {
   skills: string[]
   interests: string[]
   volunteer_hours: number
+  average_rating?: number
+}
+
+export interface VolunteerCertificate {
+  id: number
+  title: string
+  description: string
+  file: string
+  project?: number
+  project_title?: string
+  issued_by: string
+  issued_at?: string
+  created_at: string
 }
 
 export interface OrganizationProfile {
@@ -142,6 +156,7 @@ export interface Statistics {
   achievements?: {
     total_projects: number
     total_hours: number
+    average_rating: number
     longest_streak: number
     diversity_score: number
   }

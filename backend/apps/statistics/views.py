@@ -317,16 +317,23 @@ class StatisticsAPIView(views.APIView):
 
     def _get_volunteer_achievements(self, user):
         """Достижения волонтера."""
+        from apps.reports.models import VolunteerContribution
+
         applications = Application.objects.filter(
-            volunteer=user, 
+            volunteer=user,
             status=ApplicationStatus.APPROVED
         )
-        
+
+        avg_rating = VolunteerContribution.objects.filter(
+            volunteer=user
+        ).aggregate(avg=Avg('performance_rating'))['avg']
+
         return {
             'total_projects': applications.values('project').distinct().count(),
             'total_hours': applications.aggregate(
                 total=Sum('hours_committed')
             )['total'] or 0,
+            'average_rating': round(avg_rating, 1) if avg_rating else 0,
             'longest_streak': self._calculate_longest_streak(user),
             'diversity_score': self._calculate_diversity_score(user),
         }

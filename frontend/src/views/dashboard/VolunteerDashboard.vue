@@ -36,7 +36,7 @@
     </div>
 
     <div class="container-custom py-8">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div class="bg-white p-6 rounded-lg shadow">
           <div class="flex items-center">
             <div class="p-3 bg-blue-100 rounded-full">
@@ -120,9 +120,203 @@
             </div>
           </div>
         </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+          <div class="flex items-center">
+            <div class="p-3 bg-yellow-100 rounded-full">
+              <svg
+                class="w-6 h-6 text-yellow-600"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+            </div>
+            <div class="ml-4">
+              <div class="text-2xl font-bold text-gray-900">
+                {{ stats.average_rating > 0 ? stats.average_rating.toFixed(1) : '—' }}
+              </div>
+              <div class="text-sm text-gray-600">
+                Средний рейтинг
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow">
+      <!-- Tabs: Заявки | Сертификаты -->
+      <div class="mb-6">
+        <div class="border-b border-gray-200">
+          <nav class="-mb-px flex space-x-8">
+            <button
+              :class="[activeTab === 'applications' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']"
+              @click="activeTab = 'applications'"
+            >
+              Мои заявки
+            </button>
+            <button
+              :class="[activeTab === 'certificates' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']"
+              @click="activeTab = 'certificates'; loadCertificates()"
+            >
+              Мои сертификаты
+              <span
+                v-if="certificates.length > 0"
+                class="ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs"
+              >{{ certificates.length }}</span>
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Certificates Tab -->
+      <div
+        v-if="activeTab === 'certificates'"
+        class="bg-white rounded-lg shadow"
+      >
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <h2 class="text-xl font-semibold text-gray-900">
+            Мои сертификаты
+          </h2>
+          <button
+            class="btn btn-primary"
+            @click="showCertificateForm = !showCertificateForm"
+          >
+            {{ showCertificateForm ? 'Отмена' : 'Загрузить сертификат' }}
+          </button>
+        </div>
+
+        <!-- Upload form -->
+        <div
+          v-if="showCertificateForm"
+          class="p-6 border-b border-gray-200 bg-gray-50"
+        >
+          <form
+            class="space-y-4"
+            @submit.prevent="uploadCertificate"
+          >
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="form-label">Название *</label>
+                <input
+                  v-model="certForm.title"
+                  type="text"
+                  class="form-input"
+                  placeholder="Название сертификата"
+                  required
+                >
+              </div>
+              <div>
+                <label class="form-label">Кем выдан</label>
+                <input
+                  v-model="certForm.issued_by"
+                  type="text"
+                  class="form-input"
+                  placeholder="Организация или учреждение"
+                >
+              </div>
+              <div>
+                <label class="form-label">Дата выдачи</label>
+                <input
+                  v-model="certForm.issued_at"
+                  type="date"
+                  class="form-input"
+                >
+              </div>
+              <div>
+                <label class="form-label">Файл *</label>
+                <input
+                  ref="certFileInput"
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  class="form-input"
+                  required
+                >
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Описание</label>
+              <textarea
+                v-model="certForm.description"
+                class="form-input"
+                rows="2"
+                placeholder="Краткое описание"
+              />
+            </div>
+            <div class="flex justify-end">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                :disabled="certUploading"
+              >
+                {{ certUploading ? 'Загрузка...' : 'Загрузить' }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="p-6">
+          <div
+            v-if="certificatesLoading"
+            class="text-center py-8"
+          >
+            <div class="loading-spinner mx-auto" />
+          </div>
+          <div
+            v-else-if="certificates.length === 0"
+            class="text-center py-8 text-gray-500"
+          >
+            У вас пока нет сертификатов. Загрузите свой первый сертификат!
+          </div>
+          <div
+            v-else
+            class="space-y-4"
+          >
+            <div
+              v-for="cert in certificates"
+              :key="cert.id"
+              class="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
+            >
+              <div class="flex-1">
+                <h3 class="font-medium text-gray-900">
+                  {{ cert.title }}
+                </h3>
+                <div class="text-sm text-gray-500 mt-1">
+                  <span v-if="cert.issued_by">{{ cert.issued_by }}</span>
+                  <span v-if="cert.issued_by && cert.issued_at"> · </span>
+                  <span v-if="cert.issued_at">{{ formatDate(cert.issued_at) }}</span>
+                </div>
+                <p
+                  v-if="cert.description"
+                  class="text-sm text-gray-600 mt-1"
+                >
+                  {{ cert.description }}
+                </p>
+              </div>
+              <div class="flex items-center space-x-2 ml-4">
+                <a
+                  :href="cert.file"
+                  target="_blank"
+                  class="btn btn-outline btn-sm"
+                >
+                  Скачать
+                </a>
+                <button
+                  class="btn btn-ghost btn-sm text-red-600 hover:text-red-800"
+                  @click="deleteCertificate(cert.id)"
+                >
+                  Удалить
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Applications Tab -->
+      <div
+        v-if="activeTab === 'applications'"
+        class="bg-white rounded-lg shadow"
+      >
         <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <h2 class="text-xl font-semibold text-gray-900">
             Мои заявки
@@ -223,19 +417,35 @@
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import apiService from '@/services/api'
-import type { Application } from '@/types/api'
+import type { Application, VolunteerCertificate } from '@/types/api'
 
 const authStore = useAuthStore()
+
+const activeTab = ref<'applications' | 'certificates'>('applications')
 
 const stats = ref({
   total_applications: 0,
   approved_applications: 0,
-  hours_committed: 0
+  hours_committed: 0,
+  average_rating: 0
 })
 
 const applications = ref<Application[]>([])
 const applicationsLoading = ref(false)
 const unreadCount = ref(0)
+
+// Certificates
+const certificates = ref<VolunteerCertificate[]>([])
+const certificatesLoading = ref(false)
+const showCertificateForm = ref(false)
+const certUploading = ref(false)
+const certFileInput = ref<HTMLInputElement | null>(null)
+const certForm = ref({
+  title: '',
+  description: '',
+  issued_by: '',
+  issued_at: ''
+})
 
 onMounted(async () => {
   await Promise.all([loadStats(), loadApplications(), loadUnreadCount()])
@@ -245,9 +455,10 @@ const loadStats = async () => {
   try {
     const data = await apiService.getStatistics()
     stats.value = {
-      total_applications: data.total_applications ?? 0,
-      approved_applications: data.approved_applications ?? 0,
-      hours_committed: data.total_hours ?? 0
+      total_applications: data.my_applications?.total ?? data.total_applications ?? 0,
+      approved_applications: data.my_applications?.approved ?? data.approved_applications ?? 0,
+      hours_committed: data.my_applications?.total_hours ?? data.total_hours ?? 0,
+      average_rating: data.achievements?.average_rating ?? 0
     }
   } catch (error) {
     console.error('Failed to load stats:', error)
@@ -312,5 +523,53 @@ const formatDate = (dateString: string) => {
     month: 'short',
     year: 'numeric'
   })
+}
+
+const loadCertificates = async () => {
+  if (certificates.value.length > 0) return
+  try {
+    certificatesLoading.value = true
+    const response = await apiService.getCertificates()
+    certificates.value = response.results || []
+  } catch (error) {
+    console.error('Failed to load certificates:', error)
+  } finally {
+    certificatesLoading.value = false
+  }
+}
+
+const uploadCertificate = async () => {
+  const file = certFileInput.value?.files?.[0]
+  if (!file || !certForm.value.title) return
+
+  try {
+    certUploading.value = true
+    const formData = new FormData()
+    formData.append('title', certForm.value.title)
+    formData.append('file', file)
+    if (certForm.value.description) formData.append('description', certForm.value.description)
+    if (certForm.value.issued_by) formData.append('issued_by', certForm.value.issued_by)
+    if (certForm.value.issued_at) formData.append('issued_at', certForm.value.issued_at)
+
+    const newCert = await apiService.uploadCertificate(formData)
+    certificates.value.unshift(newCert)
+    showCertificateForm.value = false
+    certForm.value = { title: '', description: '', issued_by: '', issued_at: '' }
+    if (certFileInput.value) certFileInput.value.value = ''
+  } catch (error) {
+    console.error('Failed to upload certificate:', error)
+  } finally {
+    certUploading.value = false
+  }
+}
+
+const deleteCertificate = async (id: number) => {
+  if (!confirm('Удалить этот сертификат?')) return
+  try {
+    await apiService.deleteCertificate(id)
+    certificates.value = certificates.value.filter(c => c.id !== id)
+  } catch (error) {
+    console.error('Failed to delete certificate:', error)
+  }
 }
 </script>
