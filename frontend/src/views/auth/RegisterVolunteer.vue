@@ -494,7 +494,8 @@ const handleRegister = async () => {
   }
 
   try {
-    await authStore.registerVolunteer(form)
+    const payload = { ...form, birth_date: form.birth_date || undefined }
+    await authStore.registerVolunteer(payload)
     router.push('/dashboard')
   } catch (error: any) {
     // Показываем детальные ошибки от сервера
