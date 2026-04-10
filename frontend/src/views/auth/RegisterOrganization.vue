@@ -110,6 +110,9 @@
               <option value="religious">
                 Религиозная
               </option>
+              <option value="initiative_group">
+                Инициативная группа
+              </option>
               <option value="other">
                 Другое
               </option>

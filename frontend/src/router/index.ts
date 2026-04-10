@@ -102,8 +102,14 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'Dashboard',
-      component: VolunteerDashboard,
-      meta: { title: 'Личный кабинет', requiresAuth: true }
+      meta: { title: 'Личный кабинет', requiresAuth: true },
+      redirect: () => {
+        const authStore = useAuthStore()
+        const role = authStore.user?.role
+        if (role === 'organization') return '/dashboard/organization'
+        if (role === 'admin') return '/dashboard/admin'
+        return '/dashboard/volunteer'
+      }
     },
     {
       path: '/dashboard/volunteer',

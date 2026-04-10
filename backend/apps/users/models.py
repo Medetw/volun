@@ -41,9 +41,15 @@ class VolunteerProfile(models.Model):
 
 
 class OrganizationType(models.TextChoices):
-    NGO = "ngo", "NPO/NGO"
-    INITIATIVE_GROUP = "initiative_group", "Initiative group"
-    GOVERNMENT = "government", "Government"
+    NGO = "ngo", "НКО"
+    FOUNDATION = "foundation", "Фонд"
+    ASSOCIATION = "association", "Ассоциация"
+    CORPORATE = "corporate", "Корпорация"
+    GOVERNMENT = "government", "Государственная"
+    EDUCATIONAL = "educational", "Образовательная"
+    RELIGIOUS = "religious", "Религиозная"
+    INITIATIVE_GROUP = "initiative_group", "Инициативная группа"
+    OTHER = "other", "Другое"
 
 
 class OrganizationProfile(models.Model):
