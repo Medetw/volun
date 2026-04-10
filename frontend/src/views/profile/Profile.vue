@@ -481,14 +481,14 @@ const loadProfile = async () => {
     
     if (user) {
       // Basic info
-      form.first_name = user.first_name || ''
-      form.last_name = user.last_name || ''
       form.email = user.email || ''
       form.phone = user.phone || ''
-      
+
       // Volunteer profile
       if (user.volunteer_profile) {
         const profile = user.volunteer_profile
+        form.first_name = profile.first_name || ''
+        form.last_name = profile.last_name || ''
         form.birth_date = profile.birth_date || ''
         form.gender = profile.gender || ''
         form.city = profile.city || ''

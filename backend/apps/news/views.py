@@ -21,11 +21,33 @@ class NewsViewSet(viewsets.ModelViewSet):
     
     def get_permissions(self):
         """Разные права для разных действий."""
-        if self.action in ['list', 'retrieve']:
+        if self.action in ['list', 'retrieve', 'featured', 'recent', 'by_category', 'view']:
             self.permission_classes = [permissions.AllowAny]
         else:
             self.permission_classes = [permissions.IsAuthenticated]
         return super().get_permissions()
+
+    def perform_create(self, serializer):
+        """Только админы могут создавать новости."""
+        if self.request.user.role != 'admin':
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Только администраторы могут создавать новости")
+        with transaction.atomic():
+            serializer.save(author=self.request.user)
+
+    def perform_update(self, serializer):
+        """Только админы могут редактировать новости."""
+        if self.request.user.role != 'admin':
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Только администраторы могут редактировать новости")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        """Только админы могут удалять новости."""
+        if self.request.user.role != 'admin':
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Только администраторы могут удалять новости")
+        instance.delete()
     
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['category', 'status', 'featured']
@@ -70,11 +92,6 @@ class NewsViewSet(viewsets.ModelViewSet):
                 model = News
                 fields = serializer_class.Meta.fields
         return DynamicSerializer
-
-    def perform_create(self, serializer):
-        """Создание новости с транзакцией."""
-        with transaction.atomic():
-            serializer.save(author=self.request.user)
 
     def retrieve(self, request, *args, **kwargs):
         """Получение новости с кэшированием и увеличением просмотров."""

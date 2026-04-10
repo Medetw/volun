@@ -50,12 +50,6 @@
             </h3>
             <div class="mt-2 text-sm text-green-700">
               <p>{{ successMessage }}</p>
-              <p
-                v-if="resetCode"
-                class="mt-1 font-mono bg-green-100 px-2 py-1 rounded"
-              >
-                Код: {{ resetCode }}
-              </p>
             </div>
             <div class="mt-4">
               <router-link

@@ -544,8 +544,8 @@ const loadStats = async () => {
 const loadProjects = async () => {
   try {
     projectsLoading.value = true
-    const response = await apiService.getProjects({ limit: 5 })
-    projects.value = response.results
+    const response = await apiService.getMyProjects()
+    projects.value = (response.results || []).slice(0, 5)
   } catch (error) {
     console.error('Failed to load projects:', error)
   } finally {

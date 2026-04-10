@@ -46,6 +46,11 @@ class VolunteerCertificateSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at']
 
+    def validate_file(self, value):
+        if value.size > 10 * 1024 * 1024:  # 10MB
+            raise serializers.ValidationError("Размер файла не должен превышать 10 МБ")
+        return value
+
 
 class OrganizationProfileSerializer(serializers.ModelSerializer):
     """Сериализатор для профиля организации."""

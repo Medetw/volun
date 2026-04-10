@@ -1,6 +1,6 @@
 from rest_framework import status, generics
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_spectacular.utils import extend_schema, OpenApiResponse
@@ -53,7 +53,6 @@ def request_password_reset(request):
             
             return Response({
                 'message': 'Код для сброса пароля отправлен на вашу почту',
-                'reset_code': reset_code  # Только для разработки!
             }, status=status.HTTP_200_OK)
             
         except User.DoesNotExist:
@@ -121,14 +120,9 @@ def confirm_password_reset(request):
     },
 )
 @api_view(['POST'])
-@permission_classes([AllowAny])  # Будет проверяться в сериализаторе
+@permission_classes([IsAuthenticated])
 def change_password(request):
     """Изменение пароля."""
-    if not request.user.is_authenticated:
-        return Response(
-            {'error': 'Требуется авторизация'},
-            status=status.HTTP_401_UNAUTHORIZED
-        )
     
     serializer = PasswordChangeSerializer(data=request.data, context={'request': request})
     if serializer.is_valid():
