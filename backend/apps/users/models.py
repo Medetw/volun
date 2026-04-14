@@ -96,6 +96,50 @@ class VolunteerCertificate(models.Model):
         return f"{self.title} — {self.volunteer.username}"
 
 
+class ModeratorProfile(models.Model):
+    """Профиль модератора с RBAC-разрешениями."""
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE,
+        related_name="moderator_profile",
+        verbose_name="Пользователь"
+    )
+    department = models.CharField(
+        max_length=255, blank=True, default="",
+        verbose_name="Отдел / направление"
+    )
+
+    # RBAC-разрешения
+    can_view_volunteers = models.BooleanField(
+        default=True,
+        verbose_name="Просматривать таблицу волонтёров"
+    )
+    can_manage_hours = models.BooleanField(
+        default=True,
+        verbose_name="Вносить учёт рабочего времени"
+    )
+    can_manage_certificates = models.BooleanField(
+        default=True,
+        verbose_name="Добавлять сертификаты волонтёрам"
+    )
+
+    notes = models.TextField(
+        blank=True, default="",
+        verbose_name="Заметки"
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Создан")
+
+    class Meta:
+        verbose_name = "Профиль модератора"
+        verbose_name_plural = "Профили модераторов"
+
+    def __str__(self) -> str:
+        return f"ModeratorProfile({self.user.username})"
+
+    def has_permission(self, perm: str) -> bool:
+        """Проверить конкретное RBAC-разрешение."""
+        return bool(getattr(self, perm, False))
+
+
 class VolunteerHoursLog(models.Model):
     """Журнал учёта волонтёрских часов (вносит модератор)."""
     volunteer = models.ForeignKey(

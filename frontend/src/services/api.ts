@@ -417,9 +417,19 @@ class ApiService {
     await this.api.delete(`/users/hours/${id}/`)
   }
 
-  async getVolunteerList(): Promise<{ id: number; username: string; name: string; volunteer_hours: number }[]> {
+  async getVolunteerList(): Promise<{ id: number; username: string; name: string; email: string; city: string; volunteer_hours: number }[]> {
     const response = await this.api.get('/users/volunteers/')
     return response.data
+  }
+
+  async getModeratorProfile(): Promise<any> {
+    const response = await this.api.get('/users/moderator/profile/')
+    return response.data
+  }
+
+  async getCertificatesForModerator(params?: { volunteer_id?: number }): Promise<any[]> {
+    const response = await this.api.get('/users/certificates/', { params })
+    return response.data.results ?? response.data
   }
 }
 

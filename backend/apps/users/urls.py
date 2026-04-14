@@ -6,6 +6,7 @@ from apps.users.views import (
     VolunteerHoursViewSet,
     VolunteerListView,
     VolunteerOfWeekAPIView,
+    ModeratorProfileView,
 )
 
 router = DefaultRouter()
@@ -16,4 +17,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('volunteers/', VolunteerListView.as_view(), name='volunteer-list'),
     path('volunteer-of-week/', VolunteerOfWeekAPIView.as_view(), name='volunteer-of-week'),
+    path('moderator/profile/', ModeratorProfileView.as_view(), name='moderator-profile'),
 ]

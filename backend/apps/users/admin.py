@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from apps.users.models import User, VolunteerProfile, OrganizationProfile, VolunteerHoursLog
+from apps.users.models import User, VolunteerProfile, OrganizationProfile, VolunteerHoursLog, ModeratorProfile
 
 
 @admin.register(User)
@@ -107,3 +107,31 @@ class VolunteerHoursLogAdmin(admin.ModelAdmin):
             ).aggregate(total=Sum('hours'))['total'] or 0
             profile.volunteer_hours = total
             profile.save(update_fields=['volunteer_hours'])
+
+
+@admin.register(ModeratorProfile)
+class ModeratorProfileAdmin(admin.ModelAdmin):
+    list_display = [
+        'user', 'department',
+        'can_view_volunteers', 'can_manage_hours', 'can_manage_certificates',
+        'created_at',
+    ]
+    list_filter = ['can_view_volunteers', 'can_manage_hours', 'can_manage_certificates']
+    search_fields = ['user__username', 'user__email', 'department']
+    readonly_fields = ['user', 'created_at']
+
+    fieldsets = (
+        ('Пользователь', {
+            'fields': ('user', 'department', 'notes')
+        }),
+        ('RBAC-разрешения', {
+            'fields': (
+                'can_view_volunteers',
+                'can_manage_hours',
+                'can_manage_certificates',
+            )
+        }),
+        ('Служебное', {
+            'fields': ('created_at',)
+        }),
+    )

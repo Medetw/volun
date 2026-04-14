@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from django.db.models import Avg
-from apps.users.models import User, VolunteerProfile, OrganizationProfile, VolunteerCertificate, VolunteerHoursLog
+from apps.users.models import (
+    User, VolunteerProfile, OrganizationProfile,
+    VolunteerCertificate, VolunteerHoursLog, ModeratorProfile,
+)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -37,14 +40,21 @@ class VolunteerProfileSerializer(serializers.ModelSerializer):
 class VolunteerCertificateSerializer(serializers.ModelSerializer):
     """Сериализатор для сертификатов волонтёра."""
     project_title = serializers.CharField(source='project.title', read_only=True, default='')
+    volunteer_name = serializers.SerializerMethodField()
 
     class Meta:
         model = VolunteerCertificate
         fields = [
-            'id', 'title', 'description', 'file', 'project', 'project_title',
-            'issued_by', 'issued_at', 'created_at'
+            'id', 'volunteer', 'volunteer_name', 'title', 'description',
+            'file', 'project', 'project_title', 'issued_by', 'issued_at', 'created_at'
         ]
         read_only_fields = ['id', 'created_at']
+
+    def get_volunteer_name(self, obj):
+        profile = getattr(obj.volunteer, 'volunteer_profile', None)
+        if profile and (profile.first_name or profile.last_name):
+            return f"{profile.first_name} {profile.last_name}".strip()
+        return obj.volunteer.username
 
     def validate_file(self, value):
         if value.size > 10 * 1024 * 1024:  # 10MB
@@ -88,6 +98,21 @@ class VolunteerHoursLogSerializer(serializers.ModelSerializer):
         if obj.moderator:
             return obj.moderator.get_full_name() or obj.moderator.username
         return None
+
+
+class ModeratorProfileSerializer(serializers.ModelSerializer):
+    """Сериализатор профиля модератора с RBAC-разрешениями."""
+    username = serializers.CharField(source='user.username', read_only=True)
+    email = serializers.CharField(source='user.email', read_only=True)
+
+    class Meta:
+        model = ModeratorProfile
+        fields = [
+            'id', 'username', 'email', 'department',
+            'can_view_volunteers', 'can_manage_hours', 'can_manage_certificates',
+            'notes', 'created_at',
+        ]
+        read_only_fields = ['id', 'created_at', 'username', 'email']
 
 
 class UserAdminSerializer(serializers.ModelSerializer):
