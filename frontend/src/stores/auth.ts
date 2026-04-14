@@ -13,6 +13,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!user.value)
   const isVolunteer = computed(() => user.value?.role === 'volunteer')
   const isOrganization = computed(() => user.value?.role === 'organization')
+  const isModerator = computed(() => user.value?.role === 'moderator')
   const isAdmin = computed(() => user.value?.role === 'admin')
   const userRole = computed(() => user.value?.role || null)
 
@@ -201,6 +202,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     isVolunteer,
     isOrganization,
+    isModerator,
     isAdmin,
     userRole,
     

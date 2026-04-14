@@ -44,7 +44,7 @@ class StatisticsAPIView(views.APIView):
             'applications': self._get_applications_stats(),
         }
         
-        if user.role == UserRole.ADMIN:
+        if user.role in (UserRole.ADMIN, 'moderator'):
             base_stats.update({
                 'recent_activity': self._get_recent_activity(),
                 'top_projects': self._get_top_projects(),

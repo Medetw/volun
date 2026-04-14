@@ -20,6 +20,7 @@ const NewsDetail = () => import('@/views/news/NewsDetail.vue')
 const VolunteerDashboard = () => import('@/views/dashboard/VolunteerDashboard.vue')
 const OrganizationDashboard = () => import('@/views/dashboard/OrganizationDashboard.vue')
 const AdminDashboard = () => import('@/views/dashboard/AdminDashboard.vue')
+const ModeratorDashboard = () => import('@/views/dashboard/ModeratorDashboard.vue')
 
 const Profile = () => import('@/views/profile/Profile.vue')
 const MyApplications = () => import('@/views/applications/MyApplications.vue')
@@ -108,6 +109,7 @@ const router = createRouter({
         const role = authStore.user?.role
         if (role === 'organization') return '/dashboard/organization'
         if (role === 'admin') return '/dashboard/admin'
+        if (role === 'moderator') return '/dashboard/moderator'
         return '/dashboard/volunteer'
       }
     },
@@ -128,6 +130,12 @@ const router = createRouter({
       name: 'AdminDashboard',
       component: AdminDashboard,
       meta: { title: 'Админ панель', requiresAuth: true, roles: ['admin'] }
+    },
+    {
+      path: '/dashboard/moderator',
+      name: 'ModeratorDashboard',
+      component: ModeratorDashboard,
+      meta: { title: 'Панель модератора', requiresAuth: true, roles: ['moderator'] }
     },
 
     // Profile
@@ -244,6 +252,9 @@ router.beforeEach(async (to, from, next) => {
         break
       case 'admin':
         next({ name: 'AdminDashboard' })
+        break
+      case 'moderator':
+        next({ name: 'ModeratorDashboard' })
         break
       default:
         next({ name: 'Home' })

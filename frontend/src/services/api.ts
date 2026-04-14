@@ -395,6 +395,32 @@ class ApiService {
   async deleteCertificate(id: number): Promise<void> {
     await this.api.delete(`/users/certificates/${id}/`)
   }
+
+  // Volunteer of week (public)
+  async getVolunteerOfWeek(): Promise<{ volunteer: { id: number; name: string; avatar: string | null } | null; week_hours: number }> {
+    const response = await this.api.get('/users/volunteer-of-week/')
+    return response.data
+  }
+
+  // Volunteer hours (moderator)
+  async getVolunteerHours(params?: { volunteer_id?: number }): Promise<any[]> {
+    const response = await this.api.get('/users/hours/', { params })
+    return response.data.results ?? response.data
+  }
+
+  async createVolunteerHours(data: { volunteer: number; hours: number; description: string; date: string }): Promise<any> {
+    const response = await this.api.post('/users/hours/', data)
+    return response.data
+  }
+
+  async deleteVolunteerHours(id: number): Promise<void> {
+    await this.api.delete(`/users/hours/${id}/`)
+  }
+
+  async getVolunteerList(): Promise<{ id: number; username: string; name: string; volunteer_hours: number }[]> {
+    const response = await this.api.get('/users/volunteers/')
+    return response.data
+  }
 }
 
 export const apiService = new ApiService()

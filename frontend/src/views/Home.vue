@@ -27,12 +27,14 @@
                 Найти проекты
               </router-link>
               <router-link
+                v-if="!authStore.isAuthenticated"
                 to="/register/volunteer"
                 class="btn border-2 border-white text-white hover:bg-white hover:text-primary-700 btn-lg"
               >
                 Стать волонтером
               </router-link>
               <router-link
+                v-if="!authStore.isAuthenticated || authStore.isOrganization || authStore.isAdmin"
                 to="/register/organization"
                 class="btn bg-primary-900/40 text-white hover:bg-primary-900/60 btn-lg"
               >
@@ -44,15 +46,34 @@
             <div class="relative rounded-3xl border border-white/20 bg-white/10 p-8 backdrop-blur">
               <div class="grid gap-6">
                 <div class="flex items-center justify-between">
-                  <div>
-                    <p class="text-sm uppercase text-primary-100">
-                      Волонтёр дня
-                    </p>
-                    <p class="text-2xl font-semibold">
-                      Айша Садыкова
-                    </p>
+                  <div class="flex items-center gap-3">
+                    <div
+                      v-if="volunteerOfWeek?.volunteer?.avatar"
+                      class="h-10 w-10 rounded-full overflow-hidden flex-shrink-0"
+                    >
+                      <img
+                        :src="volunteerOfWeek.volunteer.avatar"
+                        :alt="volunteerOfWeek.volunteer.name"
+                        class="h-full w-full object-cover"
+                      >
+                    </div>
+                    <div
+                      v-else
+                      class="h-10 w-10 rounded-full bg-primary-200/30 flex-shrink-0"
+                    />
+                    <div>
+                      <p class="text-sm uppercase text-primary-100">
+                        Волонтёр недели
+                      </p>
+                      <p class="text-2xl font-semibold">
+                        {{ volunteerOfWeek?.volunteer?.name || '—' }}
+                      </p>
+                    </div>
                   </div>
-                  <span class="rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-100">+18 часов</span>
+                  <span
+                    v-if="volunteerOfWeek?.week_hours"
+                    class="rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-100"
+                  >+{{ volunteerOfWeek.week_hours }} часов</span>
                 </div>
                 <div class="rounded-2xl bg-white/15 p-5">
                   <p class="text-sm text-primary-100">
@@ -409,16 +430,25 @@
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <router-link
+            v-if="!authStore.isAuthenticated"
             to="/register/volunteer"
             class="btn bg-white text-primary-600 hover:bg-gray-100 btn-lg"
           >
             Стать волонтером
           </router-link>
           <router-link
+            v-if="!authStore.isAuthenticated || authStore.isOrganization || authStore.isAdmin"
             to="/register/organization"
             class="btn btn-outline border-white text-white hover:bg-white hover:text-primary-600 btn-lg"
           >
             Создать проект
+          </router-link>
+          <router-link
+            v-if="authStore.isAuthenticated"
+            to="/dashboard"
+            class="btn bg-white text-primary-600 hover:bg-gray-100 btn-lg"
+          >
+            Личный кабинет
           </router-link>
         </div>
       </div>
@@ -519,6 +549,7 @@ const stats = ref({
   projects: { total: 0 },
   applications: { total: 0, total_hours: 0 }
 })
+const volunteerOfWeek = ref<{ volunteer: { id: number; name: string; avatar: string | null } | null; week_hours: number } | null>(null)
 const showApplicationModal = ref(false)
 const selectedProject = ref<Project | null>(null)
 const applicationLoading = ref(false)
@@ -532,7 +563,8 @@ onMounted(async () => {
   await Promise.all([
     loadProjects(),
     loadNews(),
-    loadStats()
+    loadStats(),
+    loadVolunteerOfWeek(),
   ])
 })
 
@@ -566,6 +598,14 @@ const loadStats = async () => {
     stats.value = data
   } catch (error) {
     console.error('Failed to load stats:', error)
+  }
+}
+
+const loadVolunteerOfWeek = async () => {
+  try {
+    volunteerOfWeek.value = await apiService.getVolunteerOfWeek()
+  } catch (error) {
+    console.error('Failed to load volunteer of week:', error)
   }
 }
 

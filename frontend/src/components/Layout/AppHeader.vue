@@ -353,9 +353,10 @@ const getUserDisplayName = () => {
 const getUserRole = () => {
   if (!authStore.user) return ''
   
-  const roles = {
+  const roles: Record<string, string> = {
     volunteer: 'Волонтер',
     organization: 'Организация',
+    moderator: 'Модератор',
     admin: 'Администратор'
   }
   return roles[authStore.user.role] || ''

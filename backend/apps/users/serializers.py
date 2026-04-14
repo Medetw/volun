@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.db.models import Avg
-from apps.users.models import User, VolunteerProfile, OrganizationProfile, VolunteerCertificate
+from apps.users.models import User, VolunteerProfile, OrganizationProfile, VolunteerCertificate, VolunteerHoursLog
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -63,6 +63,31 @@ class OrganizationProfileSerializer(serializers.ModelSerializer):
             'id', 'user', 'name', 'organization_type', 'organization_type_display',
             'description', 'region', 'contacts', 'is_verified'
         ]
+
+
+class VolunteerHoursLogSerializer(serializers.ModelSerializer):
+    """Сериализатор для записей часов волонтёра."""
+    volunteer_name = serializers.SerializerMethodField()
+    moderator_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = VolunteerHoursLog
+        fields = [
+            'id', 'volunteer', 'volunteer_name', 'moderator', 'moderator_name',
+            'hours', 'description', 'date', 'created_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'moderator']
+
+    def get_volunteer_name(self, obj):
+        profile = getattr(obj.volunteer, 'volunteer_profile', None)
+        if profile and (profile.first_name or profile.last_name):
+            return f"{profile.first_name} {profile.last_name}".strip()
+        return obj.volunteer.username
+
+    def get_moderator_name(self, obj):
+        if obj.moderator:
+            return obj.moderator.get_full_name() or obj.moderator.username
+        return None
 
 
 class UserAdminSerializer(serializers.ModelSerializer):

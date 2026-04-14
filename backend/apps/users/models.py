@@ -1,12 +1,13 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import FileExtensionValidator
+from django.core.validators import FileExtensionValidator, MinValueValidator
 from django.db import models
 
 
 class UserRole(models.TextChoices):
-    VOLUNTEER = "volunteer", "Volunteer"
-    ORGANIZATION = "organization", "Organization"
-    ADMIN = "admin", "Admin"
+    VOLUNTEER = "volunteer", "Волонтер"
+    ORGANIZATION = "organization", "Организация"
+    MODERATOR = "moderator", "Модератор"
+    ADMIN = "admin", "Админ"
 
 
 class User(AbstractUser):
@@ -93,3 +94,36 @@ class VolunteerCertificate(models.Model):
 
     def __str__(self) -> str:
         return f"{self.title} — {self.volunteer.username}"
+
+
+class VolunteerHoursLog(models.Model):
+    """Журнал учёта волонтёрских часов (вносит модератор)."""
+    volunteer = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        related_name='hours_logs',
+        verbose_name="Волонтёр"
+    )
+    moderator = models.ForeignKey(
+        User, on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='moderated_hours',
+        verbose_name="Модератор"
+    )
+    hours = models.PositiveIntegerField(
+        verbose_name="Часы",
+        validators=[MinValueValidator(1)]
+    )
+    description = models.TextField(
+        blank=True, default="",
+        verbose_name="Описание деятельности"
+    )
+    date = models.DateField(verbose_name="Дата активности")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Записано")
+
+    class Meta:
+        verbose_name = "Запись часов волонтёра"
+        verbose_name_plural = "Записи часов волонтёров"
+        ordering = ['-date']
+
+    def __str__(self) -> str:
+        return f"{self.volunteer.username} — {self.hours}ч ({self.date})"
