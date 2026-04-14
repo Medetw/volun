@@ -5,7 +5,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("users", "0005_add_moderator_role_volunteerhours"),
+        ("users", "0006_add_moderator_role_volunteerhours"),
     ]
 
     operations = [

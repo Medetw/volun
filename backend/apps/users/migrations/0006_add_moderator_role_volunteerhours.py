@@ -2,12 +2,11 @@ from django.conf import settings
 from django.db import migrations, models
 import django.core.validators
 import django.db.models.deletion
-import django.utils.timezone
 
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("users", "0004_alter_organizationprofile_organization_type"),
+        ("users", "0005_alter_user_avatar_alter_volunteercertificate_file"),
     ]
 
     operations = [
