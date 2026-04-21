@@ -36,6 +36,15 @@
           >
             Новости
           </router-link>
+          <!-- Admin / Moderator only (Block 6) -->
+          <router-link
+            v-if="authStore.isAdmin || authStore.isModerator"
+            to="/volunteers"
+            class="nav-link"
+            :class="{ 'nav-link-active': $route.name === 'VolunteersTable' }"
+          >
+            Волонтёры
+          </router-link>
         </nav>
 
         <!-- User menu -->

@@ -26,6 +26,8 @@ const Profile = () => import('@/views/profile/Profile.vue')
 const MyApplications = () => import('@/views/applications/MyApplications.vue')
 const OrganizationApplications = () => import('@/views/applications/OrganizationApplications.vue')
 
+const VolunteersTable = () => import('@/views/volunteers/VolunteersTable.vue')
+
 const Notifications = () => import('@/views/notifications/Notifications.vue')
 const Reports = () => import('@/views/reports/Reports.vue')
 const CreateReport = () => import('@/views/reports/CreateReport.vue')
@@ -172,6 +174,14 @@ const router = createRouter({
       name: 'EditProject',
       component: EditProject,
       meta: { title: 'Редактировать проект', requiresAuth: true, roles: ['organization'] }
+    },
+
+    // Volunteers table (admin/moderator only) — Block 6
+    {
+      path: '/volunteers',
+      name: 'VolunteersTable',
+      component: VolunteersTable,
+      meta: { title: 'Волонтёры', requiresAuth: true, roles: ['admin', 'moderator'] }
     },
 
     // Notifications

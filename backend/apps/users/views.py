@@ -176,11 +176,13 @@ class VolunteerListView(views.APIView):
             role=UserRole.VOLUNTEER, is_active=True
         ).select_related('volunteer_profile').order_by('username')
         if search:
+            # Экранируем LIKE-wildcards чтобы пользователь не мог вводить % и _ как шаблон
+            escaped = search.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
             volunteers = volunteers.filter(
-                models.Q(username__icontains=search) |
-                models.Q(email__icontains=search) |
-                models.Q(volunteer_profile__first_name__icontains=search) |
-                models.Q(volunteer_profile__last_name__icontains=search)
+                models.Q(username__icontains=escaped) |
+                models.Q(email__icontains=escaped) |
+                models.Q(volunteer_profile__first_name__icontains=escaped) |
+                models.Q(volunteer_profile__last_name__icontains=escaped)
             )
 
         # Получаем активные баны одним запросом
