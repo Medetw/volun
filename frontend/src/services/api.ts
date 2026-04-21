@@ -196,16 +196,16 @@ class ApiService {
     return response.data
   }
 
-  // Categories endpoints
-  async getCategories(): Promise<ApiResponse<{ id: number; name: string; description: string }>> {
+  // Categories endpoints — backend returns plain array (pagination_class = None)
+  async getCategories(): Promise<{ id: number; name: string; description: string }[]> {
     const response = await this.api.get('/projects/categories/')
-    return response.data
+    return Array.isArray(response.data) ? response.data : (response.data.results ?? [])
   }
 
-  // Regions endpoints
-  async getRegions(): Promise<ApiResponse<{ id: number; name: string; code: string }>> {
+  // Regions endpoints — backend returns plain array (pagination_class = None)
+  async getRegions(): Promise<{ id: number; name: string; code: string }[]> {
     const response = await this.api.get('/projects/regions/')
-    return response.data
+    return Array.isArray(response.data) ? response.data : (response.data.results ?? [])
   }
 
   // Applications endpoints
@@ -266,6 +266,22 @@ class ApiService {
 
   async deleteNews(id: number): Promise<void> {
     await this.api.delete(`/news/${id}/`)
+  }
+
+  async getFeaturedNews(): Promise<News[]> {
+    const response: AxiosResponse<News[]> = await this.api.get('/news/featured/')
+    return response.data
+  }
+
+  // Hardcoded news categories (enum choices on backend, no separate endpoint)
+  getNewsCategories(): { id: string; name: string }[] {
+    return [
+      { id: 'general', name: 'Общие новости' },
+      { id: 'events', name: 'Мероприятия' },
+      { id: 'announcements', name: 'Объявления' },
+      { id: 'success_stories', name: 'Истории успеха' },
+      { id: 'partners', name: 'Партнеры' },
+    ]
   }
 
   // Statistics endpoints

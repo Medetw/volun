@@ -47,13 +47,13 @@ def register_volunteer(request):
         )
         
         return Response({
-            'user': UserSerializer(user).data,
+            'user': UserSerializer(user, context={'request': request}).data,
             'tokens': {
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             }
         }, status=status.HTTP_201_CREATED)
-    
+
     logger.warning(f"Volunteer registration failed: {serializer.errors}")
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -90,7 +90,7 @@ def register_organization(request):
         )
 
         return Response({
-            'user': UserSerializer(user).data,
+            'user': UserSerializer(user, context={'request': request}).data,
             'tokens': {
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
@@ -130,13 +130,13 @@ def login(request):
         )
         
         return Response({
-            'user': UserSerializer(user).data,
+            'user': UserSerializer(user, context={'request': request}).data,
             'tokens': {
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             }
         }, status=status.HTTP_200_OK)
-    
+
     log_authentication_attempt(request, success=False, username=email)
     logger.warning(f"Login failed for {email}: {serializer.errors}")
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -154,7 +154,7 @@ def login(request):
 @permission_classes([IsAuthenticated])
 def get_current_user(request):
     """Get current authenticated user profile."""
-    serializer = UserSerializer(request.user)
+    serializer = UserSerializer(request.user, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -185,7 +185,7 @@ def update_current_user(request):
             user_id=request.user.id,
             details={'updated_fields': list(request.data.keys())}
         )
-        return Response(UserSerializer(request.user).data, status=status.HTTP_200_OK)
+        return Response(UserSerializer(request.user, context={'request': request}).data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

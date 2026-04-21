@@ -471,11 +471,12 @@ const debouncedSearch = () => {
 const loadProjects = async () => {
   try {
     loading.value = true
-    
-    const params = {
-      ...filters,
-      page: pagination.currentPage
-    }
+
+    // strip empty strings so backend filters aren't confused
+    const params: Record<string, unknown> = { page: pagination.currentPage }
+    Object.entries(filters).forEach(([k, v]) => {
+      if (v !== '' && v !== null && v !== undefined) params[k] = v
+    })
     
     const response = await apiService.getProjects(params)
     projects.value = response.results
@@ -497,8 +498,7 @@ const loadProjects = async () => {
 
 const loadCategories = async () => {
   try {
-    const response = await apiService.getCategories()
-    categories.value = response.results
+    categories.value = await apiService.getCategories()
   } catch (error) {
     console.error('Failed to load categories:', error)
   }
@@ -506,8 +506,7 @@ const loadCategories = async () => {
 
 const loadRegions = async () => {
   try {
-    const response = await apiService.getRegions()
-    regions.value = response.results
+    regions.value = await apiService.getRegions()
   } catch (error) {
     console.error('Failed to load regions:', error)
   }

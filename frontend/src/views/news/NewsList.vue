@@ -335,14 +335,22 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import apiService from '@/services/api'
-import type { News, Category } from '@/types/api'
+import type { News } from '@/types/api'
 
 const router = useRouter()
 
 const news = ref<News[]>([])
 const featuredNews = ref<News[]>([])
-const categories = ref<Category[]>([])
 const loading = ref(false)
+
+// Категории — enum на бэкенде, не отдельная таблица
+const categories = [
+  { id: 'general', name: 'Общие новости' },
+  { id: 'events', name: 'Мероприятия' },
+  { id: 'announcements', name: 'Объявления' },
+  { id: 'success_stories', name: 'Истории успеха' },
+  { id: 'partners', name: 'Партнеры' },
+]
 
 const filters = reactive({
   category: '',
@@ -365,7 +373,6 @@ onMounted(async () => {
   await Promise.all([
     loadNews(),
     loadFeaturedNews(),
-    loadCategories()
   ])
 })
 
@@ -407,22 +414,9 @@ const loadNews = async () => {
 
 const loadFeaturedNews = async () => {
   try {
-    const response = await apiService.getNews({
-      is_featured: true,
-      limit: 2
-    })
-    featuredNews.value = response.results
+    featuredNews.value = await apiService.getFeaturedNews()
   } catch (error) {
     console.error('Failed to load featured news:', error)
-  }
-}
-
-const loadCategories = async () => {
-  try {
-    const response = await apiService.getNewsCategories()
-    categories.value = response.results
-  } catch (error) {
-    console.error('Failed to load categories:', error)
   }
 }
 
