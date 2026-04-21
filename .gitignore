@@ -1,4 +1,6 @@
 .venv/
+venv/
+test_env/
 __pycache__/
 *.py[cod]
 *.sqlite3
@@ -11,4 +13,9 @@ node_modules/
 dist/
 build/
 *.log
+backend/staticfiles/
+backend/media/
+backend/htmlcov/
+backend/logs/
+.claude/
 
