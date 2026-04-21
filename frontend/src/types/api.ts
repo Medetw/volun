@@ -82,6 +82,20 @@ export interface Region {
   code: string
 }
 
+// Project participant (after close) — Block 5
+export interface ProjectParticipant {
+  volunteer_id: number
+  application_id: number
+  username: string
+  name: string
+  email: string
+  avatar: string | null
+  hours_committed: number
+  total_hours: number
+  is_banned: boolean
+  has_certificate: boolean
+}
+
 // Application types
 export interface Application {
   id: number

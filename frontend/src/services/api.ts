@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios'
 import type {
   User,
   Project,
+  ProjectParticipant,
   Application,
   News,
   Statistics,
@@ -193,6 +194,17 @@ class ApiService {
 
   async getMyProjects(): Promise<PaginatedResponse<Project>> {
     const response: AxiosResponse<PaginatedResponse<Project>> = await this.api.get('/projects/my/')
+    return response.data
+  }
+
+  // ---- Project close + participants (Block 5) ----
+  async closeProject(id: number): Promise<{ project: Project; participants: ProjectParticipant[] }> {
+    const response = await this.api.post(`/projects/projects/${id}/close/`)
+    return response.data
+  }
+
+  async getProjectParticipants(id: number): Promise<ProjectParticipant[]> {
+    const response = await this.api.get(`/projects/projects/${id}/participants/`)
     return response.data
   }
 

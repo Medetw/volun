@@ -262,7 +262,7 @@
               </div>
               
               <div
-                v-else
+                v-else-if="!canModerate"
                 class="space-y-3"
               >
                 <router-link
@@ -277,6 +277,24 @@
                 >
                   Зарегистрироваться
                 </router-link>
+              </div>
+
+              <!-- Admin / Moderator / Owner controls (Block 5) -->
+              <div v-if="canModerate" class="space-y-3 pt-3 border-t mt-3">
+                <button
+                  v-if="project.status !== 'completed'"
+                  class="btn btn-primary w-full"
+                  :disabled="closing"
+                  @click="handleCloseProject"
+                >
+                  {{ closing ? 'Закрытие...' : 'Закрыть проект' }}
+                </button>
+                <button
+                  class="btn btn-outline w-full"
+                  @click="showParticipantsModal = true"
+                >
+                  Участники проекта
+                </button>
               </div>
             </div>
 
@@ -393,15 +411,25 @@
         </div>
       </div>
     </div>
+
+    <!-- Participants Modal (Block 5) -->
+    <ParticipantsModal
+      v-if="project"
+      :open="showParticipantsModal"
+      :project-id="project.id"
+      :project-title="project.title"
+      @close="showParticipantsModal = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import apiService from '@/services/api'
 import type { Project } from '@/types/api'
+import ParticipantsModal from '@/components/ParticipantsModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -412,6 +440,15 @@ const loading = ref(true)
 const error = ref(false)
 const showApplyModal = ref(false)
 const applying = ref(false)
+const showParticipantsModal = ref(false)
+const closing = ref(false)
+
+const canModerate = computed(() => {
+  if (!authStore.isAuthenticated || !project.value) return false
+  if (authStore.isAdmin || authStore.isModerator) return true
+  // Owner of the project
+  return authStore.isOrganization && project.value.organization_name === authStore.user?.organization_profile?.name
+})
 
 const applicationForm = reactive({
   cover_letter: '',
@@ -489,6 +526,21 @@ const getFormatDisplay = (format: string) => {
 
 const getProgressPercentage = (project: Project) => {
   return ((project.volunteers_needed - project.volunteers_remaining) / project.volunteers_needed) * 100
+}
+
+const handleCloseProject = async () => {
+  if (!project.value) return
+  if (!confirm('Закрыть проект? Откроется таблица волонтёров для оценки часов и сертификатов.')) return
+  closing.value = true
+  try {
+    const result = await apiService.closeProject(project.value.id)
+    project.value = result.project
+    showParticipantsModal.value = true
+  } catch (e: any) {
+    alert(e?.response?.data?.error || 'Не удалось закрыть проект')
+  } finally {
+    closing.value = false
+  }
 }
 
 const formatDateRange = (startDate: string, endDate: string) => {

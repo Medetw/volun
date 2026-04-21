@@ -59,29 +59,29 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return ProjectDetailSerializer
 
     def get_queryset(self):
-        """Filter queryset based on query parameters."""
+        """
+        Видимость проектов:
+          - Гость: только active
+          - Волонтёр: active + draft (каталог)
+          - Организация: свои (любой статус) + active чужих
+          - Admin / moderator: всё
+        """
+        from django.db.models import Q
         queryset = super().get_queryset()
-        
-        # Filter by status (default: show active and draft for public, all for owner)
-        status_filter = self.request.query_params.get('status')
-        if not status_filter:
-            # For unauthenticated users, show only active projects
-            if not self.request.user.is_authenticated:
-                queryset = queryset.filter(status='active')
-            # For authenticated users, show active and draft
-            elif self.request.user.role != 'organization':
-                queryset = queryset.filter(status__in=['active', 'draft'])
-            # For organizations, show all their projects + active others
-            else:
-                # Show all projects, but we'll filter in list action
-                pass
-        
-        # Filter by organization (for organizations to see their projects)
-        if self.request.user.is_authenticated and self.request.user.role == 'organization':
+        user = self.request.user
+
+        if not user.is_authenticated:
+            queryset = queryset.filter(status='active')
+        elif user.role in ('admin', 'moderator'):
+            pass  # full access
+        elif user.role == 'organization':
+            queryset = queryset.filter(Q(organization=user) | Q(status='active'))
             my_projects = self.request.query_params.get('my', '').lower() == 'true'
             if my_projects:
-                queryset = queryset.filter(organization=self.request.user)
-        
+                queryset = queryset.filter(organization=user)
+        else:  # volunteer
+            queryset = queryset.filter(status__in=['active', 'draft'])
+
         return queryset
 
     @extend_schema(
@@ -161,12 +161,133 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 {'detail': 'Only organizations can access this endpoint.'},
                 status=status.HTTP_403_FORBIDDEN
             )
-        
+
         projects = self.get_queryset().filter(organization=request.user)
         page = self.paginate_queryset(projects)
         if page is not None:
             serializer = ProjectListSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        
+
         serializer = ProjectListSerializer(projects, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def close(self, request, pk=None):
+        """
+        Закрыть проект — перевести в статус COMPLETED.
+        Доступ: admin / moderator / организация-владелец.
+        Возвращает обновлённый проект + список одобренных волонтёров.
+        """
+        project = self.get_object()
+        user = request.user
+
+        is_admin_or_mod = user.role in ('admin', 'moderator')
+        is_owner = user == project.organization
+        if not (is_admin_or_mod or is_owner):
+            return Response(
+                {'error': 'Нет прав на закрытие этого проекта.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Атомарная смена статуса — защита от race condition
+        from apps.projects.models import Project as ProjectModel
+        updated = ProjectModel.objects.filter(
+            id=project.id
+        ).exclude(status='completed').update(status='completed')
+        if updated == 0:
+            return Response(
+                {'error': 'Проект уже закрыт.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        project.refresh_from_db()
+
+        logger.user_action(
+            action="PROJECT_CLOSED",
+            user_id=user.id,
+            details={'project_id': project.id, 'title': project.title}
+        )
+        return Response({
+            'project': ProjectDetailSerializer(project, context={'request': request}).data,
+            'participants': self._participants_payload(project, request),
+        })
+
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated])
+    def participants(self, request, pk=None):
+        """
+        Список одобренных волонтёров проекта с их данными:
+        hours_committed, total_hours, is_banned, has_certificate.
+        Доступ: admin / moderator / организация-владелец.
+        """
+        project = self.get_object()
+        user = request.user
+
+        is_admin_or_mod = user.role in ('admin', 'moderator')
+        is_owner = user == project.organization
+        if not (is_admin_or_mod or is_owner):
+            return Response(
+                {'error': 'Нет прав на просмотр участников.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        return Response(self._participants_payload(project, request))
+
+    def _participants_payload(self, project, request):
+        """Собрать данные участников проекта одним методом (используется в close и participants)."""
+        from django.db.models import Sum, Q
+        from django.utils import timezone as tz
+        from apps.users.models import Blacklist, VolunteerHoursLog, VolunteerCertificate
+
+        apps_qs = (
+            project.applications
+            .filter(status='approved')
+            .select_related('volunteer__volunteer_profile')
+        )
+        volunteer_ids = [a.volunteer_id for a in apps_qs]
+
+        # Активные баны (с учётом срока)
+        now = tz.now()
+        banned_ids = set(
+            Blacklist.objects
+            .filter(volunteer_id__in=volunteer_ids, is_active=True)
+            .filter(Q(banned_until__isnull=True) | Q(banned_until__gt=now))
+            .values_list('volunteer_id', flat=True)
+        )
+
+        # Суммарные часы на этом проекте
+        hours_by_vol = {
+            r['volunteer_id']: r['total'] or 0
+            for r in VolunteerHoursLog.objects
+            .filter(volunteer_id__in=volunteer_ids)
+            .values('volunteer_id')
+            .annotate(total=Sum('hours'))
+        }
+
+        # Есть ли сертификат на этот проект
+        cert_vols = set(
+            VolunteerCertificate.objects
+            .filter(volunteer_id__in=volunteer_ids, project=project)
+            .values_list('volunteer_id', flat=True)
+        )
+
+        result = []
+        for app in apps_qs:
+            v = app.volunteer
+            profile = getattr(v, 'volunteer_profile', None)
+            name = f"{profile.first_name} {profile.last_name}".strip() if profile else ''
+            avatar_url = None
+            if v.avatar:
+                req_obj = request._request if hasattr(request, '_request') else request
+                avatar_url = req_obj.build_absolute_uri(v.avatar.url)
+            result.append({
+                'volunteer_id': v.id,
+                'application_id': app.id,
+                'username': v.username,
+                'name': name or v.username,
+                'email': v.email,
+                'avatar': avatar_url,
+                'hours_committed': app.hours_committed,
+                'total_hours': hours_by_vol.get(v.id, 0),
+                'is_banned': v.id in banned_ids,
+                'has_certificate': v.id in cert_vols,
+            })
+        return result
