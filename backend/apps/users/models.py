@@ -140,6 +140,57 @@ class ModeratorProfile(models.Model):
         return bool(getattr(self, perm, False))
 
 
+class Blacklist(models.Model):
+    """
+    Чёрный список волонтёров.
+    Один активный бан на волонтёра одновременно (UniqueConstraint).
+    Причина — обязательна.
+    """
+    volunteer = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        related_name='blacklist_entries',
+        verbose_name="Волонтёр"
+    )
+    reason = models.TextField(verbose_name="Причина")
+    banned_until = models.DateTimeField(
+        null=True, blank=True,
+        verbose_name="Заблокирован до",
+        help_text="Пусто — бессрочно",
+        db_index=True,
+    )
+    banned_by = models.ForeignKey(
+        User, on_delete=models.SET_NULL,
+        null=True, related_name='bans_issued',
+        verbose_name="Кем заблокирован"
+    )
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата блокировки")
+
+    class Meta:
+        verbose_name = "ЧС запись"
+        verbose_name_plural = "ЧС записи"
+        ordering = ['-created_at']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['volunteer'],
+                condition=models.Q(is_active=True),
+                name='unique_active_ban_per_volunteer'
+            )
+        ]
+
+    def is_currently_banned(self) -> bool:
+        """Бан активен и не истёк."""
+        if not self.is_active:
+            return False
+        if self.banned_until is None:
+            return True  # бессрочный
+        from django.utils import timezone
+        return self.banned_until > timezone.now()
+
+    def __str__(self) -> str:
+        return f"Blacklist({self.volunteer.username}, active={self.is_active})"
+
+
 class VolunteerHoursLog(models.Model):
     """Журнал учёта волонтёрских часов (вносит модератор)."""
     volunteer = models.ForeignKey(

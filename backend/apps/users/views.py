@@ -3,13 +3,15 @@ from datetime import timedelta
 from django.db.models import Sum
 from django.utils import timezone
 from rest_framework import viewsets, permissions, views, status
+from rest_framework.decorators import action
+from django.db import models
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 
-from apps.users.models import User, UserRole, VolunteerCertificate, VolunteerHoursLog, VolunteerProfile, ModeratorProfile
+from apps.users.models import User, UserRole, VolunteerCertificate, VolunteerHoursLog, VolunteerProfile, ModeratorProfile, Blacklist
 from apps.users.serializers import (
     VolunteerCertificateSerializer, VolunteerHoursLogSerializer,
-    ModeratorProfileSerializer,
+    ModeratorProfileSerializer, BlacklistSerializer,
 )
 from apps.users.permissions import IsAdminOrModerator, ModeratorPermission
 from apps.core.logging import logger
@@ -169,9 +171,30 @@ class VolunteerListView(views.APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
+        search = request.query_params.get('search', '').strip()
         volunteers = User.objects.filter(
             role=UserRole.VOLUNTEER, is_active=True
         ).select_related('volunteer_profile').order_by('username')
+        if search:
+            volunteers = volunteers.filter(
+                models.Q(username__icontains=search) |
+                models.Q(email__icontains=search) |
+                models.Q(volunteer_profile__first_name__icontains=search) |
+                models.Q(volunteer_profile__last_name__icontains=search)
+            )
+
+        # Получаем активные баны одним запросом
+        from apps.users.models import Blacklist
+        from django.utils import timezone as tz
+        now = tz.now()
+        banned_ids = set(
+            Blacklist.objects.filter(
+                volunteer__in=volunteers,
+                is_active=True,
+            ).filter(
+                models.Q(banned_until__isnull=True) | models.Q(banned_until__gt=now)
+            ).values_list('volunteer_id', flat=True)
+        )
 
         data = []
         for v in volunteers:
@@ -185,6 +208,7 @@ class VolunteerListView(views.APIView):
                 'city': profile.city if profile else '',
                 'region': profile.region if profile else '',
                 'volunteer_hours': profile.volunteer_hours if profile else 0,
+                'is_banned': v.id in banned_ids,
             })
         return Response(data)
 
@@ -207,6 +231,84 @@ class ModeratorProfileView(views.APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+class BlacklistViewSet(viewsets.ModelViewSet):
+    """
+    ЧС — чёрный список волонтёров.
+    Доступ: только admin / moderator.
+    POST   /blacklist/          — добавить волонтёра (reason обязателен)
+    GET    /blacklist/          — список всех записей
+    GET    /blacklist/{id}/     — конкретная запись
+    POST   /blacklist/{id}/unban/ — снять с ЧС
+    GET    /blacklist/check/?volunteer_id=N — проверить статус
+    """
+    serializer_class = BlacklistSerializer
+    permission_classes = [IsAdminOrModerator]
+
+    def get_queryset(self):
+        return Blacklist.objects.select_related(
+            'volunteer__volunteer_profile', 'banned_by'
+        ).all()
+
+    def perform_create(self, serializer):
+        serializer.save(banned_by=self.request.user, is_active=True)
+        logger.user_action(
+            action="BLACKLIST_BAN",
+            user_id=self.request.user.id,
+            details={
+                'volunteer_id': serializer.instance.volunteer_id,
+                'reason': serializer.instance.reason,
+                'banned_until': str(serializer.instance.banned_until),
+            }
+        )
+
+    @action(detail=False, methods=['get'])
+    def check(self, request):
+        """Проверить, находится ли волонтёр в ЧС. ?volunteer_id=N"""
+        raw = request.query_params.get('volunteer_id')
+        if not raw:
+            return Response(
+                {'error': 'Параметр volunteer_id обязателен'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            volunteer_id = int(raw)
+        except (TypeError, ValueError):
+            return Response(
+                {'error': 'volunteer_id должен быть целым числом'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # is_currently_banned() проверяет и is_active, и banned_until
+        # Фильтр is_active=True — оптимизация: не загружать неактивные записи
+        entry = Blacklist.objects.filter(
+            volunteer_id=volunteer_id, is_active=True
+        ).select_related('volunteer__volunteer_profile', 'banned_by').first()
+
+        if entry and entry.is_currently_banned():
+            return Response({
+                'is_banned': True,
+                'entry': BlacklistSerializer(entry).data,
+            })
+        return Response({'is_banned': False})
+
+    @action(detail=True, methods=['post'])
+    def unban(self, request, pk=None):
+        """Снять волонтёра с ЧС (атомарно — защита от race condition)."""
+        entry = self.get_object()
+        updated = Blacklist.objects.filter(id=entry.id, is_active=True).update(is_active=False)
+        if updated == 0:
+            return Response(
+                {'error': 'Запись уже неактивна'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        logger.user_action(
+            action="BLACKLIST_UNBAN",
+            user_id=request.user.id,
+            details={'volunteer_id': entry.volunteer_id, 'ban_id': entry.id}
+        )
+        return Response({'message': 'Волонтёр удалён из ЧС.'})
 
 
 class VolunteerOfWeekAPIView(views.APIView):

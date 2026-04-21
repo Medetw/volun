@@ -7,11 +7,13 @@ from apps.users.views import (
     VolunteerListView,
     VolunteerOfWeekAPIView,
     ModeratorProfileView,
+    BlacklistViewSet,
 )
 
 router = DefaultRouter()
 router.register('certificates', VolunteerCertificateViewSet, basename='certificates')
 router.register('hours', VolunteerHoursViewSet, basename='volunteer-hours')
+router.register('blacklist', BlacklistViewSet, basename='blacklist')
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -433,13 +433,41 @@ class ApiService {
     await this.api.delete(`/users/hours/${id}/`)
   }
 
-  async getVolunteerList(): Promise<{ id: number; username: string; name: string; email: string; city: string; volunteer_hours: number }[]> {
-    const response = await this.api.get('/users/volunteers/')
+  async getVolunteerList(params?: { search?: string }): Promise<{
+    id: number; username: string; name: string; email: string
+    city: string; region: string; volunteer_hours: number; is_banned: boolean
+  }[]> {
+    const response = await this.api.get('/users/volunteers/', { params })
     return response.data
   }
 
   async getModeratorProfile(): Promise<any> {
     const response = await this.api.get('/users/moderator/profile/')
+    return response.data
+  }
+
+  // ---- Blacklist (ЧС) ----
+  async getBlacklist(): Promise<any> {
+    const response = await this.api.get('/users/blacklist/')
+    return response.data
+  }
+
+  async banVolunteer(data: {
+    volunteer: number
+    reason: string
+    banned_until?: string | null
+  }): Promise<any> {
+    const response = await this.api.post('/users/blacklist/', data)
+    return response.data
+  }
+
+  async unbanVolunteer(id: number): Promise<any> {
+    const response = await this.api.post(`/users/blacklist/${id}/unban/`)
+    return response.data
+  }
+
+  async checkBlacklist(volunteerId: number): Promise<{ is_banned: boolean; entry?: any }> {
+    const response = await this.api.get(`/users/blacklist/check/?volunteer_id=${volunteerId}`)
     return response.data
   }
 
