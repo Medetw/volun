@@ -458,6 +458,30 @@ class ApiService {
     return response.data
   }
 
+  // ---- Moderator management (Block 7, admin only) ----
+  async listModerators(): Promise<Array<{
+    id: number; username: string; email: string; department: string;
+    can_view_volunteers: boolean; can_manage_hours: boolean; can_manage_certificates: boolean;
+  }>> {
+    const response = await this.api.get('/users/moderators/')
+    return response.data
+  }
+
+  async createModerator(data: {
+    username: string; email: string; password: string;
+    department?: string;
+    can_view_volunteers?: boolean;
+    can_manage_hours?: boolean;
+    can_manage_certificates?: boolean;
+  }): Promise<{ id: number; username: string; email: string; department: string }> {
+    const response = await this.api.post('/users/moderators/', data)
+    return response.data
+  }
+
+  async removeModerator(id: number): Promise<void> {
+    await this.api.delete(`/users/moderators/${id}/`)
+  }
+
   // ---- Blacklist (ЧС) ----
   async getBlacklist(): Promise<any> {
     const response = await this.api.get('/users/blacklist/')

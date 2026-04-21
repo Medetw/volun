@@ -28,6 +28,7 @@ const MyApplications = () => import('@/views/applications/MyApplications.vue')
 const OrganizationApplications = () => import('@/views/applications/OrganizationApplications.vue')
 
 const VolunteersTable = () => import('@/views/volunteers/VolunteersTable.vue')
+const AdminModerators = () => import('@/views/admin/Moderators.vue')
 
 const Notifications = () => import('@/views/notifications/Notifications.vue')
 const Reports = () => import('@/views/reports/Reports.vue')
@@ -183,6 +184,14 @@ const router = createRouter({
       name: 'CreateNews',
       component: CreateNews,
       meta: { title: 'Создать новость', requiresAuth: true, roles: ['admin', 'moderator'] }
+    },
+
+    // Admin — модераторы (Block 7)
+    {
+      path: '/admin/moderators',
+      name: 'AdminModerators',
+      component: AdminModerators,
+      meta: { title: 'Модераторы', requiresAuth: true, roles: ['admin'] }
     },
 
     // Volunteers table (admin/moderator only) — Block 6

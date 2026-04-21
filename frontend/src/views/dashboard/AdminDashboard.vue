@@ -186,6 +186,12 @@
           >
             Управление
           </router-link>
+          <router-link
+            to="/admin/moderators"
+            class="btn btn-outline w-full mt-2"
+          >
+            Модераторы
+          </router-link>
         </div>
 
         <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">

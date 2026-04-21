@@ -7,6 +7,8 @@ from apps.users.views import (
     VolunteerListView,
     VolunteerOfWeekAPIView,
     ModeratorProfileView,
+    ModeratorManagementView,
+    ModeratorDetailView,
     BlacklistViewSet,
 )
 
@@ -20,4 +22,6 @@ urlpatterns = [
     path('volunteers/', VolunteerListView.as_view(), name='volunteer-list'),
     path('volunteer-of-week/', VolunteerOfWeekAPIView.as_view(), name='volunteer-of-week'),
     path('moderator/profile/', ModeratorProfileView.as_view(), name='moderator-profile'),
+    path('moderators/', ModeratorManagementView.as_view(), name='moderator-management'),
+    path('moderators/<int:pk>/', ModeratorDetailView.as_view(), name='moderator-detail'),
 ]
