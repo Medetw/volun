@@ -16,6 +16,7 @@ const EditProject = () => import('@/views/projects/EditProject.vue')
 
 const NewsList = () => import('@/views/news/NewsList.vue')
 const NewsDetail = () => import('@/views/news/NewsDetail.vue')
+const CreateNews = () => import('@/views/news/CreateNews.vue')
 
 const VolunteerDashboard = () => import('@/views/dashboard/VolunteerDashboard.vue')
 const OrganizationDashboard = () => import('@/views/dashboard/OrganizationDashboard.vue')
@@ -167,13 +168,21 @@ const router = createRouter({
       path: '/projects/create',
       name: 'CreateProject',
       component: CreateProject,
-      meta: { title: 'Создать проект', requiresAuth: true, roles: ['organization'] }
+      meta: { title: 'Создать проект', requiresAuth: true, roles: ['organization', 'admin', 'moderator'] }
     },
     {
       path: '/projects/:id/edit',
       name: 'EditProject',
       component: EditProject,
-      meta: { title: 'Редактировать проект', requiresAuth: true, roles: ['organization'] }
+      meta: { title: 'Редактировать проект', requiresAuth: true, roles: ['organization', 'admin', 'moderator'] }
+    },
+
+    // Create news (admin/moderator) — Block 3
+    {
+      path: '/news/create',
+      name: 'CreateNews',
+      component: CreateNews,
+      meta: { title: 'Создать новость', requiresAuth: true, roles: ['admin', 'moderator'] }
     },
 
     // Volunteers table (admin/moderator only) — Block 6

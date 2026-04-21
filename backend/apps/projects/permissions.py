@@ -4,35 +4,29 @@ from apps.projects.models import Project
 
 class IsOrganizationOrReadOnly(permissions.BasePermission):
     """
-    Permission class:
-    - Read-only for everyone (including unauthenticated)
-    - Create/Update/Delete only for organizations
+    - Read: всем
+    - Write: организация / модератор / админ
     """
-    
+
     def has_permission(self, request, view):
-        # Read permissions are allowed for any request
         if request.method in permissions.SAFE_METHODS:
             return True
-        
-        # Write permissions only for authenticated organizations
         return (
             request.user and
             request.user.is_authenticated and
-            request.user.role == 'organization'
+            request.user.role in ('organization', 'moderator', 'admin')
         )
 
 
 class IsProjectOwnerOrReadOnly(permissions.BasePermission):
     """
-    Permission class:
-    - Read-only for everyone
-    - Update/Delete only for project owner (organization)
+    - Read: всем
+    - Update/Delete: владелец проекта, либо admin/moderator
     """
-    
+
     def has_object_permission(self, request, view, obj):
-        # Read permissions are allowed for any request
         if request.method in permissions.SAFE_METHODS:
             return True
-        
-        # Write permissions only for project owner
+        if request.user.role in ('admin', 'moderator'):
+            return True
         return obj.organization == request.user

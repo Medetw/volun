@@ -12,6 +12,14 @@
               Будьте в курсе событий платформы
             </p>
           </div>
+          <!-- Block 3: кнопка для admin/moderator -->
+          <router-link
+            v-if="canCreateNews"
+            to="/news/create"
+            class="btn btn-primary"
+          >
+            + Создать новость
+          </router-link>
         </div>
       </div>
     </div>
@@ -332,10 +340,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import apiService from '@/services/api'
 import type { News } from '@/types/api'
+
+const authStore = useAuthStore()
+const canCreateNews = computed(() => authStore.isAdmin || authStore.isModerator)
 
 const router = useRouter()
 

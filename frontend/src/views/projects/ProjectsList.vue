@@ -12,8 +12,19 @@
               Найдите проекты, которые вам интересны
             </p>
           </div>
-          
+
           <div class="flex flex-col sm:flex-row gap-3">
+            <!-- Block 1/2: кнопка для admin/moderator/organization -->
+            <router-link
+              v-if="canCreateProject"
+              to="/projects/create"
+              class="btn btn-primary flex items-center justify-center"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Создать проект
+            </router-link>
             <button
               class="btn btn-outline flex items-center justify-center"
               @click="showFilters = !showFilters"
@@ -413,7 +424,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import apiService from '@/services/api'
@@ -455,6 +466,10 @@ onMounted(async () => {
     loadRegions()
   ])
 })
+
+const canCreateProject = computed(() =>
+  authStore.isAuthenticated && ['organization', 'admin', 'moderator'].includes(authStore.user?.role || '')
+)
 
 const activeFiltersCount = computed(() => {
   return Object.values(filters).filter(value => value !== '').length

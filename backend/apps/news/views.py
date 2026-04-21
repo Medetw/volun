@@ -28,25 +28,43 @@ class NewsViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     def perform_create(self, serializer):
-        """Только админы могут создавать новости."""
-        if self.request.user.role != 'admin':
-            from rest_framework.exceptions import PermissionDenied
-            raise PermissionDenied("Только администраторы могут создавать новости")
+        """Создавать могут admin и moderator. Флаг featured (реклама) — только admin."""
+        from rest_framework.exceptions import PermissionDenied
+        user = self.request.user
+        if user.role not in ('admin', 'moderator'):
+            raise PermissionDenied("Только администраторы и модераторы могут создавать новости")
+        # Только admin может ставить featured=True (реклама)
+        if user.role != 'admin' and serializer.validated_data.get('featured'):
+            raise PermissionDenied("Только администраторы могут публиковать рекламу (featured)")
         with transaction.atomic():
-            serializer.save(author=self.request.user)
+            serializer.save(author=user)
 
     def perform_update(self, serializer):
-        """Только админы могут редактировать новости."""
-        if self.request.user.role != 'admin':
-            from rest_framework.exceptions import PermissionDenied
-            raise PermissionDenied("Только администраторы могут редактировать новости")
+        """Редактировать: admin — всё, moderator — только свои новости, featured только admin."""
+        from rest_framework.exceptions import PermissionDenied
+        user = self.request.user
+        instance = serializer.instance
+        if user.role == 'admin':
+            pass
+        elif user.role == 'moderator':
+            if instance.author_id != user.id:
+                raise PermissionDenied("Модератор может редактировать только свои новости")
+            if serializer.validated_data.get('featured'):
+                raise PermissionDenied("Только администраторы могут устанавливать featured")
+        else:
+            raise PermissionDenied("Только администраторы и модераторы могут редактировать новости")
         serializer.save()
 
     def perform_destroy(self, instance):
-        """Только админы могут удалять новости."""
-        if self.request.user.role != 'admin':
-            from rest_framework.exceptions import PermissionDenied
-            raise PermissionDenied("Только администраторы могут удалять новости")
+        """Удалять: admin — всё, moderator — только свои новости."""
+        from rest_framework.exceptions import PermissionDenied
+        user = self.request.user
+        if user.role == 'admin':
+            pass
+        elif user.role == 'moderator' and instance.author_id == user.id:
+            pass
+        else:
+            raise PermissionDenied("Нет прав на удаление этой новости")
         instance.delete()
     
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]

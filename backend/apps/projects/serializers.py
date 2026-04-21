@@ -26,9 +26,18 @@ class ProjectListSerializer(serializers.ModelSerializer):
     """Serializer for project list (short version)."""
     category = CategorySerializer(read_only=True)
     region = RegionSerializer(read_only=True)
-    organization_name = serializers.CharField(source='organization.organization_profile.name', read_only=True)
+    organization_name = serializers.SerializerMethodField()
     volunteers_count = serializers.IntegerField(read_only=True)
     volunteers_remaining = serializers.IntegerField(read_only=True)
+
+    def get_organization_name(self, obj):
+        """Поддерживает проекты от admin/moderator (без organization_profile)."""
+        org = obj.organization
+        profile = getattr(org, 'organization_profile', None)
+        if profile:
+            return profile.name
+        # admin/moderator/пользователь без профиля — показываем username
+        return org.username if org else ''
     
     class Meta:
         model = Project
