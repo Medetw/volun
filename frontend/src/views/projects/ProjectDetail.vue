@@ -280,7 +280,10 @@
               </div>
 
               <!-- Admin / Moderator / Owner controls (Block 5) -->
-              <div v-if="canModerate" class="space-y-3 pt-3 border-t mt-3">
+              <div
+                v-if="canModerate"
+                class="space-y-3 pt-3 border-t mt-3"
+              >
                 <button
                   v-if="project.status !== 'completed'"
                   class="btn btn-primary w-full"

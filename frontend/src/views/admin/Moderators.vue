@@ -3,58 +3,122 @@
     <div class="container-custom max-w-5xl">
       <div class="flex justify-between items-center mb-6">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Управление модераторами</h1>
-          <p class="text-gray-600 mt-1">Добавляйте новых модераторов и управляйте их правами</p>
+          <h1 class="text-2xl font-bold text-gray-900">
+            Управление модераторами
+          </h1>
+          <p class="text-gray-600 mt-1">
+            Добавляйте новых модераторов и управляйте их правами
+          </p>
         </div>
-        <button class="btn btn-primary" @click="showForm = !showForm">
+        <button
+          class="btn btn-primary"
+          @click="showForm = !showForm"
+        >
           {{ showForm ? 'Скрыть форму' : '+ Добавить модератора' }}
         </button>
       </div>
 
-      <div v-if="message" class="mb-4 p-3 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+      <div
+        v-if="message"
+        class="mb-4 p-3 bg-green-50 border border-green-200 rounded text-sm text-green-700"
+      >
         {{ message }}
       </div>
-      <div v-if="errorMsg" class="mb-4 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+      <div
+        v-if="errorMsg"
+        class="mb-4 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700"
+      >
         {{ errorMsg }}
       </div>
 
       <!-- Create form -->
-      <div v-if="showForm" class="bg-white p-6 rounded-lg shadow mb-6">
-        <h2 class="text-lg font-semibold mb-4">Новый модератор</h2>
-        <form class="grid grid-cols-1 md:grid-cols-2 gap-4" @submit.prevent="submit">
+      <div
+        v-if="showForm"
+        class="bg-white p-6 rounded-lg shadow mb-6"
+      >
+        <h2 class="text-lg font-semibold mb-4">
+          Новый модератор
+        </h2>
+        <form
+          class="grid grid-cols-1 md:grid-cols-2 gap-4"
+          @submit.prevent="submit"
+        >
           <div>
             <label class="form-label">Username *</label>
-            <input v-model="form.username" type="text" class="form-input w-full" required />
+            <input
+              v-model="form.username"
+              type="text"
+              class="form-input w-full"
+              required
+            >
           </div>
           <div>
             <label class="form-label">Email *</label>
-            <input v-model="form.email" type="email" class="form-input w-full" required />
+            <input
+              v-model="form.email"
+              type="email"
+              class="form-input w-full"
+              required
+            >
           </div>
           <div>
             <label class="form-label">Пароль * (мин. 8 символов)</label>
-            <input v-model="form.password" type="password" class="form-input w-full" minlength="8" required />
+            <input
+              v-model="form.password"
+              type="password"
+              class="form-input w-full"
+              minlength="8"
+              required
+            >
           </div>
           <div>
             <label class="form-label">Отдел / направление</label>
-            <input v-model="form.department" type="text" class="form-input w-full" placeholder="Например: IT, SMM, Ивенты" />
+            <input
+              v-model="form.department"
+              type="text"
+              class="form-input w-full"
+              placeholder="Например: IT, SMM, Ивенты"
+            >
           </div>
           <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-3 bg-gray-50 p-3 rounded">
             <label class="flex items-center gap-2">
-              <input v-model="form.can_view_volunteers" type="checkbox" class="h-4 w-4" />
+              <input
+                v-model="form.can_view_volunteers"
+                type="checkbox"
+                class="h-4 w-4"
+              >
               <span class="text-sm">Просмотр волонтёров</span>
             </label>
             <label class="flex items-center gap-2">
-              <input v-model="form.can_manage_hours" type="checkbox" class="h-4 w-4" />
+              <input
+                v-model="form.can_manage_hours"
+                type="checkbox"
+                class="h-4 w-4"
+              >
               <span class="text-sm">Учёт часов</span>
             </label>
             <label class="flex items-center gap-2">
-              <input v-model="form.can_manage_certificates" type="checkbox" class="h-4 w-4" />
+              <input
+                v-model="form.can_manage_certificates"
+                type="checkbox"
+                class="h-4 w-4"
+              >
               <span class="text-sm">Выдача сертификатов</span>
             </label>
           </div>
           <div class="md:col-span-2 flex gap-3 justify-end">
-            <button type="button" class="btn btn-outline" @click="showForm = false">Отмена</button>
-            <button type="submit" :disabled="submitting" class="btn btn-primary">
+            <button
+              type="button"
+              class="btn btn-outline"
+              @click="showForm = false"
+            >
+              Отмена
+            </button>
+            <button
+              type="submit"
+              :disabled="submitting"
+              class="btn btn-primary"
+            >
               {{ submitting ? 'Создание...' : 'Создать' }}
             </button>
           </div>
@@ -63,29 +127,69 @@
 
       <!-- List -->
       <div class="bg-white rounded-lg shadow overflow-hidden">
-        <div v-if="loading" class="p-12 text-center text-gray-500">Загрузка...</div>
-        <div v-else-if="moderators.length === 0" class="p-12 text-center text-gray-500">
+        <div
+          v-if="loading"
+          class="p-12 text-center text-gray-500"
+        >
+          Загрузка...
+        </div>
+        <div
+          v-else-if="moderators.length === 0"
+          class="p-12 text-center text-gray-500"
+        >
           Модераторов пока нет.
         </div>
-        <table v-else class="w-full text-sm">
+        <table
+          v-else
+          class="w-full text-sm"
+        >
           <thead class="bg-gray-50 text-left text-xs uppercase text-gray-600">
             <tr>
-              <th class="p-3">Username</th>
-              <th class="p-3">Email</th>
-              <th class="p-3">Отдел</th>
-              <th class="p-3">Разрешения</th>
-              <th class="p-3">Действия</th>
+              <th class="p-3">
+                Username
+              </th>
+              <th class="p-3">
+                Email
+              </th>
+              <th class="p-3">
+                Отдел
+              </th>
+              <th class="p-3">
+                Разрешения
+              </th>
+              <th class="p-3">
+                Действия
+              </th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="m in moderators" :key="m.id" class="border-b hover:bg-gray-50">
-              <td class="p-3 font-medium">{{ m.username }}</td>
-              <td class="p-3">{{ m.email }}</td>
-              <td class="p-3">{{ m.department || '—' }}</td>
+            <tr
+              v-for="m in moderators"
+              :key="m.id"
+              class="border-b hover:bg-gray-50"
+            >
+              <td class="p-3 font-medium">
+                {{ m.username }}
+              </td>
+              <td class="p-3">
+                {{ m.email }}
+              </td>
+              <td class="p-3">
+                {{ m.department || '—' }}
+              </td>
               <td class="p-3 space-x-1">
-                <span v-if="m.can_view_volunteers" class="badge badge-primary text-xs">Волонтёры</span>
-                <span v-if="m.can_manage_hours" class="badge badge-primary text-xs">Часы</span>
-                <span v-if="m.can_manage_certificates" class="badge badge-primary text-xs">Сертификаты</span>
+                <span
+                  v-if="m.can_view_volunteers"
+                  class="badge badge-primary text-xs"
+                >Волонтёры</span>
+                <span
+                  v-if="m.can_manage_hours"
+                  class="badge badge-primary text-xs"
+                >Часы</span>
+                <span
+                  v-if="m.can_manage_certificates"
+                  class="badge badge-primary text-xs"
+                >Сертификаты</span>
               </td>
               <td class="p-3">
                 <button

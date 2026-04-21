@@ -8,7 +8,11 @@
           class="flex items-center space-x-2"
         >
           <div class="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center">
-            <img src="@/assets/logo_Newman.jpeg" alt="Logo" class="w-8 h-8 object-cover rounded-lg" />
+            <img
+              src="@/assets/logo_Newman.jpeg"
+              alt="Logo"
+              class="w-8 h-8 object-cover rounded-lg"
+            >
           </div>
           <span class="text-xl font-bold text-gray-900">NEWMAN</span>
         </router-link>
@@ -288,7 +292,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import apiService from '@/services/api'
