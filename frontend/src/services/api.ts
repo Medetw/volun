@@ -167,33 +167,33 @@ class ApiService {
     return response.data
   }
 
-  // Projects endpoints
+  // Projects endpoints — nested DRF router: /api/projects/projects/...
   async getProjects(params?: ProjectFilters): Promise<PaginatedResponse<Project>> {
-    const response: AxiosResponse<PaginatedResponse<Project>> = await this.api.get('/projects/', { params })
+    const response: AxiosResponse<PaginatedResponse<Project>> = await this.api.get('/projects/projects/', { params })
     return response.data
   }
 
   async getProject(id: number): Promise<Project> {
-    const response: AxiosResponse<Project> = await this.api.get(`/projects/${id}/`)
+    const response: AxiosResponse<Project> = await this.api.get(`/projects/projects/${id}/`)
     return response.data
   }
 
   async createProject(data: Partial<Project>): Promise<Project> {
-    const response: AxiosResponse<Project> = await this.api.post('/projects/', data)
+    const response: AxiosResponse<Project> = await this.api.post('/projects/projects/', data)
     return response.data
   }
 
   async updateProject(id: number, data: Partial<Project>): Promise<Project> {
-    const response: AxiosResponse<Project> = await this.api.patch(`/projects/${id}/`, data)
+    const response: AxiosResponse<Project> = await this.api.patch(`/projects/projects/${id}/`, data)
     return response.data
   }
 
   async deleteProject(id: number): Promise<void> {
-    await this.api.delete(`/projects/${id}/`)
+    await this.api.delete(`/projects/projects/${id}/`)
   }
 
   async getMyProjects(): Promise<PaginatedResponse<Project>> {
-    const response: AxiosResponse<PaginatedResponse<Project>> = await this.api.get('/projects/my/')
+    const response: AxiosResponse<PaginatedResponse<Project>> = await this.api.get('/projects/projects/my/')
     return response.data
   }
 
@@ -255,33 +255,33 @@ class ApiService {
     return response.data
   }
 
-  // News endpoints
+  // News endpoints — nested router: /api/news/news/...
   async getNews(params?: { category?: string; search?: string }): Promise<PaginatedResponse<News>> {
-    const response: AxiosResponse<PaginatedResponse<News>> = await this.api.get('/news/', { params })
+    const response: AxiosResponse<PaginatedResponse<News>> = await this.api.get('/news/news/', { params })
     return response.data
   }
 
   async getNewsItem(slug: string): Promise<News> {
-    const response: AxiosResponse<News> = await this.api.get(`/news/${slug}/`)
+    const response: AxiosResponse<News> = await this.api.get(`/news/news/${slug}/`)
     return response.data
   }
 
   async createNews(data: Partial<News>): Promise<News> {
-    const response: AxiosResponse<News> = await this.api.post('/news/', data)
+    const response: AxiosResponse<News> = await this.api.post('/news/news/', data)
     return response.data
   }
 
   async updateNews(id: number, data: Partial<News>): Promise<News> {
-    const response: AxiosResponse<News> = await this.api.patch(`/news/${id}/`, data)
+    const response: AxiosResponse<News> = await this.api.patch(`/news/news/${id}/`, data)
     return response.data
   }
 
   async deleteNews(id: number): Promise<void> {
-    await this.api.delete(`/news/${id}/`)
+    await this.api.delete(`/news/news/${id}/`)
   }
 
   async getFeaturedNews(): Promise<News[]> {
-    const response: AxiosResponse<News[]> = await this.api.get('/news/featured/')
+    const response: AxiosResponse<News[]> = await this.api.get('/news/news/featured/')
     return response.data
   }
 
