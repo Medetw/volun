@@ -28,7 +28,12 @@ export const useAuthStore = defineStore('auth', () => {
       
       return response
     } catch (err: any) {
-      error.value = err.response?.data?.non_field_errors?.[0] || 'Ошибка входа'
+      const backendMsg = err.response?.data?.non_field_errors?.[0] || err.response?.data?.detail
+      if (backendMsg === 'Invalid email or password.') {
+        error.value = 'Неверный email или пароль'
+      } else {
+        error.value = backendMsg || 'Ошибка входа'
+      }
       throw err
     } finally {
       isLoading.value = false

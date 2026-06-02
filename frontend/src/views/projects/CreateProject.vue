@@ -392,8 +392,7 @@ onMounted(async () => {
 
 const loadCategories = async () => {
   try {
-    const response = await apiService.getCategories()
-    categories.value = response.results
+    categories.value = await apiService.getCategories()
   } catch (err) {
     console.error('Failed to load categories:', err)
   }
@@ -401,8 +400,7 @@ const loadCategories = async () => {
 
 const loadRegions = async () => {
   try {
-    const response = await apiService.getRegions()
-    regions.value = response.results
+    regions.value = await apiService.getRegions()
   } catch (err) {
     console.error('Failed to load regions:', err)
   }
@@ -473,10 +471,13 @@ const handleSubmit = async () => {
     submitting.value = true
     error.value = ''
 
-    const projectData = {
+    const projectData: any = {
       ...form,
       image: imageFile.value
     }
+    if (!projectData.start_date) delete projectData.start_date
+    if (!projectData.end_date) delete projectData.end_date
+    if (!projectData.image) delete projectData.image
 
     const createdProject = await apiService.createProject(projectData)
     

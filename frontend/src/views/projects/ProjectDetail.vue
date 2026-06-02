@@ -188,8 +188,21 @@
               <h2 class="text-xl font-semibold mb-4">
                 Контактная информация
               </h2>
-              <div class="prose max-w-none text-gray-600">
-                <p>{{ project.contact_info }}</p>
+              <div class="text-gray-700 space-y-1">
+                <template v-if="contactInfoFormatted">
+                  <p v-if="contactInfoFormatted.phone">
+                    <span class="font-medium">Телефон:</span> {{ contactInfoFormatted.phone }}
+                  </p>
+                  <p v-if="contactInfoFormatted.email">
+                    <span class="font-medium">Email:</span> {{ contactInfoFormatted.email }}
+                  </p>
+                  <p v-if="contactInfoFormatted.other">
+                    {{ contactInfoFormatted.other }}
+                  </p>
+                </template>
+                <p v-else>
+                  {{ project.contact_info }}
+                </p>
               </div>
             </div>
           </div>
@@ -369,6 +382,12 @@
           </h3>
           
           <form @submit.prevent="handleApply">
+            <div
+              v-if="applyError"
+              class="mb-4 bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-600"
+            >
+              {{ applyError }}
+            </div>
             <div class="space-y-4">
               <div>
                 <label class="form-label">Сопроводительное письмо</label>
@@ -458,6 +477,27 @@ const applicationForm = reactive({
   hours_committed: 5
 })
 
+const applyError = ref('')
+
+const contactInfoFormatted = computed(() => {
+  const raw = project.value?.contact_info
+  if (!raw) return null
+  let parsed: any = null
+  if (typeof raw === 'object') {
+    parsed = raw
+  } else if (typeof raw === 'string') {
+    const trimmed = raw.trim()
+    if (!trimmed.startsWith('{')) return null
+    try { parsed = JSON.parse(trimmed) } catch { return null }
+  }
+  if (!parsed || typeof parsed !== 'object') return null
+  return {
+    phone: parsed.phone || '',
+    email: parsed.email || '',
+    other: parsed.other || parsed.note || ''
+  }
+})
+
 onMounted(async () => {
   await loadProject()
 })
@@ -480,19 +520,33 @@ const handleApply = async () => {
 
   try {
     applying.value = true
-    
+    applyError.value = ''
+
     await apiService.createApplication({
       project: project.value.id,
       cover_letter: applicationForm.cover_letter,
       hours_committed: applicationForm.hours_committed
     })
-    
+
     showApplyModal.value = false
-    
+
     // Show success message or redirect
     router.push('/applications/my')
-  } catch (error) {
-    console.error('Failed to apply:', error)
+  } catch (err: any) {
+    console.error('Failed to apply:', err)
+    const data = err?.response?.data
+    if (typeof data === 'string') {
+      applyError.value = data
+    } else if (data?.detail) {
+      applyError.value = data.detail
+    } else if (data?.non_field_errors?.length) {
+      applyError.value = data.non_field_errors[0]
+    } else if (data && typeof data === 'object') {
+      const firstField = Object.values(data)[0]
+      applyError.value = Array.isArray(firstField) ? String(firstField[0]) : String(firstField)
+    } else {
+      applyError.value = 'Не удалось подать заявку. Попробуйте ещё раз.'
+    }
   } finally {
     applying.value = false
   }

@@ -220,14 +220,14 @@ class ApiService {
     return Array.isArray(response.data) ? response.data : (response.data.results ?? [])
   }
 
-  // Applications endpoints
+  // Applications endpoints — nested router: /api/applications/applications/...
   async getApplications(params?: ApplicationFilters): Promise<PaginatedResponse<Application>> {
-    const response: AxiosResponse<PaginatedResponse<Application>> = await this.api.get('/applications/', { params })
+    const response: AxiosResponse<PaginatedResponse<Application>> = await this.api.get('/applications/applications/', { params })
     return response.data
   }
 
   async getApplication(id: number): Promise<Application> {
-    const response: AxiosResponse<Application> = await this.api.get(`/applications/${id}/`)
+    const response: AxiosResponse<Application> = await this.api.get(`/applications/applications/${id}/`)
     return response.data
   }
 
@@ -236,22 +236,22 @@ class ApiService {
     cover_letter: string
     hours_committed: number
   }): Promise<Application> {
-    const response: AxiosResponse<Application> = await this.api.post('/applications/', data)
+    const response: AxiosResponse<Application> = await this.api.post('/applications/applications/', data)
     return response.data
   }
 
   async approveApplication(id: number): Promise<Application> {
-    const response: AxiosResponse<Application> = await this.api.post(`/applications/${id}/approve/`)
+    const response: AxiosResponse<Application> = await this.api.post(`/applications/applications/${id}/approve/`)
     return response.data
   }
 
   async rejectApplication(id: number, data: { review_comment?: string }): Promise<Application> {
-    const response: AxiosResponse<Application> = await this.api.post(`/applications/${id}/reject/`, data)
+    const response: AxiosResponse<Application> = await this.api.post(`/applications/applications/${id}/reject/`, data)
     return response.data
   }
 
   async cancelApplication(id: number): Promise<Application> {
-    const response: AxiosResponse<Application> = await this.api.post(`/applications/${id}/cancel/`)
+    const response: AxiosResponse<Application> = await this.api.post(`/applications/applications/${id}/cancel/`)
     return response.data
   }
 
@@ -296,78 +296,78 @@ class ApiService {
     ]
   }
 
-  // Statistics endpoints
+  // Statistics endpoints — nested router: /api/statistics/statistics/
   async getStatistics(): Promise<Statistics> {
-    const response: AxiosResponse<Statistics> = await this.api.get('/statistics/')
+    const response: AxiosResponse<Statistics> = await this.api.get('/statistics/statistics/')
     return response.data
   }
 
-  // Notifications endpoints
+  // Notifications endpoints — nested router: /api/notifications/notifications/...
   async getNotifications(params?: { is_read?: boolean }): Promise<PaginatedResponse<Notification>> {
-    const response: AxiosResponse<PaginatedResponse<Notification>> = await this.api.get('/notifications/', { params })
+    const response: AxiosResponse<PaginatedResponse<Notification>> = await this.api.get('/notifications/notifications/', { params })
     return response.data
   }
 
   async getUnreadNotifications(): Promise<Notification[]> {
-    const response: AxiosResponse<Notification[]> = await this.api.get('/notifications/unread/')
+    const response: AxiosResponse<Notification[]> = await this.api.get('/notifications/notifications/unread/')
     return response.data
   }
 
   async markNotificationAsRead(id: number): Promise<void> {
-    await this.api.post(`/notifications/${id}/mark_read/`)
+    await this.api.post(`/notifications/notifications/${id}/mark_read/`)
   }
 
   async markAllNotificationsAsRead(): Promise<void> {
-    await this.api.post('/notifications/mark_all_read/')
+    await this.api.post('/notifications/notifications/mark_all_read/')
   }
 
   async getNotificationStats(): Promise<{ total: number; unread: number; read: number; today: number }> {
-    const response = await this.api.get('/notifications/stats/')
+    const response = await this.api.get('/notifications/notifications/stats/')
     return response.data
   }
 
   async deleteNotification(id: number): Promise<void> {
-    await this.api.delete(`/notifications/${id}/`)
+    await this.api.delete(`/notifications/notifications/${id}/`)
   }
 
   async getNotificationPreferences(): Promise<NotificationPreference> {
-    const response: AxiosResponse<NotificationPreference> = await this.api.get('/notification-preferences/')
+    const response: AxiosResponse<NotificationPreference> = await this.api.get('/notifications/notification-preferences/')
     return response.data
   }
 
   async updateNotificationPreferences(data: Partial<NotificationPreference>): Promise<NotificationPreference> {
-    const response: AxiosResponse<NotificationPreference> = await this.api.patch('/notification-preferences/', data)
+    const response: AxiosResponse<NotificationPreference> = await this.api.patch('/notifications/notification-preferences/', data)
     return response.data
   }
 
-  // Reports endpoints
+  // Reports endpoints — nested router: /api/reports/reports/...
   async getReports(params?: { project?: number; status?: string; type?: string; period?: string; search?: string }): Promise<PaginatedResponse<ProjectReport>> {
-    const response: AxiosResponse<PaginatedResponse<ProjectReport>> = await this.api.get('/reports/', { params })
+    const response: AxiosResponse<PaginatedResponse<ProjectReport>> = await this.api.get('/reports/reports/', { params })
     return response.data
   }
 
   async getReport(id: number): Promise<ProjectReport> {
-    const response: AxiosResponse<ProjectReport> = await this.api.get(`/reports/${id}/`)
+    const response: AxiosResponse<ProjectReport> = await this.api.get(`/reports/reports/${id}/`)
     return response.data
   }
 
   async createReport(data: Partial<ProjectReport>): Promise<ProjectReport> {
-    const response: AxiosResponse<ProjectReport> = await this.api.post('/reports/', data)
+    const response: AxiosResponse<ProjectReport> = await this.api.post('/reports/reports/', data)
     return response.data
   }
 
   async updateReport(id: number, data: Partial<ProjectReport>): Promise<ProjectReport> {
-    const response: AxiosResponse<ProjectReport> = await this.api.patch(`/reports/${id}/`, data)
+    const response: AxiosResponse<ProjectReport> = await this.api.patch(`/reports/reports/${id}/`, data)
     return response.data
   }
 
   async generateReport(id: number): Promise<ProjectReport> {
-    const response: AxiosResponse<ProjectReport> = await this.api.post(`/reports/${id}/generate/`)
+    const response: AxiosResponse<ProjectReport> = await this.api.post(`/reports/reports/${id}/generate/`)
     return response.data
   }
 
   async downloadReport(id: number): Promise<void> {
-    const response = await this.api.get(`/reports/${id}/download/`, { responseType: 'blob' })
+    const response = await this.api.get(`/reports/reports/${id}/download/`, { responseType: 'blob' })
     const url = window.URL.createObjectURL(new Blob([response.data]))
     const link = document.createElement('a')
     link.href = url
@@ -379,21 +379,21 @@ class ApiService {
   }
 
   async deleteReport(id: number): Promise<void> {
-    await this.api.delete(`/reports/${id}/`)
+    await this.api.delete(`/reports/reports/${id}/`)
   }
 
   async submitReport(id: number): Promise<ProjectReport> {
-    const response: AxiosResponse<ProjectReport> = await this.api.post(`/reports/${id}/submit/`)
+    const response: AxiosResponse<ProjectReport> = await this.api.post(`/reports/reports/${id}/submit/`)
     return response.data
   }
 
   async approveReport(id: number, data: { review_comment?: string }): Promise<ProjectReport> {
-    const response: AxiosResponse<ProjectReport> = await this.api.post(`/reports/${id}/approve/`, data)
+    const response: AxiosResponse<ProjectReport> = await this.api.post(`/reports/reports/${id}/approve/`, data)
     return response.data
   }
 
   async rejectReport(id: number, data: { review_comment?: string }): Promise<ProjectReport> {
-    const response: AxiosResponse<ProjectReport> = await this.api.post(`/reports/${id}/reject/`, data)
+    const response: AxiosResponse<ProjectReport> = await this.api.post(`/reports/reports/${id}/reject/`, data)
     return response.data
   }
 

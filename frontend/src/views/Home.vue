@@ -439,7 +439,7 @@
           <router-link
             v-if="!authStore.isAuthenticated || authStore.isOrganization || authStore.isAdmin"
             to="/register/organization"
-            class="btn btn-outline border-white text-white hover:bg-white hover:text-primary-600 btn-lg"
+            class="btn btn-lg border-2 border-white bg-transparent text-white hover:bg-white hover:text-primary-600"
           >
             Создать проект
           </router-link>

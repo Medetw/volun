@@ -13,27 +13,40 @@ from apps.applications.models import Application, ApplicationStatus
 
 class StatisticsAPIView(views.APIView):
     """Оптимизированный API для получения статистики платформы."""
-    permission_classes = [permissions.IsAuthenticated]
-    
+    permission_classes = [permissions.AllowAny]
+
     # Кэширование статистики
     cache_timeout = 600  # 10 минут
 
     def get(self, request):
         """Получить статистику с кэшированием."""
         user = request.user
+        if not user.is_authenticated:
+            cache_key = 'stats_public'
+            cached_stats = cache.get(cache_key)
+            if cached_stats:
+                return Response(cached_stats)
+            stats = {
+                'users': self._get_users_stats(),
+                'projects': self._get_projects_stats(),
+                'applications': self._get_applications_stats(),
+            }
+            cache.set(cache_key, stats, self.cache_timeout)
+            return Response(stats)
+
         cache_key = f'stats_{user.role}_{user.id}'
-        
+
         # Пытаемся получить из кэша
         cached_stats = cache.get(cache_key)
         if cached_stats:
             return Response(cached_stats)
-        
+
         # Генерируем статистику
         stats = self._generate_stats(user)
-        
+
         # Сохраняем в кэш
         cache.set(cache_key, stats, self.cache_timeout)
-        
+
         return Response(stats)
 
     def _generate_stats(self, user):
@@ -43,7 +56,7 @@ class StatisticsAPIView(views.APIView):
             'projects': self._get_projects_stats(),
             'applications': self._get_applications_stats(),
         }
-        
+
         if user.role in (UserRole.ADMIN, 'moderator'):
             base_stats.update({
                 'recent_activity': self._get_recent_activity(),

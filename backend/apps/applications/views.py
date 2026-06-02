@@ -46,8 +46,6 @@ class ApplicationViewSet(viewsets.ModelViewSet):
             return ApplicationCreateSerializer
         elif self.action in ['approve', 'reject']:
             return ApplicationReviewSerializer
-        elif self.action == 'list':
-            return ApplicationListSerializer
         return ApplicationSerializer
 
     def perform_create(self, serializer):

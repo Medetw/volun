@@ -228,7 +228,7 @@
       <div class="mt-12 pt-8 border-t border-gray-800">
         <div class="flex flex-col md:flex-row justify-between items-center">
           <p class="text-gray-400 text-sm">
-            © 2024 Волонтерская платформа. Все права защищены.
+            © {{ currentYear }} Волонтерская платформа. Все права защищены.
           </p>
           <div class="flex space-x-6 mt-4 md:mt-0">
             <a
@@ -257,5 +257,5 @@
 </template>
 
 <script setup lang="ts">
-// Footer component - no additional logic needed
+const currentYear = new Date().getFullYear()
 </script>
