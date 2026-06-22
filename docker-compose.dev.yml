@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:15-alpine
     environment:
-      POSTGRES_DB: volunteering_platform
+      POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -39,7 +39,7 @@ services:
       - DJANGO_DEBUG=1
       - DJANGO_SECRET_KEY=dev-secret-key-not-for-production
       - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,backend
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/volunteering_platform
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/${POSTGRES_DB}
       - REDIS_URL=redis://redis:6379/1
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -71,7 +71,7 @@ services:
     environment:
       - DJANGO_DEBUG=1
       - DJANGO_SECRET_KEY=dev-secret-key-not-for-production
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/volunteering_platform
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/${POSTGRES_DB}
       - REDIS_URL=redis://redis:6379/1
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -90,7 +90,7 @@ services:
     environment:
       - DJANGO_DEBUG=1
       - DJANGO_SECRET_KEY=dev-secret-key-not-for-production
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/volunteering_platform
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/${POSTGRES_DB}
       - REDIS_URL=redis://redis:6379/1
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
