@@ -2,6 +2,9 @@
 # exit on error
 set -o errexit
 
+# Create directories needed by Django
+mkdir -p logs
+
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 
