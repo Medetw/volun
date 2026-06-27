@@ -4,9 +4,9 @@ services:
     runtime: python
     name: volunteering-backend
     region: frankfurt
-    plan: free
-    buildCommand: "cd backend && ./build.sh"
-    startCommand: "cd backend && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+    rootDir: backend
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -29,8 +29,9 @@ services:
   - type: web
     runtime: static
     name: volunteering-frontend
-    buildCommand: "cd frontend && npm install && npm run build"
-    staticPublishPath: "frontend/dist"
+    rootDir: frontend
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: "dist"
     routes:
       - type: rewrite
         source: /*
