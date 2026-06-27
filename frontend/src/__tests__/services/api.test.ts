@@ -141,7 +141,7 @@ describe('ApiService', () => {
 
       const result = await apiService.getProjects({ status: 'active' })
 
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/projects/', {
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/projects/projects/', {
         params: { status: 'active' },
       })
       expect(result).toEqual(mockData)
@@ -154,7 +154,7 @@ describe('ApiService', () => {
 
       const result = await apiService.createProject(projectData)
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/projects/', projectData)
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/projects/projects/', projectData)
       expect(result).toEqual(mockResponse.data)
     })
 
@@ -163,7 +163,7 @@ describe('ApiService', () => {
 
       await apiService.deleteProject(1)
 
-      expect(mockAxiosInstance.delete).toHaveBeenCalledWith('/projects/1/')
+      expect(mockAxiosInstance.delete).toHaveBeenCalledWith('/projects/projects/1/')
     })
   })
 
@@ -175,7 +175,7 @@ describe('ApiService', () => {
 
       const result = await apiService.createApplication(appData)
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/applications/', appData)
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/applications/applications/', appData)
       expect(result).toEqual(mockResponse.data)
     })
 
@@ -185,7 +185,7 @@ describe('ApiService', () => {
 
       const result = await apiService.approveApplication(1)
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/applications/1/approve/')
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/applications/applications/1/approve/')
       expect(result).toEqual(mockResponse.data)
     })
   })
@@ -196,7 +196,7 @@ describe('ApiService', () => {
 
       await apiService.markNotificationAsRead(5)
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/notifications/5/mark_read/')
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/notifications/notifications/5/mark_read/')
     })
 
     it('should mark all notifications as read', async () => {
@@ -204,7 +204,7 @@ describe('ApiService', () => {
 
       await apiService.markAllNotificationsAsRead()
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/notifications/mark_all_read/')
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/notifications/notifications/mark_all_read/')
     })
 
     it('should get notification stats', async () => {
@@ -213,7 +213,7 @@ describe('ApiService', () => {
 
       const result = await apiService.getNotificationStats()
 
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/notifications/stats/')
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/notifications/notifications/stats/')
       expect(result).toEqual(mockStats)
     })
   })

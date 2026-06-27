@@ -4,7 +4,7 @@ from apps.applications.models import Application, ApplicationStatus
 from apps.applications.serializers import (
     ApplicationSerializer,
     ApplicationCreateSerializer,
-    ApplicationUpdateSerializer
+    ApplicationReviewSerializer
 )
 from apps.users.models import User, UserRole
 from apps.projects.models import Project, ProjectStatus, Category
@@ -178,8 +178,8 @@ class TestApplicationCreateSerializer:
         assert serializer.is_valid()
 
 
-class TestApplicationUpdateSerializer:
-    """Test ApplicationUpdateSerializer."""
+class TestApplicationReviewSerializer:
+    """Test ApplicationReviewSerializer."""
 
     def test_volunteer_can_update_own_application(self, db, application, volunteer_user):
         """Test that volunteer can update own application."""
@@ -188,7 +188,7 @@ class TestApplicationUpdateSerializer:
             'hours_committed': 15
         }
         
-        serializer = ApplicationUpdateSerializer(
+        serializer = ApplicationReviewSerializer(
             application, 
             data=data, 
             partial=True,
@@ -204,7 +204,7 @@ class TestApplicationUpdateSerializer:
         """Test that volunteer cannot change application status."""
         data = {'status': ApplicationStatus.APPROVED}
         
-        serializer = ApplicationUpdateSerializer(
+        serializer = ApplicationReviewSerializer(
             application, 
             data=data, 
             partial=True,
@@ -221,7 +221,7 @@ class TestApplicationUpdateSerializer:
             'review_comment': 'Great candidate!'
         }
         
-        serializer = ApplicationUpdateSerializer(
+        serializer = ApplicationReviewSerializer(
             application, 
             data=data, 
             partial=True,
@@ -238,7 +238,7 @@ class TestApplicationUpdateSerializer:
         # Try to set invalid status
         data = {'status': 'invalid_status'}
         
-        serializer = ApplicationUpdateSerializer(
+        serializer = ApplicationReviewSerializer(
             application, 
             data=data, 
             partial=True,
@@ -253,7 +253,7 @@ class TestApplicationUpdateSerializer:
         
         # For volunteers, status field might not be available
         # This would be handled in the view with a separate endpoint
-        serializer = ApplicationUpdateSerializer(
+        serializer = ApplicationReviewSerializer(
             application, 
             data={'cover_letter': 'Cancelling my application'}, 
             partial=True,
@@ -268,7 +268,7 @@ class TestApplicationUpdateSerializer:
             'review_comment': 'Not suitable'
         }
         
-        serializer = ApplicationUpdateSerializer(
+        serializer = ApplicationReviewSerializer(
             application, 
             data=data, 
             partial=True,

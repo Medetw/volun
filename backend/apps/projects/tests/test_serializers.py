@@ -2,21 +2,21 @@ import pytest
 from rest_framework import serializers
 from apps.projects.models import Project, ProjectFormat, ProjectStatus, Category, Region
 from apps.projects.serializers import (
-    ProjectSerializer, 
-    ProjectCreateSerializer,
-    ProjectUpdateSerializer,
+    ProjectDetailSerializer, 
+    ProjectCreateUpdateSerializer,
+    ProjectCreateUpdateSerializer,
     CategorySerializer,
     RegionSerializer
 )
 from apps.users.models import User, UserRole
 
 
-class TestProjectSerializer:
-    """Test ProjectSerializer."""
+class TestProjectDetailSerializer:
+    """Test ProjectDetailSerializer."""
 
     def test_project_serialization(self, db, project):
         """Test project serialization output."""
-        serializer = ProjectSerializer(project)
+        serializer = ProjectDetailSerializer(project)
         data = serializer.data
         
         assert data['title'] == project.title
@@ -32,7 +32,7 @@ class TestProjectSerializer:
 
     def test_project_with_applications_serialization(self, db, project, approved_application):
         """Test project serialization with applications."""
-        serializer = ProjectSerializer(project)
+        serializer = ProjectDetailSerializer(project)
         data = serializer.data
         
         assert data['volunteers_count'] == 1
@@ -40,7 +40,7 @@ class TestProjectSerializer:
 
     def test_project_read_only_fields(self, db, project):
         """Test that certain fields are read-only."""
-        serializer = ProjectSerializer(project, data={
+        serializer = ProjectDetailSerializer(project, data={
             'volunteers_count': 999,
             'volunteers_remaining': 999,
             'is_active': False
@@ -55,8 +55,8 @@ class TestProjectSerializer:
         assert updated_project.is_active == True  # Based on status
 
 
-class TestProjectCreateSerializer:
-    """Test ProjectCreateSerializer."""
+class TestProjectCreateUpdateSerializer:
+    """Test ProjectCreateUpdateSerializer."""
 
     def test_valid_project_creation(self, db, organization_user, category, region):
         """Test valid project creation data."""
@@ -73,14 +73,14 @@ class TestProjectCreateSerializer:
             'contact_info': {'phone': '+123456789', 'email': 'contact@example.com'}
         }
         
-        serializer = ProjectCreateSerializer(data=data, context={'request': type('Request', (), {'user': organization_user})()})
+        serializer = ProjectCreateUpdateSerializer(data=data, context={'request': type('Request', (), {'user': organization_user})()})
         assert serializer.is_valid(raise_exception=True)
 
     def test_missing_required_fields(self, db, organization_user):
         """Test missing required fields."""
         data = {}  # Empty data
         
-        serializer = ProjectCreateSerializer(data=data, context={'request': type('Request', (), {'user': organization_user})()})
+        serializer = ProjectCreateUpdateSerializer(data=data, context={'request': type('Request', (), {'user': organization_user})()})
         assert not serializer.is_valid()
         
         required_fields = ['title', 'description', 'category', 'volunteers_needed']
@@ -96,7 +96,7 @@ class TestProjectCreateSerializer:
             'volunteers_needed': 0  # Should be at least 1
         }
         
-        serializer = ProjectCreateSerializer(data=data, context={'request': type('Request', (), {'user': organization_user})()})
+        serializer = ProjectCreateUpdateSerializer(data=data, context={'request': type('Request', (), {'user': organization_user})()})
         assert not serializer.is_valid()
         assert 'volunteers_needed' in serializer.errors
 
@@ -111,7 +111,7 @@ class TestProjectCreateSerializer:
             'end_date': '2024-01-01'  # End before start
         }
         
-        serializer = ProjectCreateSerializer(data=data, context={'request': type('Request', (), {'user': organization_user})()})
+        serializer = ProjectCreateUpdateSerializer(data=data, context={'request': type('Request', (), {'user': organization_user})()})
         assert not serializer.is_valid()
         assert 'end_date' in serializer.errors
 
@@ -125,7 +125,7 @@ class TestProjectCreateSerializer:
             'format': 'invalid_format'
         }
         
-        serializer = ProjectCreateSerializer(data=data, context={'request': type('Request', (), {'user': organization_user})()})
+        serializer = ProjectCreateUpdateSerializer(data=data, context={'request': type('Request', (), {'user': organization_user})()})
         assert not serializer.is_valid()
         assert 'format' in serializer.errors
 
@@ -140,7 +140,7 @@ class TestProjectCreateSerializer:
             'volunteers_needed': 10
         }
         
-        serializer = ProjectCreateSerializer(data=data, context={'request': type('Request', (), {'user': organization_user})()})
+        serializer = ProjectCreateUpdateSerializer(data=data, context={'request': type('Request', (), {'user': organization_user})()})
         assert serializer.is_valid(raise_exception=True)
         
         project = serializer.save()
@@ -157,7 +157,7 @@ class TestProjectCreateSerializer:
             'volunteers_needed': 5
         }
         
-        serializer = ProjectCreateSerializer(data=data, context={'request': type('Request', (), {'user': volunteer_user})()})
+        serializer = ProjectCreateUpdateSerializer(data=data, context={'request': type('Request', (), {'user': volunteer_user})()})
         
         # Serializer should be valid but business logic should prevent creation
         assert serializer.is_valid()
@@ -167,8 +167,8 @@ class TestProjectCreateSerializer:
             serializer.save()
 
 
-class TestProjectUpdateSerializer:
-    """Test ProjectUpdateSerializer."""
+class TestProjectCreateUpdateSerializer:
+    """Test ProjectCreateUpdateSerializer."""
 
     def test_partial_update(self, db, project, organization_user):
         """Test partial project update."""
@@ -177,7 +177,7 @@ class TestProjectUpdateSerializer:
             'description': 'Updated description'
         }
         
-        serializer = ProjectUpdateSerializer(project, data=data, partial=True)
+        serializer = ProjectCreateUpdateSerializer(project, data=data, partial=True)
         assert serializer.is_valid(raise_exception=True)
         
         updated_project = serializer.save()
@@ -188,7 +188,7 @@ class TestProjectUpdateSerializer:
         """Test updating project status."""
         data = {'status': ProjectStatus.ACTIVE}
         
-        serializer = ProjectUpdateSerializer(project, data=data, partial=True)
+        serializer = ProjectCreateUpdateSerializer(project, data=data, partial=True)
         assert serializer.is_valid(raise_exception=True)
         
         updated_project = serializer.save()
@@ -205,7 +205,7 @@ class TestProjectUpdateSerializer:
         
         data = {'organization': other_org.id}
         
-        serializer = ProjectUpdateSerializer(project, data=data, partial=True)
+        serializer = ProjectCreateUpdateSerializer(project, data=data, partial=True)
         # Organization field should be read-only
         assert 'organization' not in serializer.fields
 
