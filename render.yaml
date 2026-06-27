@@ -1,8 +1,8 @@
 services:
-  # Backend Django Web Service
+  # Single web service: Django serves both API and Vue frontend
   - type: web
     runtime: python
-    name: volunteering-backend
+    name: volunteering-platform
     region: frankfurt
     rootDir: backend
     buildCommand: "./build.sh"
@@ -19,26 +19,9 @@ services:
       - key: DJANGO_SETTINGS_MODULE
         value: "config.settings"
       - key: DJANGO_ALLOWED_HOSTS
-        value: "volunteering-backend.onrender.com"
-      - key: CORS_ALLOWED_ORIGINS
-        value: "https://volunteering-frontend.onrender.com"
+        value: ".onrender.com"
       - key: PYTHON_VERSION
         value: "3.12.3"
-
-  # Frontend Vue Static Site
-  - type: web
-    runtime: static
-    name: volunteering-frontend
-    rootDir: frontend
-    buildCommand: "npm install && npm run build"
-    staticPublishPath: "dist"
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        value: "https://volunteering-backend.onrender.com/api"
       - key: NODE_VERSION
         value: "20"
 
