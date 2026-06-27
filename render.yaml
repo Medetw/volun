@@ -1,9 +1,10 @@
 services:
   # Backend Django Web Service
   - type: web
+    runtime: python
     name: volunteering-backend
-    env: python
     region: frankfurt
+    plan: free
     buildCommand: "cd backend && ./build.sh"
     startCommand: "cd backend && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
@@ -11,8 +12,6 @@ services:
         fromDatabase:
           name: volunteering-db
           property: connectionString
-      - key: REDIS_URL
-        value: "redis://localhost:6379" # Should use a real Redis instance in prod, placeholder for now
       - key: SECRET_KEY
         generateValue: true
       - key: DJANGO_DEBUG
@@ -28,11 +27,15 @@ services:
 
   # Frontend Vue Static Site
   - type: web
+    runtime: static
     name: volunteering-frontend
-    env: static
     region: frankfurt
     buildCommand: "cd frontend && npm install && npm run build"
     staticPublishPath: "frontend/dist"
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: VITE_API_URL
         value: "https://volunteering-backend.onrender.com/api"
@@ -44,3 +47,4 @@ databases:
     databaseName: volunteering
     user: volunteering_user
     region: frankfurt
+    plan: free
