@@ -6,6 +6,9 @@ WORKDIR /app
 # Copy everything
 COPY . .
 
+# Set Vite env var so frontend calls /api (same-origin, no CORS needed)
+ENV VITE_API_BASE_URL=/api
+
 # Run build script
 RUN chmod +x build.sh && ./build.sh
 
