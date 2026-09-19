@@ -6,8 +6,6 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig(({ command }) => ({
-  // In production, assets are served by Django under /static/
-  base: command === 'build' ? '/static/' : '/',
   plugins: [
     vue(),
     ...(command === 'serve' ? [vueDevTools()] : []),

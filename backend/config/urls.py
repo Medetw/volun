@@ -65,7 +65,20 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# Serve Vue SPA frontend — catch-all MUST be last
+# Serve Vue frontend assets directly (works regardless of collectstatic)
+from django.views.static import serve as static_serve
+from pathlib import Path as _Path
+
+_frontend_dist = _Path(settings.BASE_DIR) / "frontend_dist"
+
 urlpatterns += [
-    re_path(r"^(?!api/|admin/|static/|media/).*$", TemplateView.as_view(template_name="index.html"), name="spa"),
+    # Serve /assets/ files directly from frontend_dist
+    re_path(r"^assets/(?P<path>.*)$", static_serve, {"document_root": _frontend_dist / "assets"}),
+    # Serve /favicon.ico and other root-level files
+    re_path(r"^favicon\.ico$", static_serve, {"document_root": _frontend_dist, "path": "favicon.ico"}),
+]
+
+# Serve Vue SPA — catch-all MUST be last (excludes api, admin, static, media, assets)
+urlpatterns += [
+    re_path(r"^(?!api/|admin/|static/|media/|assets/).*$", TemplateView.as_view(template_name="index.html"), name="spa"),
 ]
