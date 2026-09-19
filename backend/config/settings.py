@@ -169,9 +169,9 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Include Vue frontend assets (built with base='/static/' so paths match)
+# Include Vue frontend assets under /static/assets/ URL prefix
 STATICFILES_DIRS = [
-    BASE_DIR / "frontend_dist" / "assets",
+    ("assets", BASE_DIR / "frontend_dist" / "assets"),
 ]
 
 # Media files (user uploads)
