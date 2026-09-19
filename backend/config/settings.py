@@ -178,8 +178,8 @@ STATICFILES_DIRS = [
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# Cache configuration
-REDIS_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1")
+# Cache configuration — use Redis only if explicitly configured, otherwise LocMemCache
+REDIS_URL = os.getenv("REDIS_URL", "")
 
 if REDIS_URL:
     CACHES = {
