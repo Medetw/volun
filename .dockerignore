@@ -1,11 +1,36 @@
 .git
 .github
 .claude
-*.md
+.vscode
+.idea
+.DS_Store
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+*.sqlite3
+backend/venv/
+backend/test_env/
+backend/.coverage
+backend/htmlcov/
+backend/logs/
+backend/media/
+backend/staticfiles/
+backend/frontend_dist/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Env files
 .env
 .env.*
 !.env.example
-__pycache__
-*.pyc
-node_modules
-.vscode
+
+# Docs / misc
+*.md
+*.log
+backups/
