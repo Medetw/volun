@@ -224,14 +224,22 @@
             </h3>
           </div>
           <p class="text-gray-600 text-sm mb-4">
-            Все проекты платформы
+            Модерация и управление проектами
           </p>
-          <router-link
-            to="/projects"
-            class="btn btn-outline w-full"
-          >
-            Список проектов
-          </router-link>
+          <div class="space-y-2">
+            <router-link
+              to="/admin/projects"
+              class="btn btn-primary w-full"
+            >
+              Модерация проектов
+            </router-link>
+            <router-link
+              to="/projects"
+              class="btn btn-outline w-full"
+            >
+              Каталог проектов
+            </router-link>
+          </div>
         </div>
 
         <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
@@ -256,14 +264,22 @@
             </h3>
           </div>
           <p class="text-gray-600 text-sm mb-4">
-            Заявки волонтеров на проекты
+            Управление всеми заявками волонтеров
           </p>
-          <router-link
-            to="/applications/organization"
-            class="btn btn-outline w-full"
-          >
-            Заявки
-          </router-link>
+          <div class="space-y-2">
+            <router-link
+              to="/admin/applications"
+              class="btn btn-primary w-full"
+            >
+              Управление заявками
+            </router-link>
+            <router-link
+              to="/applications/organization"
+              class="btn btn-outline w-full"
+            >
+              Заявки организации
+            </router-link>
+          </div>
         </div>
 
         <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
