@@ -29,6 +29,7 @@ const OrganizationApplications = () => import('@/views/applications/Organization
 
 const VolunteersTable = () => import('@/views/volunteers/VolunteersTable.vue')
 const AdminModerators = () => import('@/views/admin/Moderators.vue')
+const AdminUsers = () => import('@/views/admin/Users.vue')
 
 const Notifications = () => import('@/views/notifications/Notifications.vue')
 const Reports = () => import('@/views/reports/Reports.vue')
@@ -186,12 +187,30 @@ const router = createRouter({
       meta: { title: 'Создать новость', requiresAuth: true, roles: ['admin', 'moderator'] }
     },
 
+    // Admin — пользователи
+    {
+      path: '/admin/users',
+      name: 'AdminUsers',
+      component: AdminUsers,
+      meta: { title: 'Управление пользователями', requiresAuth: true, roles: ['admin'] }
+    },
+
     // Admin — модераторы (Block 7)
     {
       path: '/admin/moderators',
       name: 'AdminModerators',
       component: AdminModerators,
       meta: { title: 'Модераторы', requiresAuth: true, roles: ['admin'] }
+    },
+
+    // Admin redirects for dashboard shortcuts
+    {
+      path: '/admin/projects',
+      redirect: '/projects'
+    },
+    {
+      path: '/admin/applications',
+      redirect: '/applications/organization'
     },
 
     // Volunteers table (admin/moderator only) — Block 6

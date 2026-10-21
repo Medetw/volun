@@ -180,18 +180,26 @@
           <p class="text-gray-600 text-sm mb-4">
             Управление пользователями
           </p>
-          <router-link
-            to="/admin/users"
-            class="btn btn-primary w-full"
-          >
-            Управление
-          </router-link>
-          <router-link
-            to="/admin/moderators"
-            class="btn btn-outline w-full mt-2"
-          >
-            Модераторы
-          </router-link>
+          <div class="space-y-2">
+            <router-link
+              to="/admin/users"
+              class="btn btn-primary w-full"
+            >
+              Управление
+            </router-link>
+            <router-link
+              to="/admin/moderators"
+              class="btn btn-outline w-full"
+            >
+              Модераторы
+            </router-link>
+            <router-link
+              to="/volunteers"
+              class="btn btn-outline w-full"
+            >
+              Таблица волонтёров
+            </router-link>
+          </div>
         </div>
 
         <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
@@ -216,13 +224,13 @@
             </h3>
           </div>
           <p class="text-gray-600 text-sm mb-4">
-            Модерация проектов
+            Все проекты платформы
           </p>
           <router-link
-            to="/admin/projects"
+            to="/projects"
             class="btn btn-outline w-full"
           >
-            Модерация
+            Список проектов
           </router-link>
         </div>
 
@@ -248,13 +256,13 @@
             </h3>
           </div>
           <p class="text-gray-600 text-sm mb-4">
-            Управление заявками
+            Заявки волонтеров на проекты
           </p>
           <router-link
-            to="/admin/applications"
+            to="/applications/organization"
             class="btn btn-outline w-full"
           >
-            Управление
+            Заявки
           </router-link>
         </div>
 
