@@ -46,5 +46,18 @@ python manage.py migrate --noinput
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
+# Create superuser from environment variables if provided (blitz.cloud env vars)
+# Uses DJANGO_SUPERUSER_USERNAME, DJANGO_SUPERUSER_PASSWORD, DJANGO_SUPERUSER_EMAIL
+if [ -n "$DJANGO_SUPERUSER_PASSWORD" ] || [ -n "$DJANGO_SUPERUSER_USERNAME" ]; then
+    echo "Creating superuser from DJANGO_SUPERUSER_* environment variables..."
+    python manage.py createsuperuser --noinput || true
+fi
+
+# Create test accounts (idempotent — safe to run on every restart)
+if [ "${DJANGO_CREATE_TEST_ACCOUNTS:-1}" = "1" ]; then
+    echo "Creating test accounts..."
+    python manage.py create_test_accounts
+fi
+
 # Start server
 exec "$@"

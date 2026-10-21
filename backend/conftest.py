@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from apps.users.models import VolunteerProfile, OrganizationProfile
+from apps.users.models import VolunteerProfile, OrganizationProfile, ModeratorProfile
 from apps.projects.models import Category, Region, Project
 from apps.applications.models import Application
 
@@ -68,8 +68,52 @@ def admin_user(db):
         email='admin@example.com',
         password='testpass123',
         role='admin',
+        is_staff=True,
+        is_superuser=True,
         phone='+1234567892'
     )
+
+
+@pytest.fixture
+def moderator_user(db):
+    """Create a full-access moderator user with a ModeratorProfile."""
+    user = User.objects.create_user(
+        username='moderator1',
+        email='moderator@example.com',
+        password='testpass123',
+        role='moderator',
+        phone='+1234567893'
+    )
+    ModeratorProfile.objects.create(
+        user=user,
+        department='Test Department',
+        can_view_volunteers=True,
+        can_manage_hours=True,
+        can_manage_certificates=True,
+        notes='Full-access moderator fixture.',
+    )
+    return user
+
+
+@pytest.fixture
+def moderator_user_limited(db):
+    """Create a moderator with all RBAC permissions disabled."""
+    user = User.objects.create_user(
+        username='moderator_limited',
+        email='moderator_limited@example.com',
+        password='testpass123',
+        role='moderator',
+        phone='+1234567894'
+    )
+    ModeratorProfile.objects.create(
+        user=user,
+        department='Limited Dept',
+        can_view_volunteers=False,
+        can_manage_hours=False,
+        can_manage_certificates=False,
+        notes='Limited moderator fixture – all RBAC permissions off.',
+    )
+    return user
 
 
 @pytest.fixture
@@ -92,6 +136,22 @@ def auth_organization_client(api_client, organization_user):
 def auth_admin_client(api_client, admin_user):
     """Return authenticated client for admin."""
     refresh = RefreshToken.for_user(admin_user)
+    api_client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
+    return api_client
+
+
+@pytest.fixture
+def auth_moderator_client(api_client, moderator_user):
+    """Return authenticated client for full-access moderator."""
+    refresh = RefreshToken.for_user(moderator_user)
+    api_client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
+    return api_client
+
+
+@pytest.fixture
+def auth_moderator_limited_client(api_client, moderator_user_limited):
+    """Return authenticated client for limited moderator (all RBAC permissions off)."""
+    refresh = RefreshToken.for_user(moderator_user_limited)
     api_client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
     return api_client
 
