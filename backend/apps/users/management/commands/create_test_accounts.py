@@ -32,6 +32,7 @@ Notes
 
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from apps.users.models import (
     UserRole,
     VolunteerProfile,
@@ -173,8 +174,9 @@ class Command(BaseCommand):
     # Helpers
     # ------------------------------------------------------------------
 
-    def _all_usernames(self):
-        names = []
+    def _all_identifiers(self):
+        usernames = []
+        emails = []
         for accounts in (
             ADMIN_ACCOUNTS,
             MODERATOR_ACCOUNTS,
@@ -182,34 +184,59 @@ class Command(BaseCommand):
             VOLUNTEER_ACCOUNTS,
         ):
             for a in accounts:
-                names.append(a["username"])
-        return names
+                usernames.append(a["username"])
+                emails.append(a["email"])
+        # Also clean up legacy username formats
+        usernames.extend([
+            "test_admin", "test_moderator", "test_mod_limited",
+            "test_org", "test_volunteer", "test_volunteer2"
+        ])
+        return usernames, emails
 
     def _delete_accounts(self):
-        usernames = self._all_usernames()
-        deleted, _ = User.objects.filter(username__in=usernames).delete()
+        usernames, emails = self._all_identifiers()
+        deleted, _ = User.objects.filter(
+            Q(username__in=usernames) | Q(email__in=emails)
+        ).delete()
         self.stdout.write(
             self.style.WARNING(f"  🗑  Deleted {deleted} existing test account(s).")
         )
 
     def _create_user(self, account: dict) -> tuple:
         """
-        Get-or-create the base User.
-        Returns (user, created).
+        Create or update the base User, ensuring exact credentials and no duplicates.
         """
-        defaults = {
-            "email": account["email"],
-            "role": account["role"],
-            "is_staff": account.get("is_staff", False),
-            "is_superuser": account.get("is_superuser", False),
-        }
-        user, created = User.objects.get_or_create(
-            username=account["username"],
-            defaults=defaults,
-        )
-        if created:
-            user.set_password(account["password"])
-            user.save()
+        username = account["username"]
+        email = account["email"]
+        password = account["password"]
+        role = account["role"]
+        is_staff = account.get("is_staff", False)
+        is_superuser = account.get("is_superuser", False)
+
+        # Match any existing account by email or username
+        existing = list(User.objects.filter(
+            Q(email__iexact=email) | Q(username__iexact=username)
+        ))
+
+        created = False
+        if not existing:
+            user = User(username=username, email=email)
+            created = True
+        else:
+            user = existing[0]
+            # Delete any duplicate users sharing the same email or username
+            for extra in existing[1:]:
+                extra.delete()
+
+        user.username = username
+        user.email = email
+        user.role = role
+        user.is_staff = is_staff
+        user.is_superuser = is_superuser
+        user.is_active = True
+        user.set_password(password)
+        user.save()
+
         return user, created
 
     # ------------------------------------------------------------------

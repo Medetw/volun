@@ -110,17 +110,22 @@ class OrganizationRegisterSerializer(serializers.Serializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    """Serializer for user login."""
-    email = serializers.EmailField(required=True)
+    """Serializer for user login (supports email or username)."""
+    email = serializers.CharField(required=True)
     password = serializers.CharField(write_only=True, required=True)
 
     def validate(self, attrs):
-        email = attrs.get('email')
+        email = attrs.get('email', '').strip()
         password = attrs.get('password')
         
         if email and password:
-            # Try to authenticate using email
-            user = authenticate(request=self.context.get('request'), email=email, password=password)
+            # Try to authenticate using email or username
+            user = authenticate(
+                request=self.context.get('request'),
+                email=email,
+                username=email,
+                password=password
+            )
             if not user:
                 raise serializers.ValidationError('Invalid email or password.')
             if not user.is_active:
