@@ -7,8 +7,6 @@ router.register(r'categories', views.CategoryViewSet, basename='category')
 router.register(r'regions', views.RegionViewSet, basename='region')
 router.register(r'projects', views.ProjectViewSet, basename='project')
 
-app_name = 'projects'
-
 urlpatterns = [
     path('', include(router.urls)),
 ]

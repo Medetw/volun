@@ -48,6 +48,14 @@ class ApplicationViewSet(viewsets.ModelViewSet):
             return ApplicationReviewSerializer
         return ApplicationSerializer
 
+    def create(self, request, *args, **kwargs):
+        if request.user.role != 'volunteer':
+            return Response(
+                {'error': 'Только волонтеры могут подавать заявки.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().create(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         """При создании заявки устанавливаем волонтера."""
         instance = serializer.save(volunteer=self.request.user)
@@ -55,6 +63,30 @@ class ApplicationViewSet(viewsets.ModelViewSet):
             action="APPLICATION_CREATED",
             user_id=self.request.user.id,
             details={'application_id': instance.id, 'project_id': instance.project_id}
+        )
+
+    def perform_update(self, serializer):
+        kwargs = {}
+        if 'status' in serializer.validated_data and self.request.user.role in ['organization', 'admin']:
+            kwargs['reviewed_by'] = self.request.user
+            kwargs['reviewed_at'] = timezone.now()
+        serializer.save(**kwargs)
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def statistics(self, request):
+        """Получить статистику по заявкам."""
+        qs = self.get_queryset()
+        return Response({
+            'total_applications': qs.count(),
+            'pending_applications': qs.filter(status=ApplicationStatus.PENDING).count(),
+            'approved_applications': qs.filter(status=ApplicationStatus.APPROVED).count(),
+            'rejected_applications': qs.filter(status=ApplicationStatus.REJECTED).count(),
+        })
+
+    def destroy(self, request, *args, **kwargs):
+        return Response(
+            {'error': 'Удаление заявок запрещено.'},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED
         )
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])

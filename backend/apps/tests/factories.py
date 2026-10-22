@@ -81,7 +81,6 @@ class OrganizationProfileFactory(factory.django.DjangoModelFactory):
     name = factory.Faker("company")
     organization_type = fuzzy.FuzzyChoice([OrganizationType.NGO, OrganizationType.INITIATIVE_GROUP, OrganizationType.GOVERNMENT])
     description = factory.Faker("text", max_nb_chars=500)
-    city = factory.Faker("city")
     region = factory.Faker("state")
     contacts = factory.LazyFunction(lambda: {
         "phone": factory.Faker("phone_number").generate(),

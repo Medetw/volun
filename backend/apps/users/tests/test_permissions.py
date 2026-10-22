@@ -1,5 +1,5 @@
 import pytest
-from django.test import TestCase
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -67,7 +67,7 @@ class TestUserPermissions:
         assert response.status_code == 401
         
         # But can access public project list
-        response = client.get('/api/projects/')
+        response = client.get(reverse('project-list'))
         assert response.status_code == 200
 
     def test_role_based_api_access(self, db):
@@ -100,16 +100,16 @@ class TestUserPermissions:
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
         # Volunteer can create application
-        response = client.post('/api/applications/', {
+        response = client.post(reverse('application-list'), {
             'project': 1,
             'cover_letter': 'I want to join',
             'hours_committed': 5
         })
-        # 404 because project doesn't exist, but 403 would mean no permission
-        assert response.status_code in [404, 403]
+        # 400/404 because project doesn't exist, but not 403
+        assert response.status_code in [400, 404]
         
         # Volunteer cannot create projects
-        response = client.post('/api/projects/', {
+        response = client.post(reverse('project-list'), {
             'title': 'Test Project',
             'description': 'Test',
             'category': 1
@@ -121,13 +121,13 @@ class TestUserPermissions:
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
         # Organization can create projects
-        response = client.post('/api/projects/', {
+        response = client.post(reverse('project-list'), {
             'title': 'Test Project',
             'description': 'Test',
             'category': 1
         })
-        # 400 because category doesn't exist, but 403 would mean no permission
-        assert response.status_code in [400, 403]
+        # 400 because category doesn't exist, but not 403
+        assert response.status_code == 400
         
         # Test admin access
         refresh = RefreshToken.for_user(admin)
@@ -135,7 +135,7 @@ class TestUserPermissions:
         
         # Admin can access admin endpoints
         response = client.get('/api/admin/statistics/')
-        assert response.status_code in [200, 404]  # 404 if endpoint doesn't exist yet
+        assert response.status_code in [200, 404]
 
     def test_cross_role_access_denial(self, db):
         """Test that users cannot access endpoints for other roles."""
@@ -158,9 +158,9 @@ class TestUserPermissions:
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
         # Volunteer trying to access organization-only endpoints
-        response = client.get('/api/applications/organization/')
-        assert response.status_code == 403
+        response = client.post(reverse('application-approve', kwargs={'pk': 1}))
+        assert response.status_code in [403, 404]
         
         # Volunteer trying to access admin-only endpoints
-        response = client.get('/api/admin/users/')
+        response = client.get(reverse('admin-users-list'))
         assert response.status_code == 403

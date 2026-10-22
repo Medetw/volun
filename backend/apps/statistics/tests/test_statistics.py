@@ -1,12 +1,12 @@
-from django.test import TestCase
+from rest_framework.test import APITestCase
 from django.contrib.auth import get_user_model
-from apps.projects.models import Project, ProjectStatus
+from apps.projects.models import Project, ProjectStatus, Category
 from apps.applications.models import Application, ApplicationStatus
 
 User = get_user_model()
 
 
-class StatisticsAPITest(TestCase):
+class StatisticsAPITest(APITestCase):
     def setUp(self):
         self.admin_user = User.objects.create_user(
             username='admin',
@@ -28,10 +28,13 @@ class StatisticsAPITest(TestCase):
             password='password',
             role='organization'
         )
+
+        self.category = Category.objects.create(name='General')
         
         self.project = Project.objects.create(
             title='Test Project',
             description='Test Description',
+            category=self.category,
             organization=self.organization_user,
             volunteers_needed=5,
             status=ProjectStatus.ACTIVE
@@ -101,7 +104,10 @@ class StatisticsAPITest(TestCase):
         self.assertEqual(data['my_applications']['total'], 1)
         self.assertEqual(data['my_applications']['approved'], 1)
 
-    def test_statistics_unauthorized(self):
-        """Тест доступа без авторизации."""
+    def test_statistics_unauthenticated(self):
+        """Тест доступа без авторизации (публичная статистика)."""
         response = self.client.get('/api/statistics/')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('users', response.data)
+        self.assertIn('projects', response.data)
+        self.assertIn('applications', response.data)

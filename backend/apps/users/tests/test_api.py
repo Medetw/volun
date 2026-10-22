@@ -4,6 +4,7 @@ from rest_framework import status
 from apps.users.models import User, UserRole
 
 
+@pytest.mark.django_db
 class TestAuthAPI:
     """Test authentication API endpoints."""
 
@@ -119,7 +120,7 @@ class TestAuthAPI:
             }
         }
         
-        response = auth_volunteer_client.patch(url, data)
+        response = auth_volunteer_client.patch(url, data, format='json')
         assert response.status_code == status.HTTP_200_OK
         
         volunteer_user.refresh_from_db()
@@ -184,6 +185,7 @@ class TestAuthAPI:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
+@pytest.mark.django_db
 class TestUserAPI:
     """Test user-related API endpoints."""
 

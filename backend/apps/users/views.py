@@ -10,10 +10,11 @@ from rest_framework.response import Response
 
 from apps.users.models import User, UserRole, VolunteerCertificate, VolunteerHoursLog, VolunteerProfile, ModeratorProfile, Blacklist
 from apps.users.serializers import (
+    UserSerializer,
     VolunteerCertificateSerializer, VolunteerHoursLogSerializer,
     ModeratorProfileSerializer, BlacklistSerializer,
 )
-from apps.users.permissions import IsAdminOrModerator, ModeratorPermission
+from apps.users.permissions import IsAdminOrModerator, ModeratorPermission, IsAdminRole
 from apps.core.logging import logger
 
 
@@ -469,3 +470,21 @@ class VolunteerOfWeekAPIView(views.APIView):
             },
             'week_hours': top['week_hours'],
         })
+
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet для просмотра пользователей (admin / self)."""
+    serializer_class = UserSerializer
+
+    def get_permissions(self):
+        if self.action == 'list':
+            return [permissions.IsAuthenticated(), IsAdminRole()]
+        return [permissions.IsAuthenticated()]
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            return User.objects.none()
+        if getattr(user, 'role', None) == UserRole.ADMIN or getattr(user, 'is_staff', False):
+            return User.objects.all().order_by('id')
+        return User.objects.filter(id=user.id)

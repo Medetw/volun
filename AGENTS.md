@@ -52,9 +52,10 @@ Stage 2: python:3.12-slim   → pip install, копирует backend + frontend
 1. Ждёт PostgreSQL (socket check)
 2. python manage.py migrate
 3. python manage.py collectstatic
-4. python manage.py createsuperuser --noinput || true  ← если заданы DJANGO_SUPERUSER_*
-5. python manage.py create_test_accounts  ← если DJANGO_CREATE_TEST_ACCOUNTS=1 (по умолч.)
-6. exec gunicorn (1 worker, 4 threads, timeout 120)
+4. python manage.py create_initial_data  ← категории и регионы (идемпотентно)
+5. python manage.py createsuperuser --noinput || true  ← если заданы DJANGO_SUPERUSER_*
+6. python manage.py create_test_accounts  ← если DJANGO_CREATE_TEST_ACCOUNTS=1 (по умолч.)
+7. exec gunicorn (1 worker, 4 threads, timeout 120)
 ```
 
 > Чтобы отключить авто-создание тестовых аккаунтов на проде:

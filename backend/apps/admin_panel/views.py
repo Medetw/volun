@@ -12,10 +12,20 @@ from apps.core.logging import security_logger
 User = get_user_model()
 
 
+class IsAdminRole(permissions.BasePermission):
+    """Доступ только для администраторов."""
+    def has_permission(self, request, view):
+        return bool(
+            request.user and
+            request.user.is_authenticated and
+            (getattr(request.user, 'role', None) == 'admin' or getattr(request.user, 'is_staff', False))
+        )
+
+
 class AdminUserViewSet(viewsets.ModelViewSet):
     """ViewSet для администрирования пользователей."""
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminRole]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ["role", "is_active"]
     search_fields = ["username", "email", "first_name", "last_name"]

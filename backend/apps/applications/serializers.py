@@ -30,36 +30,52 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
         fields = ['project', 'cover_letter', 'hours_committed']
     
     def validate_project(self, value):
-        """Проверяем, что проект активен и есть свободные места."""
-        if not value.is_active:
-            raise serializers.ValidationError("Нельзя подать заявку на неактивный проект.")
-        
-        if value.volunteers_remaining <= 0:
+        """Проверяем, что в проекте есть свободные места."""
+        if value.volunteers_needed and value.volunteers_remaining <= 0:
             raise serializers.ValidationError("В проекте больше нет свободных мест.")
         
         return value
     
     def validate(self, attrs):
         """Проверяем, что волонтер еще не подавал заявку на этот проект."""
-        user = self.context['request'].user
-        project = attrs['project']
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+        project = attrs.get('project')
         
-        if Application.objects.filter(volunteer=user, project=project).exists():
+        if user and project and Application.objects.filter(volunteer=user, project=project).exists():
             raise serializers.ValidationError(
                 "Вы уже подали заявку на этот проект."
             )
         
         return attrs
 
+    def create(self, validated_data):
+        if 'volunteer' not in validated_data and 'request' in self.context:
+            validated_data['volunteer'] = self.context['request'].user
+        return super().create(validated_data)
+
 
 class ApplicationReviewSerializer(serializers.ModelSerializer):
-    """Сериализатор для рассмотрения заявок организацией."""
+    """Сериализатор для рассмотрения заявок организацией или обновления волонтером."""
     class Meta:
         model = Application
-        fields = ['status', 'review_comment']
-    
+        fields = ['status', 'review_comment', 'cover_letter', 'hours_committed']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+        if user and getattr(user, 'role', None) == 'volunteer':
+            self.fields.pop('status', None)
+            self.fields.pop('review_comment', None)
+        elif user and getattr(user, 'role', None) in ['organization', 'admin']:
+            self.fields.pop('cover_letter', None)
+            self.fields.pop('hours_committed', None)
+
     def validate_status(self, value):
         """Проверяем, что статус можно изменить."""
+        if not self.instance:
+            return value
         current_status = self.instance.status
         
         if current_status != ApplicationStatus.PENDING:
@@ -73,6 +89,16 @@ class ApplicationReviewSerializer(serializers.ModelSerializer):
             )
         
         return value
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+        if user and getattr(user, 'role', None) in ['organization', 'admin']:
+            if 'status' in validated_data:
+                instance.reviewed_by = user
+                from django.utils import timezone
+                instance.reviewed_at = timezone.now()
+        return super().update(instance, validated_data)
 
 
 class ApplicationListSerializer(serializers.ModelSerializer):

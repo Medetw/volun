@@ -28,6 +28,18 @@ class User(AbstractUser):
     password_reset_code = models.CharField(max_length=6, blank=True, null=True)
     password_reset_expiry = models.DateTimeField(null=True, blank=True)
 
+    def has_perm(self, perm, obj=None):
+        """Role-based permissions check."""
+        if self.is_active and (self.is_superuser or self.role == UserRole.ADMIN):
+            return True
+        if self.role == UserRole.ORGANIZATION:
+            if perm in ['projects.add_project', 'projects.change_own_project', 'users.view_own_profile']:
+                return True
+        if self.role == UserRole.VOLUNTEER:
+            if perm in ['users.view_own_profile', 'applications.add_application']:
+                return True
+        return super().has_perm(perm, obj)
+
 
 class VolunteerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="volunteer_profile")

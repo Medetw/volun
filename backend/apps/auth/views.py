@@ -48,6 +48,8 @@ def register_volunteer(request):
         
         return Response({
             'user': UserSerializer(user, context={'request': request}).data,
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
             'tokens': {
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
@@ -91,6 +93,8 @@ def register_organization(request):
 
         return Response({
             'user': UserSerializer(user, context={'request': request}).data,
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
             'tokens': {
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
@@ -131,6 +135,8 @@ def login(request):
         
         return Response({
             'user': UserSerializer(user, context={'request': request}).data,
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
             'tokens': {
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
@@ -139,7 +145,7 @@ def login(request):
 
     log_authentication_attempt(request, success=False, username=email)
     logger.warning(f"Login failed for {email}: {serializer.errors}")
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 
 @extend_schema(

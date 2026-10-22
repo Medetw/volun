@@ -1,8 +1,11 @@
 import pytest
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from apps.applications.models import Application, ApplicationStatus
 from apps.users.models import UserRole
+
+User = get_user_model()
 
 
 class TestApplicationAPI:
@@ -17,7 +20,10 @@ class TestApplicationAPI:
         # Should only see own applications
         applications = response.data['results']
         assert len(applications) >= 1
-        assert all(app['volunteer'] == volunteer_user.id for app in applications)
+        assert all(
+            (app['volunteer']['id'] if isinstance(app['volunteer'], dict) else app['volunteer']) == volunteer_user.id
+            for app in applications
+        )
 
     def test_list_applications_organization(self, auth_organization_client, organization_user, application):
         """Test that organizations can list applications for their projects."""
@@ -50,7 +56,8 @@ class TestApplicationAPI:
         url = reverse('application-detail', kwargs={'pk': application.pk})
         response = auth_volunteer_client.get(url)
         assert response.status_code == status.HTTP_200_OK
-        assert response.data['volunteer'] == volunteer_user.id
+        vol_id = response.data['volunteer']['id'] if isinstance(response.data['volunteer'], dict) else response.data['volunteer']
+        assert vol_id == volunteer_user.id
 
     def test_retrieve_application_organization(self, auth_organization_client, organization_user, application):
         """Test that organization can retrieve application for their project."""
@@ -191,7 +198,10 @@ class TestApplicationAPI:
         # Filter by project
         response = auth_organization_client.get(url, {'project': application.project.id})
         assert response.status_code == status.HTTP_200_OK
-        assert all(app['project'] == application.project.id for app in response.data['results'])
+        assert all(
+            ((app['project']['id'] if isinstance(app['project'], dict) else app['project']) == application.project.id)
+            for app in response.data['results']
+        )
 
     def test_application_statistics(self, auth_organization_client, organization_user, application, approved_application):
         """Test application statistics endpoint."""

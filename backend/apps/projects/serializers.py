@@ -57,6 +57,7 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
     organization = serializers.SerializerMethodField()
     volunteers_count = serializers.IntegerField(read_only=True)
     volunteers_remaining = serializers.IntegerField(read_only=True)
+    is_active = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = Project
@@ -64,9 +65,10 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
             'id', 'title', 'description', 'category', 'format', 'region',
             'start_date', 'end_date', 'volunteers_needed', 'status',
             'organization', 'volunteers_count', 'volunteers_remaining',
+            'is_active',
             'created_at', 'updated_at', 'image', 'requirements', 'contact_info'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'organization', 'volunteers_count', 'volunteers_remaining']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'organization', 'volunteers_count', 'volunteers_remaining', 'is_active']
 
     def get_organization(self, obj: Project) -> Dict[str, Any]:
         """Get organization profile information."""
@@ -85,6 +87,14 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
     """Serializer for creating and updating projects."""
     category_id = serializers.IntegerField(write_only=True)
     region_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    
+    def to_internal_value(self, data):
+        data = data.copy() if hasattr(data, 'copy') else dict(data)
+        if 'category' in data and 'category_id' not in data:
+            data['category_id'] = data.get('category')
+        if 'region' in data and 'region_id' not in data:
+            data['region_id'] = data.get('region')
+        return super().to_internal_value(data)
     
     class Meta:
         model = Project

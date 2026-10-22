@@ -228,14 +228,16 @@ class TestUserRoleChoices(TestCase):
         """Test user role choices are valid."""
         assert UserRole.VOLUNTEER == 'volunteer'
         assert UserRole.ORGANIZATION == 'organization'
+        assert UserRole.MODERATOR == 'moderator'
         assert UserRole.ADMIN == 'admin'
         
         # Test choices list
         choices = UserRole.choices
-        assert len(choices) == 3
-        assert ('volunteer', 'Volunteer') in choices
-        assert ('organization', 'Organization') in choices
-        assert ('admin', 'Admin') in choices
+        assert len(choices) == 4
+        assert (UserRole.VOLUNTEER.value, UserRole.VOLUNTEER.label) in choices
+        assert (UserRole.ORGANIZATION.value, UserRole.ORGANIZATION.label) in choices
+        assert (UserRole.MODERATOR.value, UserRole.MODERATOR.label) in choices
+        assert (UserRole.ADMIN.value, UserRole.ADMIN.label) in choices
 
 
 class TestOrganizationTypeChoices(TestCase):
@@ -249,7 +251,7 @@ class TestOrganizationTypeChoices(TestCase):
         
         # Test choices list
         choices = OrganizationType.choices
-        assert len(choices) == 3
-        assert ('ngo', 'NPO/NGO') in choices
-        assert ('initiative_group', 'Initiative group') in choices
-        assert ('government', 'Government') in choices
+        assert len(choices) == 9
+        assert (OrganizationType.NGO.value, OrganizationType.NGO.label) in choices
+        assert (OrganizationType.INITIATIVE_GROUP.value, OrganizationType.INITIATIVE_GROUP.label) in choices
+        assert (OrganizationType.GOVERNMENT.value, OrganizationType.GOVERNMENT.label) in choices

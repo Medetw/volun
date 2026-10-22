@@ -4,7 +4,8 @@ from rest_framework.routers import DefaultRouter
 from apps.applications.views import ApplicationViewSet
 
 router = DefaultRouter()
-router.register(r'applications', ApplicationViewSet, basename='applications')
+router.register(r'applications', ApplicationViewSet, basename='application')
+router.register(r'', ApplicationViewSet, basename='application-root')
 
 urlpatterns = [
     path('', include(router.urls)),

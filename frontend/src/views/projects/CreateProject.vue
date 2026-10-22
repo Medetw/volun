@@ -56,9 +56,10 @@
                 required
                 class="form-input"
                 :class="{ 'border-red-500': errors.category_id }"
+                :disabled="loadingCategories"
               >
                 <option value="">
-                  Выберите категорию
+                  {{ loadingCategories ? 'Загрузка категорий...' : (categories.length === 0 ? 'Категории не загружены' : 'Выберите категорию') }}
                 </option>
                 <option
                   v-for="category in categories"
@@ -73,6 +74,12 @@
                 class="form-error"
               >
                 {{ errors.category_id }}
+              </div>
+              <div
+                v-if="!loadingCategories && categories.length === 0"
+                class="text-xs text-amber-600 mt-1"
+              >
+                Категории не загрузились. Попробуйте обновить страницу.
               </div>
             </div>
           </div>
@@ -126,15 +133,20 @@
             </div>
             
             <div>
-              <label class="form-label">Регион *</label>
+              <label class="form-label">
+                Регион
+                <span v-if="form.format !== 'online'">*</span>
+                <span v-else class="text-xs text-gray-500 font-normal ml-1">(для онлайн необязателен)</span>
+              </label>
               <select
                 v-model="form.region_id"
-                required
+                :required="form.format !== 'online'"
                 class="form-input"
                 :class="{ 'border-red-500': errors.region_id }"
+                :disabled="loadingRegions"
               >
                 <option value="">
-                  Выберите регион
+                  {{ loadingRegions ? 'Загрузка регионов...' : (form.format === 'online' ? 'Не требуется (онлайн)' : (regions.length === 0 ? 'Регионы не загружены' : 'Выберите регион')) }}
                 </option>
                 <option
                   v-for="region in regions"
@@ -149,6 +161,12 @@
                 class="form-error"
               >
                 {{ errors.region_id }}
+              </div>
+              <div
+                v-if="!loadingRegions && regions.length === 0"
+                class="text-xs text-amber-600 mt-1"
+              >
+                Регионы не загрузились. Попробуйте обновить страницу.
               </div>
             </div>
           </div>
@@ -368,6 +386,8 @@ const form = reactive({
 
 const categories = ref<Category[]>([])
 const regions = ref<Region[]>([])
+const loadingCategories = ref(false)
+const loadingRegions = ref(false)
 const imageFile = ref<File | null>(null)
 const imagePreview = ref<string | null>(null)
 
@@ -392,17 +412,23 @@ onMounted(async () => {
 
 const loadCategories = async () => {
   try {
+    loadingCategories.value = true
     categories.value = await apiService.getCategories()
   } catch (err) {
     console.error('Failed to load categories:', err)
+  } finally {
+    loadingCategories.value = false
   }
 }
 
 const loadRegions = async () => {
   try {
+    loadingRegions.value = true
     regions.value = await apiService.getRegions()
   } catch (err) {
     console.error('Failed to load regions:', err)
+  } finally {
+    loadingRegions.value = false
   }
 }
 
@@ -444,8 +470,8 @@ const validateForm = () => {
     return false
   }
 
-  if (!form.region_id) {
-    errors.region_id = 'Регион обязателен'
+  if (form.format !== 'online' && !form.region_id) {
+    errors.region_id = 'Регион обязателен для офлайн и гибридных проектов'
     return false
   }
 
@@ -478,6 +504,7 @@ const handleSubmit = async () => {
     if (!projectData.start_date) delete projectData.start_date
     if (!projectData.end_date) delete projectData.end_date
     if (!projectData.image) delete projectData.image
+    if (!projectData.region_id) delete projectData.region_id
 
     const createdProject = await apiService.createProject(projectData)
     

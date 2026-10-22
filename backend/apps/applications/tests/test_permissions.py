@@ -323,9 +323,15 @@ class TestApplicationPermissions:
         assert application.status == ApplicationStatus.CANCELLED
         
         # Create new application for organization test
+        project2 = Project.objects.create(
+            title='Test Project 2',
+            description='Test 2',
+            category=category,
+            organization=organization
+        )
         new_app = Application.objects.create(
             volunteer=volunteer,
-            project=project,
+            project=project2,
             cover_letter='Another application'
         )
         

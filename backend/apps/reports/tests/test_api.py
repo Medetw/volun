@@ -2,7 +2,8 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 from apps.reports.models import ProjectReport, ReportStatus, VolunteerContribution
-from apps.users.models import UserRole
+from apps.projects.models import Project
+from apps.users.models import User, UserRole
 
 
 class TestProjectReportAPI:

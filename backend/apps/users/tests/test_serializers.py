@@ -29,7 +29,7 @@ class TestVolunteerProfileSerializer:
 
     def test_partial_update(self, db, volunteer_user):
         """Test partial update of volunteer profile."""
-        profile = VolunteerProfile.objects.create(user=volunteer_user)
+        profile = volunteer_user.volunteer_profile
         data = {'first_name': 'Updated Name'}
         serializer = VolunteerProfileSerializer(profile, data=data, partial=True)
         assert serializer.is_valid(raise_exception=True)
@@ -39,14 +39,13 @@ class TestVolunteerProfileSerializer:
 
     def test_serialization_output(self, db, volunteer_user):
         """Test serializer output format."""
-        profile = VolunteerProfile.objects.create(
-            user=volunteer_user,
-            first_name='John',
-            last_name='Doe',
-            city='Almaty',
-            skills=['teaching'],
-            volunteer_hours=5
-        )
+        profile = volunteer_user.volunteer_profile
+        profile.first_name = 'John'
+        profile.last_name = 'Doe'
+        profile.city = 'Almaty'
+        profile.skills = ['teaching']
+        profile.volunteer_hours = 5
+        profile.save()
         
         serializer = VolunteerProfileSerializer(profile)
         data = serializer.data
@@ -86,12 +85,11 @@ class TestOrganizationProfileSerializer:
 
     def test_serialization_output(self, db, organization_user):
         """Test serializer output format."""
-        profile = OrganizationProfile.objects.create(
-            user=organization_user,
-            name='Test Organization',
-            organization_type=OrganizationType.NGO,
-            description='Test description'
-        )
+        profile = organization_user.organization_profile
+        profile.name = 'Test Organization'
+        profile.organization_type = OrganizationType.NGO
+        profile.description = 'Test description'
+        profile.save()
         
         serializer = OrganizationProfileSerializer(profile)
         data = serializer.data
@@ -107,11 +105,10 @@ class TestUserSerializer:
 
     def test_user_serialization(self, db, volunteer_user):
         """Test user serialization with profile."""
-        VolunteerProfile.objects.create(
-            user=volunteer_user,
-            first_name='John',
-            last_name='Doe'
-        )
+        profile = volunteer_user.volunteer_profile
+        profile.first_name = 'John'
+        profile.last_name = 'Doe'
+        profile.save()
         
         serializer = UserSerializer(volunteer_user)
         data = serializer.data
@@ -125,11 +122,10 @@ class TestUserSerializer:
 
     def test_organization_user_serialization(self, db, organization_user):
         """Test organization user serialization."""
-        OrganizationProfile.objects.create(
-            user=organization_user,
-            name='Test Organization',
-            organization_type=OrganizationType.NGO
-        )
+        profile = organization_user.organization_profile
+        profile.name = 'Test Organization'
+        profile.organization_type = OrganizationType.NGO
+        profile.save()
         
         serializer = UserSerializer(organization_user)
         data = serializer.data

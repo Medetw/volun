@@ -46,6 +46,10 @@ python manage.py migrate --noinput
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
+# Populate initial categories and regions (idempotent)
+echo "Creating initial categories and regions..."
+python manage.py create_initial_data || true
+
 # Create superuser from environment variables if provided (blitz.cloud env vars)
 # Uses DJANGO_SUPERUSER_USERNAME, DJANGO_SUPERUSER_PASSWORD, DJANGO_SUPERUSER_EMAIL
 if [ -n "$DJANGO_SUPERUSER_PASSWORD" ] || [ -n "$DJANGO_SUPERUSER_USERNAME" ]; then

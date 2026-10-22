@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone
 from apps.reports.models import ProjectReport, ReportStatus, VolunteerContribution
+from apps.projects.models import Project
 from apps.projects.serializers import ProjectDetailSerializer
 from apps.users.serializers import UserSerializer
 
@@ -9,11 +10,13 @@ from apps.users.serializers import UserSerializer
 class VolunteerContributionSerializer(serializers.ModelSerializer):
     """Сериализатор для вклада волонтера."""
     volunteer_name = serializers.CharField(source='volunteer.username', read_only=True)
+    report = serializers.PrimaryKeyRelatedField(queryset=ProjectReport.objects.all(), required=False)
+    impact_description = serializers.CharField(required=False, allow_blank=True)
     
     class Meta:
         model = VolunteerContribution
         fields = [
-            'id', 'volunteer', 'volunteer_name', 'hours_contributed',
+            'id', 'report', 'volunteer', 'volunteer_name', 'hours_contributed',
             'tasks_completed', 'impact_description', 'performance_rating', 'feedback'
         ]
 
@@ -44,86 +47,104 @@ class ProjectReportSerializer(serializers.ModelSerializer):
             'reviewed_by', 'reviewed_by_name'
         ]
 
+    def to_internal_value(self, data):
+        data = data.copy() if hasattr(data, 'copy') else dict(data)
+        if 'project' in data and 'project_id' not in data:
+            data['project_id'] = data.get('project')
+        return super().to_internal_value(data)
+
     def validate_project_id(self, value):
-        """Проверяем, что проект существует и принадлежит организации."""
-        from apps.projects.models import Project
-        
+        """Проверяем, что проект существует."""
         try:
             project = Project.objects.get(id=value)
-            
-            # Проверяем, что пользователь - владелец проекта или админ
-            user = self.context['request'].user
-            if user.role != 'admin' and project.organization != user:
-                raise serializers.ValidationError(
-                    "Вы можете создавать отчеты только для своих проектов"
-                )
-            
+            if self.instance is None and ProjectReport.objects.filter(project=project).exists():
+                raise serializers.ValidationError("Отчет для этого проекта уже существует")
             return value
         except Project.DoesNotExist:
             raise serializers.ValidationError("Проект не найден")
 
-    def validate(self, attrs):
-        """Валидация данных отчета."""
-        # Проверяем, что количество волонтеров не превышает количество заявок
-        project_id = attrs.get('project_id')
-        if project_id:
-            from apps.projects.models import Project
-            from apps.applications.models import Application
-            
-            project = Project.objects.get(id=project_id)
-            total_volunteers = attrs.get('total_volunteers_participated', 0)
-            approved_applications = Application.objects.filter(
-                project=project, status='approved'
-            ).count()
-            
-            if total_volunteers > approved_applications:
-                raise serializers.ValidationError({
-                    'total_volunteers_participated': 
-                    f'Количество волонтеров не может превышать количество одобренных заявок ({approved_applications})'
-                })
-        
-        return attrs
 
-
-class ProjectReportCreateSerializer(ProjectReportSerializer):
+class ProjectReportCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания отчетов."""
+    project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all())
     contributions = VolunteerContributionSerializer(many=True, required=False)
+    total_volunteers_participated = serializers.IntegerField(min_value=0, required=False, default=0)
+    total_volunteer_hours = serializers.IntegerField(min_value=0, required=False, default=0)
+    beneficiaries_count = serializers.IntegerField(min_value=0, required=False, default=0)
+
+    class Meta:
+        model = ProjectReport
+        fields = [
+            'id', 'project', 'title', 'description',
+            'goals_achieved', 'challenges_faced',
+            'total_volunteers_participated', 'total_volunteer_hours', 'beneficiaries_count',
+            'report_file', 'photos',
+            'lessons_learned', 'future_plans',
+            'contributions'
+        ]
+
+    def validate_project(self, project):
+        if ProjectReport.objects.filter(project=project).exists():
+            raise serializers.ValidationError("Отчет для этого проекта уже существует")
+        
+        request = self.context.get('request')
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            user = request.user
+            if user.role == 'organization' and project.organization != user:
+                raise serializers.ValidationError("Вы можете создавать отчеты только для своих проектов")
+        return project
 
     def create(self, validated_data):
         """Создаем отчет и связанные вклады волонтеров."""
         contributions_data = validated_data.pop('contributions', [])
-        
         report = ProjectReport.objects.create(**validated_data)
-        
-        # Создаем вклады волонтеров
         for contribution_data in contributions_data:
             VolunteerContribution.objects.create(report=report, **contribution_data)
-        
         return report
 
 
-class ProjectReportUpdateSerializer(ProjectReportSerializer):
+class ProjectReportUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор для обновления отчетов."""
     contributions = VolunteerContributionSerializer(many=True, required=False)
+
+    class Meta:
+        model = ProjectReport
+        fields = [
+            'id', 'title', 'description',
+            'goals_achieved', 'challenges_faced',
+            'total_volunteers_participated', 'total_volunteer_hours', 'beneficiaries_count',
+            'report_file', 'photos',
+            'lessons_learned', 'future_plans',
+            'status', 'review_comment',
+            'contributions'
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+        if user and getattr(user, 'role', None) != 'admin' and not getattr(user, 'is_staff', False):
+            self.fields.pop('status', None)
+            self.fields.pop('review_comment', None)
 
     def update(self, instance, validated_data):
         """Обновляем отчет и связанные вклады волонтеров."""
         contributions_data = validated_data.pop('contributions', None)
-        
-        # Обновляем основные поля
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+        if user and (getattr(user, 'role', None) == 'admin' or getattr(user, 'is_staff', False)):
+            if 'status' in validated_data and validated_data['status'] in [ReportStatus.APPROVED, ReportStatus.REJECTED]:
+                instance.reviewed_by = user
+                instance.reviewed_at = timezone.now()
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
-        
-        # Обновляем вклады волонтеров
+
         if contributions_data is not None:
-            # Удаляем старые вклады
             instance.contributions.all().delete()
-            
-            # Создаем новые
             for contribution_data in contributions_data:
                 VolunteerContribution.objects.create(report=instance, **contribution_data)
-        
         return instance
 
 

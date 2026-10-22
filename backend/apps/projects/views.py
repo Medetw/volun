@@ -1,7 +1,7 @@
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 
@@ -13,24 +13,32 @@ from apps.projects.serializers import (
     CategorySerializer,
     RegionSerializer,
 )
-from apps.projects.permissions import IsOrganizationOrReadOnly, IsProjectOwnerOrReadOnly
+from apps.projects.permissions import IsOrganizationOrReadOnly, IsProjectOwnerOrReadOnly, IsAdminUserOrAdminRole
 from apps.core.logging import logger
 
 
-class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for viewing categories (read-only)."""
+class CategoryViewSet(viewsets.ModelViewSet):
+    """ViewSet for viewing and managing categories."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [AllowAny]
     pagination_class = None  # No pagination for categories
 
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [IsAdminUserOrAdminRole()]
 
-class RegionViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for viewing regions (read-only)."""
+
+class RegionViewSet(viewsets.ModelViewSet):
+    """ViewSet for viewing and managing regions."""
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
-    permission_classes = [AllowAny]
     pagination_class = None  # No pagination for regions
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [IsAdminUserOrAdminRole()]
 
 
 class ProjectViewSet(viewsets.ModelViewSet):

@@ -8,6 +8,7 @@ from apps.users.models import User, UserRole, VolunteerProfile, OrganizationProf
 class VolunteerRegisterSerializer(serializers.Serializer):
     """Serializer for volunteer registration."""
     email = serializers.EmailField(required=True)
+    username = serializers.CharField(required=False, allow_blank=True, max_length=150)
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True, required=True)
     phone = serializers.CharField(required=False, allow_blank=True, max_length=32)
@@ -27,11 +28,15 @@ class VolunteerRegisterSerializer(serializers.Serializer):
             raise serializers.ValidationError({"password": "Passwords don't match."})
         if User.objects.filter(email=attrs['email']).exists():
             raise serializers.ValidationError({"email": "User with this email already exists."})
+        username = attrs.get('username')
+        if username and User.objects.filter(username=username).exists():
+            raise serializers.ValidationError({"username": "User with this username already exists."})
         return attrs
 
     def create(self, validated_data):
         password = validated_data.pop('password')
         password_confirm = validated_data.pop('password_confirm')
+        username = validated_data.pop('username', None)
         
         # Extract volunteer profile fields
         volunteer_fields = {
@@ -48,7 +53,7 @@ class VolunteerRegisterSerializer(serializers.Serializer):
         # Create user
         user = User.objects.create_user(
             email=validated_data['email'],
-            username=validated_data['email'],  # Use email as username
+            username=username or validated_data['email'],
             password=password,
             role=UserRole.VOLUNTEER,
             phone=validated_data.get('phone', ''),
@@ -63,6 +68,7 @@ class VolunteerRegisterSerializer(serializers.Serializer):
 class OrganizationRegisterSerializer(serializers.Serializer):
     """Serializer for organization registration."""
     email = serializers.EmailField(required=True)
+    username = serializers.CharField(required=False, allow_blank=True, max_length=150)
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True, required=True)
     phone = serializers.CharField(required=False, allow_blank=True, max_length=32)
@@ -79,11 +85,15 @@ class OrganizationRegisterSerializer(serializers.Serializer):
             raise serializers.ValidationError({"password": "Passwords don't match."})
         if User.objects.filter(email=attrs['email']).exists():
             raise serializers.ValidationError({"email": "User with this email already exists."})
+        username = attrs.get('username')
+        if username and User.objects.filter(username=username).exists():
+            raise serializers.ValidationError({"username": "User with this username already exists."})
         return attrs
 
     def create(self, validated_data):
         password = validated_data.pop('password')
         password_confirm = validated_data.pop('password_confirm')
+        username = validated_data.pop('username', None)
         
         # Extract organization profile fields
         org_fields = {
@@ -97,7 +107,7 @@ class OrganizationRegisterSerializer(serializers.Serializer):
         # Create user
         user = User.objects.create_user(
             email=validated_data['email'],
-            username=validated_data['email'],  # Use email as username
+            username=username or validated_data['email'],
             password=password,
             role=UserRole.ORGANIZATION,
             phone=validated_data.get('phone', ''),
@@ -111,19 +121,21 @@ class OrganizationRegisterSerializer(serializers.Serializer):
 
 class LoginSerializer(serializers.Serializer):
     """Serializer for user login (supports email or username)."""
-    email = serializers.CharField(required=True)
+    email = serializers.CharField(required=False, allow_blank=True)
+    username = serializers.CharField(required=False, allow_blank=True)
     password = serializers.CharField(write_only=True, required=True)
 
     def validate(self, attrs):
-        email = attrs.get('email', '').strip()
+        login_id = attrs.get('email') or attrs.get('username') or ''
+        login_id = login_id.strip()
         password = attrs.get('password')
         
-        if email and password:
+        if login_id and password:
             # Try to authenticate using email or username
             user = authenticate(
                 request=self.context.get('request'),
-                email=email,
-                username=email,
+                email=login_id,
+                username=login_id,
                 password=password
             )
             if not user:
@@ -132,7 +144,7 @@ class LoginSerializer(serializers.Serializer):
                 raise serializers.ValidationError('User account is disabled.')
             attrs['user'] = user
         else:
-            raise serializers.ValidationError('Must include "email" and "password".')
+            raise serializers.ValidationError('Must include "email" or "username" and "password".')
         
         return attrs
 
@@ -189,12 +201,14 @@ class UserUpdateSerializer(serializers.Serializer):
     region = serializers.CharField(required=False, allow_blank=True, max_length=255)
     skills = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
     interests = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
+    volunteer_profile = serializers.DictField(required=False)
     
     # Organization profile fields
     name = serializers.CharField(required=False, max_length=255)
     organization_type = serializers.ChoiceField(choices=OrganizationType.choices, required=False)
     description = serializers.CharField(required=False, allow_blank=True)
     contacts = serializers.DictField(required=False, allow_empty=True)
+    organization_profile = serializers.DictField(required=False)
 
     def update(self, instance, validated_data):
         # Update user fields
@@ -202,21 +216,35 @@ class UserUpdateSerializer(serializers.Serializer):
             instance.phone = validated_data['phone']
             instance.save()
         
-        # Update volunteer profile if exists
-        if hasattr(instance, 'volunteer_profile'):
-            volunteer_fields = ['first_name', 'last_name', 'birth_date', 'gender', 
-                              'city', 'region', 'skills', 'interests']
-            for field in volunteer_fields:
-                if field in validated_data:
-                    setattr(instance.volunteer_profile, field, validated_data[field])
+        # Check both flat fields and nested volunteer_profile
+        vp_data = {}
+        if 'volunteer_profile' in validated_data:
+            vp_data.update(validated_data['volunteer_profile'])
+        volunteer_fields = ['first_name', 'last_name', 'birth_date', 'gender', 
+                          'city', 'region', 'skills', 'interests']
+        for field in volunteer_fields:
+            if field in validated_data:
+                vp_data[field] = validated_data[field]
+
+        if hasattr(instance, 'volunteer_profile') and vp_data:
+            for field, val in vp_data.items():
+                if hasattr(instance.volunteer_profile, field):
+                    setattr(instance.volunteer_profile, field, val)
             instance.volunteer_profile.save()
         
-        # Update organization profile if exists
-        if hasattr(instance, 'organization_profile'):
-            org_fields = ['name', 'organization_type', 'description', 'contacts']
-            for field in org_fields:
-                if field in validated_data:
-                    setattr(instance.organization_profile, field, validated_data[field])
+        # Check both flat fields and nested organization_profile
+        op_data = {}
+        if 'organization_profile' in validated_data:
+            op_data.update(validated_data['organization_profile'])
+        org_fields = ['name', 'organization_type', 'description', 'contacts']
+        for field in org_fields:
+            if field in validated_data:
+                op_data[field] = validated_data[field]
+
+        if hasattr(instance, 'organization_profile') and op_data:
+            for field, val in op_data.items():
+                if hasattr(instance.organization_profile, field):
+                    setattr(instance.organization_profile, field, val)
             instance.organization_profile.save()
         
         return instance
@@ -257,7 +285,8 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
 class PasswordChangeSerializer(serializers.Serializer):
     """Сериализатор для изменения пароля."""
-    current_password = serializers.CharField(required=True, write_only=True)
+    current_password = serializers.CharField(required=False, write_only=True)
+    old_password = serializers.CharField(required=False, write_only=True)
     new_password = serializers.CharField(
         required=True,
         write_only=True,
@@ -266,15 +295,18 @@ class PasswordChangeSerializer(serializers.Serializer):
     )
     new_password_confirm = serializers.CharField(required=True, write_only=True)
 
-    def validate_current_password(self, value):
-        """Проверяем текущий пароль."""
-        user = self.context['request'].user
-        if not user.check_password(value):
-            raise serializers.ValidationError('Неверный текущий пароль')
-        return value
-
     def validate(self, attrs):
-        """Проверяем совпадение новых паролей."""
+        """Проверяем старый пароль и совпадение новых паролей."""
+        old_pwd = attrs.get('old_password') or attrs.get('current_password')
+        if not old_pwd:
+            raise serializers.ValidationError({
+                'current_password': 'Это поле обязательно.'
+            })
+        user = self.context['request'].user
+        if not user.check_password(old_pwd):
+            raise serializers.ValidationError({
+                'current_password': 'Неверный текущий пароль'
+            })
         if attrs['new_password'] != attrs['new_password_confirm']:
             raise serializers.ValidationError({
                 'new_password_confirm': 'Новые пароли не совпадают'

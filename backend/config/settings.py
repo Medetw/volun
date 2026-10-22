@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "unsafe-dev-secret-key-change-me")
 DEBUG = os.getenv("DJANGO_DEBUG", "0") == "1"
 
 ALLOWED_HOSTS = [
-    h for h in os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if h
+    h for h in os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,testserver").split(",") if h
 ]
 
 
@@ -63,9 +63,15 @@ INSTALLED_APPS = [
     'apps.admin_panel',
 ]
 
+try:
+    import whitenoise  # noqa: F401
+    _WHITENOISE_AVAILABLE = True
+except ImportError:
+    _WHITENOISE_AVAILABLE = False
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    *(["whitenoise.middleware.WhiteNoiseMiddleware"] if _WHITENOISE_AVAILABLE else []),
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -207,6 +213,8 @@ AUTHENTICATION_BACKENDS = [
 
 # DRF / JWT / OpenAPI
 REST_FRAMEWORK = {
+    "URL_FORMAT_OVERRIDE": None,
+    "FORMAT_SUFFIX_KWARG": "format_suffix",
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),

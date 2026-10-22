@@ -18,9 +18,31 @@ from apps.reports.serializers import (
 from apps.core.logging import logger
 
 
+class ProjectReportPermission(permissions.BasePermission):
+    """
+    Отчеты по проектам доступны только организациям, модераторам и администраторам.
+    Волонтерам доступ запрещен.
+    """
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        return request.user.role in ('organization', 'moderator', 'admin') or getattr(request.user, 'is_staff', False)
+
+
+class VolunteerContributionPermission(permissions.BasePermission):
+    """
+    Просмотр и изменение — только организациям, модераторам и администраторам.
+    Волонтерам доступ запрещен.
+    """
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        return request.user.role in ('organization', 'moderator', 'admin') or getattr(request.user, 'is_staff', False)
+
+
 class ProjectReportViewSet(viewsets.ModelViewSet):
     """ViewSet для управления отчетами по проектам."""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [ProjectReportPermission]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['status', 'project']
     search_fields = ['title', 'description', 'goals_achieved']
@@ -54,7 +76,14 @@ class ProjectReportViewSet(viewsets.ModelViewSet):
             return ReportReviewSerializer
         return ProjectReportSerializer
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def destroy(self, request, *args, **kwargs):
+        """Удаление отчетов запрещено."""
+        return Response(
+            {'error': 'Удаление отчетов запрещено'},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED
+        )
+
+    @action(detail=True, methods=['post'])
     def submit(self, request, pk=None):
         """Отправить отчет на модерацию."""
         report = self.get_object()
@@ -80,7 +109,7 @@ class ProjectReportViewSet(viewsets.ModelViewSet):
         )
         return Response({'message': 'Отчет отправлен на модерацию'})
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
         """Одобрить отчет."""
         report = self.get_object()
@@ -104,7 +133,7 @@ class ProjectReportViewSet(viewsets.ModelViewSet):
         )
         return Response({'message': 'Отчет одобрен'})
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=True, methods=['post'])
     def reject(self, request, pk=None):
         """Отклонить отчет."""
         report = self.get_object()
@@ -134,7 +163,7 @@ class ProjectReportViewSet(viewsets.ModelViewSet):
         )
         return Response({'message': 'Отчет отклонен'})
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=True, methods=['post'])
     def add_contribution(self, request, pk=None):
         """Добавить вклад волонтера в отчет."""
         report = self.get_object()
@@ -203,7 +232,7 @@ class ProjectReportViewSet(viewsets.ModelViewSet):
 class VolunteerContributionViewSet(viewsets.ModelViewSet):
     """ViewSet для управления вкладами волонтеров."""
     serializer_class = VolunteerContributionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [VolunteerContributionPermission]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['report', 'volunteer']
     search_fields = ['tasks_completed', 'impact_description', 'feedback']

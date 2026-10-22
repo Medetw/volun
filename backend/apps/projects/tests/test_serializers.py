@@ -38,7 +38,7 @@ class TestProjectDetailSerializer:
         assert data['volunteers_count'] == 1
         assert data['volunteers_remaining'] == project.volunteers_needed - 1
 
-    def test_project_read_only_fields(self, db, project):
+    def test_project_read_only_fields(self, db, project, approved_application):
         """Test that certain fields are read-only."""
         serializer = ProjectDetailSerializer(project, data={
             'volunteers_count': 999,

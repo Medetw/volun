@@ -1,6 +1,17 @@
 from rest_framework.permissions import BasePermission
 
 
+class IsAdminRole(BasePermission):
+    """Разрешён доступ только для администраторов."""
+
+    def has_permission(self, request, view):
+        return bool(
+            request.user and
+            request.user.is_authenticated and
+            (getattr(request.user, 'role', None) == 'admin' or getattr(request.user, 'is_staff', False))
+        )
+
+
 class IsAdminOrModerator(BasePermission):
     """Разрешён доступ только для admin и moderator."""
 

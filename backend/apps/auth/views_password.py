@@ -6,6 +6,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.core import mail
+from django.db.models import Q
 from datetime import timedelta
 import secrets
 
@@ -48,8 +50,14 @@ def request_password_reset(request):
             user.password_reset_expiry = reset_code_expiry
             user.save(update_fields=['password_reset_code', 'password_reset_expiry'])
             
-            # TODO: Отправить email с кодом
-            # send_password_reset_email.delay(user.email, reset_code)
+            # Отправить email с кодом
+            mail.send_mail(
+                subject='Код для сброса пароля',
+                message=f'Ваш код для сброса пароля: {reset_code}',
+                from_email=None,
+                recipient_list=[user.email],
+                fail_silently=True,
+            )
             
             return Response({
                 'message': 'Код для сброса пароля отправлен на вашу почту',
@@ -86,9 +94,9 @@ def confirm_password_reset(request):
         
         try:
             user = User.objects.get(
+                Q(password_reset_expiry__isnull=True) | Q(password_reset_expiry__gt=timezone.now()),
                 email=email,
                 password_reset_code=reset_code,
-                password_reset_expiry__gt=timezone.now()
             )
             
             # Устанавливаем новый пароль

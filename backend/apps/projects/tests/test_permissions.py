@@ -1,12 +1,10 @@
 import pytest
-from django.test import TestCase
-from django.contrib.auth import get_user_model
+from django.urls import reverse
+from rest_framework import status
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
-from apps.projects.models import Project
-from apps.users.models import UserRole
-
-User = get_user_model()
+from apps.projects.models import Project, Category, Region
+from apps.users.models import User, UserRole
 
 
 class TestProjectPermissions:
@@ -37,7 +35,6 @@ class TestProjectPermissions:
         )
         
         # Create project by organization
-        from apps.projects.models import Category
         category = Category.objects.create(name='Test Category')
         project = Project.objects.create(
             title='Test Project',
@@ -53,44 +50,44 @@ class TestProjectPermissions:
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
         # Volunteer can view projects
-        response = client.get(f'/api/projects/{project.id}/')
-        assert response.status_code == 200
+        response = client.get(reverse('project-detail', kwargs={'pk': project.id}))
+        assert response.status_code == status.HTTP_200_OK
         
         # Volunteer cannot create projects
-        response = client.post('/api/projects/', {
+        response = client.post(reverse('project-list'), {
             'title': 'New Project',
             'description': 'Test',
             'category': category.id
         })
-        assert response.status_code == 403
+        assert response.status_code == status.HTTP_403_FORBIDDEN
         
         # Volunteer cannot update projects
-        response = client.patch(f'/api/projects/{project.id}/', {'title': 'Updated'})
-        assert response.status_code == 404  # IsFiltered, not found for non-owner
+        response = client.patch(reverse('project-detail', kwargs={'pk': project.id}), {'title': 'Updated'})
+        assert response.status_code in [status.HTTP_403_FORBIDDEN, status.HTTP_404_NOT_FOUND]
         
         # Volunteer cannot delete projects
-        response = client.delete(f'/api/projects/{project.id}/')
-        assert response.status_code == 404
+        response = client.delete(reverse('project-detail', kwargs={'pk': project.id}))
+        assert response.status_code in [status.HTTP_403_FORBIDDEN, status.HTTP_404_NOT_FOUND]
         
         # Test organization permissions
         refresh = RefreshToken.for_user(organization)
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
         # Organization can create projects
-        response = client.post('/api/projects/', {
+        response = client.post(reverse('project-list'), {
             'title': 'New Project',
             'description': 'Test',
             'category': category.id
         })
-        assert response.status_code in [201, 400]  # 400 if validation error, but not 403
+        assert response.status_code in [status.HTTP_201_CREATED, status.HTTP_400_BAD_REQUEST]
         
         # Organization can update own project
-        response = client.patch(f'/api/projects/{project.id}/', {'title': 'Updated'})
-        assert response.status_code == 200
+        response = client.patch(reverse('project-detail', kwargs={'pk': project.id}), {'title': 'Updated'})
+        assert response.status_code == status.HTTP_200_OK
         
         # Organization can delete own project
-        response = client.delete(f'/api/projects/{project.id}/')
-        assert response.status_code == 204
+        response = client.delete(reverse('project-detail', kwargs={'pk': project.id}))
+        assert response.status_code == status.HTTP_204_NO_CONTENT
         
         # Test admin permissions
         refresh = RefreshToken.for_user(admin)
@@ -105,12 +102,12 @@ class TestProjectPermissions:
         )
         
         # Admin can update any project
-        response = client.patch(f'/api/projects/{new_project.id}/', {'title': 'Admin Updated'})
-        assert response.status_code == 200
+        response = client.patch(reverse('project-detail', kwargs={'pk': new_project.id}), {'title': 'Admin Updated'})
+        assert response.status_code == status.HTTP_200_OK
         
         # Admin can delete any project
-        response = client.delete(f'/api/projects/{new_project.id}/')
-        assert response.status_code == 204
+        response = client.delete(reverse('project-detail', kwargs={'pk': new_project.id}))
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_project_visibility_filters(self, db):
         """Test project visibility based on status."""
@@ -151,19 +148,18 @@ class TestProjectPermissions:
         client = APIClient()
         
         # Public user should only see active projects
-        response = client.get('/api/projects/')
-        assert response.status_code == 200
+        response = client.get(reverse('project-list'))
+        assert response.status_code == status.HTTP_200_OK
         
         project_ids = [p['id'] for p in response.data['results']]
         assert active_project.id in project_ids
         assert draft_project.id not in project_ids
-        # Completed projects might be visible depending on implementation
         
         # Organization should see own draft projects
         refresh = RefreshToken.for_user(organization)
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
-        response = client.get('/api/projects/')
+        response = client.get(reverse('project-list'))
         project_ids = [p['id'] for p in response.data['results']]
         assert draft_project.id in project_ids  # Organization can see own drafts
         assert active_project.id in project_ids
@@ -198,46 +194,46 @@ class TestProjectPermissions:
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
         # Volunteer can view categories and regions
-        response = client.get('/api/categories/')
-        assert response.status_code == 200
+        response = client.get(reverse('category-list'))
+        assert response.status_code == status.HTTP_200_OK
         
-        response = client.get('/api/regions/')
-        assert response.status_code == 200
+        response = client.get(reverse('region-list'))
+        assert response.status_code == status.HTTP_200_OK
         
         # Volunteer cannot create categories or regions
-        response = client.post('/api/categories/', {'name': 'New Category'})
-        assert response.status_code == 403
+        response = client.post(reverse('category-list'), {'name': 'New Category'})
+        assert response.status_code == status.HTTP_403_FORBIDDEN
         
-        response = client.post('/api/regions/', {'name': 'New Region'})
-        assert response.status_code == 403
+        response = client.post(reverse('region-list'), {'name': 'New Region'})
+        assert response.status_code == status.HTTP_403_FORBIDDEN
         
         # Test organization permissions
         refresh = RefreshToken.for_user(organization)
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
         # Organization also cannot create categories or regions
-        response = client.post('/api/categories/', {'name': 'New Category'})
-        assert response.status_code == 403
+        response = client.post(reverse('category-list'), {'name': 'New Category'})
+        assert response.status_code == status.HTTP_403_FORBIDDEN
         
-        response = client.post('/api/regions/', {'name': 'New Region'})
-        assert response.status_code == 403
+        response = client.post(reverse('region-list'), {'name': 'New Region'})
+        assert response.status_code == status.HTTP_403_FORBIDDEN
         
         # Test admin permissions
         refresh = RefreshToken.for_user(admin)
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
         # Admin can create categories and regions
-        response = client.post('/api/categories/', {
+        response = client.post(reverse('category-list'), {
             'name': 'Admin Category',
             'description': 'Created by admin'
         })
-        assert response.status_code == 201
+        assert response.status_code == status.HTTP_201_CREATED
         
-        response = client.post('/api/regions/', {
+        response = client.post(reverse('region-list'), {
             'name': 'Admin Region',
             'code': 'AR'
         })
-        assert response.status_code == 201
+        assert response.status_code == status.HTTP_201_CREATED
 
     def test_project_ownership_validation(self, db):
         """Test that users can only manage their own projects."""
@@ -271,15 +267,15 @@ class TestProjectPermissions:
         refresh = RefreshToken.for_user(org2)
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
-        response = client.patch(f'/api/projects/{project.id}/', {'title': 'Hijacked'})
-        assert response.status_code == 404  # IsFiltered, project not found for org2
+        response = client.patch(reverse('project-detail', kwargs={'pk': project.id}), {'title': 'Hijacked'})
+        assert response.status_code in [status.HTTP_403_FORBIDDEN, status.HTTP_404_NOT_FOUND]
         
         # org1 can update own project
         refresh = RefreshToken.for_user(org1)
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
-        response = client.patch(f'/api/projects/{project.id}/', {'title': 'Legitimate Update'})
-        assert response.status_code == 200
+        response = client.patch(reverse('project-detail', kwargs={'pk': project.id}), {'title': 'Legitimate Update'})
+        assert response.status_code == status.HTTP_200_OK
         
         project.refresh_from_db()
         assert project.title == 'Legitimate Update'

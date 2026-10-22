@@ -30,3 +30,17 @@ class IsProjectOwnerOrReadOnly(permissions.BasePermission):
         if request.user.role in ('admin', 'moderator'):
             return True
         return obj.organization == request.user
+
+
+class IsAdminUserOrAdminRole(permissions.BasePermission):
+    """
+    Allow access to staff or users with admin role.
+    """
+
+    def has_permission(self, request, view):
+        return bool(
+            request.user and
+            request.user.is_authenticated and
+            (getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', None) == 'admin')
+        )
+

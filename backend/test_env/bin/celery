@@ -1,4 +1,4 @@
-#!/home/medet/projects/volunteering-platform/backend/test_env/bin/python3
+#!/home/medet/projects/volun/backend/test_env/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

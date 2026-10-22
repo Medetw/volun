@@ -7,8 +7,8 @@ from apps.reports.views import (
 )
 
 router = DefaultRouter()
-router.register(r'reports', ProjectReportViewSet, basename='reports')
-router.register(r'contributions', VolunteerContributionViewSet, basename='contributions')
+router.register(r'reports', ProjectReportViewSet, basename='projectreport')
+router.register(r'contributions', VolunteerContributionViewSet, basename='volunteercontribution')
 
 urlpatterns = [
     path('', include(router.urls)),

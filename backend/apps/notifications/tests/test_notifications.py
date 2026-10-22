@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -81,7 +82,7 @@ class NotificationAPITest(TestCase):
 
     def test_get_notifications_unauthorized(self):
         """Тест доступа без авторизации."""
-        response = self.client.get('/api/notifications/')
+        response = self.client.get(reverse('notifications-list'))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_get_notifications_authorized(self):
@@ -96,7 +97,7 @@ class NotificationAPITest(TestCase):
             message='Test message'
         )
         
-        response = self.client.get('/api/notifications/')
+        response = self.client.get(reverse('notifications-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
 
@@ -111,7 +112,7 @@ class NotificationAPITest(TestCase):
             message='Test message'
         )
         
-        response = self.client.post(f'/api/notifications/{notification.id}/mark_read/')
+        response = self.client.post(reverse('notifications-mark-read', kwargs={'pk': notification.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
         notification.refresh_from_db()
@@ -136,7 +137,7 @@ class NotificationAPITest(TestCase):
             status='read'
         )
         
-        response = self.client.get('/api/notifications/stats/')
+        response = self.client.get(reverse('notifications-stats'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['total'], 2)
         self.assertEqual(response.data['unread'], 1)
@@ -147,11 +148,11 @@ class NotificationAPITest(TestCase):
         self.client.force_authenticate(user=self.user)
         
         # Получаем настройки
-        response = self.client.get('/api/notification-preferences/')
+        response = self.client.get(reverse('notification-preferences-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
         # Обновляем настройки
-        response = self.client.patch('/api/notification-preferences/', {
+        response = self.client.patch(reverse('notification-preferences-list'), {
             'email_new_projects': True
         })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -164,7 +165,7 @@ class NotificationAPITest(TestCase):
         """Тест рассылки уведомлений админом."""
         self.client.force_authenticate(user=self.admin)
         
-        response = self.client.post('/api/admin/notifications/broadcast/', {
+        response = self.client.post(reverse('admin-notifications-broadcast'), {
             'title': 'System Maintenance',
             'message': 'System will be under maintenance',
             'notification_type': NotificationType.SYSTEM

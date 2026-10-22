@@ -229,51 +229,50 @@
       <!-- Quick test credentials / secret shortcut buttons for testing -->
       <div class="mt-6 pt-4 border-t border-dashed border-gray-200">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Тестовый доступ (1-клик)</span>
-          <span class="text-[11px] text-gray-400">для заказчика / QA</span>
+          <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Тестовый доступ</span>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
           <button
             type="button"
-            class="text-xs py-1.5 px-2 bg-gray-100 hover:bg-primary-50 hover:text-primary-700 text-gray-700 rounded border border-gray-200 transition-colors text-left"
+            class="text-xs py-1.5 px-2 bg-gray-100 hover:bg-primary-50 hover:text-primary-700 text-gray-700 rounded border border-gray-200 transition-colors text-center font-medium"
             @click="fillTestAccount('test_admin@volun.test', 'Admin@12345')"
           >
-            👑 <b>Админ</b>
+            Админ
           </button>
           <button
             type="button"
-            class="text-xs py-1.5 px-2 bg-gray-100 hover:bg-primary-50 hover:text-primary-700 text-gray-700 rounded border border-gray-200 transition-colors text-left"
+            class="text-xs py-1.5 px-2 bg-gray-100 hover:bg-primary-50 hover:text-primary-700 text-gray-700 rounded border border-gray-200 transition-colors text-center font-medium"
             @click="fillTestAccount('test_moderator@volun.test', 'Mod@12345')"
           >
-            🛡 <b>Модератор</b>
+            Модератор
           </button>
           <button
             type="button"
-            class="text-xs py-1.5 px-2 bg-gray-100 hover:bg-primary-50 hover:text-primary-700 text-gray-700 rounded border border-gray-200 transition-colors text-left"
+            class="text-xs py-1.5 px-2 bg-gray-100 hover:bg-primary-50 hover:text-primary-700 text-gray-700 rounded border border-gray-200 transition-colors text-center font-medium"
             @click="fillTestAccount('test_org@volun.test', 'Org@12345')"
           >
-            🏢 <b>Организация</b>
+            Организация
           </button>
           <button
             type="button"
-            class="text-xs py-1.5 px-2 bg-gray-100 hover:bg-primary-50 hover:text-primary-700 text-gray-700 rounded border border-gray-200 transition-colors text-left"
+            class="text-xs py-1.5 px-2 bg-gray-100 hover:bg-primary-50 hover:text-primary-700 text-gray-700 rounded border border-gray-200 transition-colors text-center font-medium"
             @click="fillTestAccount('test_volunteer@volun.test', 'Vol@12345')"
           >
-            🙋 <b>Волонтёр 1</b>
+            Волонтёр 1
           </button>
           <button
             type="button"
-            class="text-xs py-1.5 px-2 bg-gray-100 hover:bg-primary-50 hover:text-primary-700 text-gray-700 rounded border border-gray-200 transition-colors text-left"
+            class="text-xs py-1.5 px-2 bg-gray-100 hover:bg-primary-50 hover:text-primary-700 text-gray-700 rounded border border-gray-200 transition-colors text-center font-medium"
             @click="fillTestAccount('test_volunteer2@volun.test', 'Vol@12345')"
           >
-            🙋 <b>Волонтёр 2</b>
+            Волонтёр 2
           </button>
           <button
             type="button"
-            class="text-xs py-1.5 px-2 bg-gray-100 hover:bg-primary-50 hover:text-primary-700 text-gray-700 rounded border border-gray-200 transition-colors text-left"
+            class="text-xs py-1.5 px-2 bg-gray-100 hover:bg-primary-50 hover:text-primary-700 text-gray-700 rounded border border-gray-200 transition-colors text-center font-medium"
             @click="fillTestAccount('test_mod_limited@volun.test', 'Mod@12345')"
           >
-            🔒 <b>Мод (огран.)</b>
+            Мод (огран.)
           </button>
         </div>
       </div>

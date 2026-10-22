@@ -18,8 +18,8 @@ class TestApplicationSerializer:
         serializer = ApplicationSerializer(application)
         data = serializer.data
         
-        assert data['volunteer'] == application.volunteer.id
-        assert data['project'] == application.project.id
+        assert (data['volunteer']['id'] if isinstance(data['volunteer'], dict) else data['volunteer']) == application.volunteer.id
+        assert (data['project']['id'] if isinstance(data['project'], dict) else data['project']) == application.project.id
         assert data['status'] == application.status
         assert data['cover_letter'] == application.cover_letter
         assert data['hours_committed'] == application.hours_committed

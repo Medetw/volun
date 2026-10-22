@@ -34,7 +34,8 @@ class TestProjectReportPermissions:
             username='admin',
             email='admin@example.com',
             password='testpass123',
-            role=UserRole.ADMIN
+            role=UserRole.ADMIN,
+            is_staff=True
         )
         
         # Create project and report
@@ -60,11 +61,11 @@ class TestProjectReportPermissions:
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
         # Volunteer cannot view reports
-        response = client.get(f'/api/reports/{report.id}/')
+        response = client.get(f'/api/reports/reports/{report.id}/')
         assert response.status_code == 403
         
         # Volunteer cannot create reports
-        response = client.post('/api/reports/', {
+        response = client.post('/api/reports/reports/', {
             'project': project.id,
             'title': 'Volunteer Report',
             'description': 'Test',
@@ -73,7 +74,7 @@ class TestProjectReportPermissions:
         assert response.status_code == 403
         
         # Volunteer cannot update reports
-        response = client.patch(f'/api/reports/{report.id}/', {'title': 'Updated'})
+        response = client.patch(f'/api/reports/reports/{report.id}/', {'title': 'Updated'})
         assert response.status_code == 403
         
         # Test organization permissions
@@ -81,12 +82,18 @@ class TestProjectReportPermissions:
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
         # Organization can view own reports
-        response = client.get(f'/api/reports/{report.id}/')
+        response = client.get(f'/api/reports/reports/{report.id}/')
         assert response.status_code == 200
         
         # Organization can create reports for own projects
-        response = client.post('/api/reports/', {
-            'project': project.id,
+        new_project_for_org = Project.objects.create(
+            title='Another Org Project',
+            description='Test',
+            category=category,
+            organization=organization
+        )
+        response = client.post('/api/reports/reports/', {
+            'project': new_project_for_org.id,
             'title': 'New Report',
             'description': 'Test',
             'goals_achieved': 'Test'
@@ -94,17 +101,17 @@ class TestProjectReportPermissions:
         assert response.status_code in [201, 400]  # 400 if duplicate
         
         # Organization can update own reports (limited fields)
-        response = client.patch(f'/api/reports/{report.id}/', {
+        response = client.patch(f'/api/reports/reports/{report.id}/', {
             'title': 'Updated Title',
             'description': 'Updated description'
         })
         assert response.status_code == 200
         
         # Organization cannot approve/reject reports
-        response = client.post(f'/api/reports/{report.id}/approve/')
+        response = client.post(f'/api/reports/reports/{report.id}/approve/')
         assert response.status_code == 403
         
-        response = client.post(f'/api/reports/{report.id}/reject/')
+        response = client.post(f'/api/reports/reports/{report.id}/reject/')
         assert response.status_code == 403
         
         # Test admin permissions
@@ -112,11 +119,11 @@ class TestProjectReportPermissions:
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
         # Admin can view any report
-        response = client.get(f'/api/reports/{report.id}/')
+        response = client.get(f'/api/reports/reports/{report.id}/')
         assert response.status_code == 200
         
         # Admin can update any report
-        response = client.patch(f'/api/reports/{report.id}/', {
+        response = client.patch(f'/api/reports/reports/{report.id}/', {
             'title': 'Admin Updated'
         })
         assert response.status_code == 200
@@ -125,21 +132,27 @@ class TestProjectReportPermissions:
         report.status = ReportStatus.SUBMITTED
         report.save()
         
-        response = client.post(f'/api/reports/{report.id}/approve/', {
+        response = client.post(f'/api/reports/reports/{report.id}/approve/', {
             'review_comment': 'Approved!'
         })
         assert response.status_code == 200
         
-        # Create new report for rejection test
+        # Create new project and report for rejection test
+        reject_project = Project.objects.create(
+            title='Reject Project',
+            description='Test',
+            category=category,
+            organization=organization
+        )
         new_report = ProjectReport.objects.create(
-            project=project,
+            project=reject_project,
             title='New Report',
             description='Test',
             goals_achieved='Test',
             status=ReportStatus.SUBMITTED
         )
         
-        response = client.post(f'/api/reports/{new_report.id}/reject/', {
+        response = client.post(f'/api/reports/reports/{new_report.id}/reject/', {
             'review_comment': 'Rejected!'
         })
         assert response.status_code == 200
@@ -198,7 +211,7 @@ class TestProjectReportPermissions:
         refresh = RefreshToken.for_user(org1)
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
-        response = client.get('/api/reports/')
+        response = client.get('/api/reports/reports/')
         assert response.status_code == 200
         
         report_ids = [r['id'] for r in response.data['results']]
@@ -207,16 +220,17 @@ class TestProjectReportPermissions:
         
         # Admin should see all reports
         admin = User.objects.create_user(
-            username='admin',
-            email='admin@example.com',
+            username='admin_vis',
+            email='admin_vis@example.com',
             password='testpass123',
-            role=UserRole.ADMIN
+            role=UserRole.ADMIN,
+            is_staff=True
         )
         
         refresh = RefreshToken.for_user(admin)
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
-        response = client.get('/api/reports/')
+        response = client.get('/api/reports/reports/')
         assert response.status_code == 200
         
         report_ids = [r['id'] for r in response.data['results']]
@@ -260,7 +274,7 @@ class TestProjectReportPermissions:
         refresh = RefreshToken.for_user(organization)
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
-        response = client.post(f'/api/reports/{report.id}/submit/')
+        response = client.post(f'/api/reports/reports/{report.id}/submit/')
         assert response.status_code == 200
         
         report.refresh_from_db()
@@ -270,7 +284,7 @@ class TestProjectReportPermissions:
         refresh = RefreshToken.for_user(volunteer)
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
-        response = client.post(f'/api/reports/{report.id}/submit/')
+        response = client.post(f'/api/reports/reports/{report.id}/submit/')
         assert response.status_code == 403
 
     def test_cross_organization_access(self, db):
@@ -327,10 +341,10 @@ class TestProjectReportPermissions:
         refresh = RefreshToken.for_user(org1)
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
-        response = client.get(f'/api/reports/{report2.id}/')
+        response = client.get(f'/api/reports/reports/{report2.id}/')
         assert response.status_code == 404  # IsFiltered
         
-        response = client.patch(f'/api/reports/{report2.id}/', {'title': 'Hijacked'})
+        response = client.patch(f'/api/reports/reports/{report2.id}/', {'title': 'Hijacked'})
         assert response.status_code == 404  # IsFiltered
 
     def test_volunteer_contribution_permissions(self, db):
@@ -350,10 +364,11 @@ class TestProjectReportPermissions:
         )
         
         admin = User.objects.create_user(
-            username='admin',
-            email='admin@example.com',
+            username='admin_contrib',
+            email='admin_contrib@example.com',
             password='testpass123',
-            role=UserRole.ADMIN
+            role=UserRole.ADMIN,
+            is_staff=True
         )
         
         category = Category.objects.create(name='Test Category')
@@ -384,10 +399,10 @@ class TestProjectReportPermissions:
         refresh = RefreshToken.for_user(volunteer)
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
-        response = client.get(f'/api/volunteer-contributions/{contribution.id}/')
+        response = client.get(f'/api/reports/contributions/{contribution.id}/')
         assert response.status_code == 403
         
-        response = client.post('/api/volunteer-contributions/', {
+        response = client.post('/api/reports/contributions/', {
             'report': report.id,
             'volunteer': volunteer.id,
             'hours_contributed': 5,
@@ -399,19 +414,21 @@ class TestProjectReportPermissions:
         refresh = RefreshToken.for_user(organization)
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
-        response = client.get(f'/api/volunteer-contributions/{contribution.id}/')
+        response = client.get(f'/api/reports/contributions/{contribution.id}/')
         assert response.status_code == 200
         
-        response = client.post('/api/volunteer-contributions/', {
+        new_volunteer = User.objects.create_user(
+            username='volunteer2',
+            email='volunteer2@example.com',
+            password='testpass123',
+            role=UserRole.VOLUNTEER
+        )
+        response = client.post('/api/reports/contributions/', {
             'report': report.id,
-            'volunteer': User.objects.create_user(
-                username='volunteer2',
-                email='volunteer2@example.com',
-                password='testpass123',
-                role=UserRole.VOLUNTEER
-            ).id,
+            'volunteer': new_volunteer.id,
             'hours_contributed': 8,
-            'tasks_completed': 'Another test'
+            'tasks_completed': 'Another test',
+            'impact_description': 'Impact'
         })
         assert response.status_code == 201
         
@@ -419,10 +436,10 @@ class TestProjectReportPermissions:
         refresh = RefreshToken.for_user(admin)
         client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         
-        response = client.get(f'/api/volunteer-contributions/{contribution.id}/')
+        response = client.get(f'/api/reports/contributions/{contribution.id}/')
         assert response.status_code == 200
         
-        response = client.patch(f'/api/volunteer-contributions/{contribution.id}/', {
+        response = client.patch(f'/api/reports/contributions/{contribution.id}/', {
             'hours_contributed': 12,
             'performance_rating': 5
         })

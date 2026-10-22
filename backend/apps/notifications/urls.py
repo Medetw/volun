@@ -9,9 +9,13 @@ from apps.notifications.views import (
 
 router = DefaultRouter()
 router.register(r'notifications', NotificationViewSet, basename='notifications')
-router.register(r'notification-preferences', NotificationPreferenceViewSet, basename='notification-preferences')
 router.register(r'admin/notifications', NotificationAdminViewSet, basename='admin-notifications')
 
 urlpatterns = [
+    path('notification-preferences/', NotificationPreferenceViewSet.as_view({
+        'get': 'retrieve',
+        'put': 'update',
+        'patch': 'update',
+    }), name='notification-preferences-list'),
     path('', include(router.urls)),
 ]

@@ -10,9 +10,11 @@ from apps.users.views import (
     ModeratorManagementView,
     ModeratorDetailView,
     BlacklistViewSet,
+    UserViewSet,
 )
 
 router = DefaultRouter()
+router.register('users', UserViewSet, basename='user')
 router.register('certificates', VolunteerCertificateViewSet, basename='certificates')
 router.register('hours', VolunteerHoursViewSet, basename='volunteer-hours')
 router.register('blacklist', BlacklistViewSet, basename='blacklist')

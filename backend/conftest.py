@@ -6,6 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from apps.users.models import VolunteerProfile, OrganizationProfile, ModeratorProfile
 from apps.projects.models import Category, Region, Project
 from apps.applications.models import Application
+from apps.reports.models import ProjectReport, VolunteerContribution
 
 User = get_user_model()
 
@@ -53,7 +54,6 @@ def organization_user(db):
         name='Test Organization',
         organization_type='ngo',
         description='Test organization description',
-        city='Almaty',
         region='Almaty',
         contacts={'phone': '+1234567891', 'email': 'org@example.com'}
     )
@@ -214,10 +214,16 @@ def application(db, volunteer_user, project):
 
 
 @pytest.fixture
-def approved_application(db, volunteer_user, project):
+def approved_application(db, project):
     """Create an approved application."""
+    vol2 = User.objects.create_user(
+        username='vol_approved_fixture',
+        email='vol_approved_fixture@example.com',
+        password='testpass123',
+        role='volunteer'
+    )
     return Application.objects.create(
-        volunteer=volunteer_user,
+        volunteer=vol2,
         project=project,
         status='approved',
         cover_letter='I want to join this project',
@@ -228,12 +234,18 @@ def approved_application(db, volunteer_user, project):
 @pytest.fixture
 def mock_email_backend(mocker):
     """Mock email backend."""
-    mock = mocker.patch('django.core.mail.outlook.EmailBackend.send_messages')
-    mock.return_value = True
+    mock = mocker.patch('django.core.mail.send_mail')
+    mock.return_value = 1
     return mock
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
+def disable_ratelimit(settings):
+    """Disable rate limiting during tests."""
+    settings.RATELIMIT_ENABLE = False
+
+
+@pytest.fixture(autouse=True)
 def mock_celery_task(mocker):
     """Mock celery task."""
     mock = mocker.patch('apps.notifications.tasks.send_notification_email.delay')
@@ -246,3 +258,33 @@ def mock_storage(mocker):
     mock = mocker.patch('django.core.files.storage.default_storage.save')
     mock.return_value = 'test_file.jpg'
     return mock
+
+
+@pytest.fixture
+def project_report(db, project):
+    """Create a test project report."""
+    return ProjectReport.objects.create(
+        project=project,
+        title='Test Project Report',
+        description='Test project report description',
+        goals_achieved='Test goals achieved',
+        total_volunteers_participated=1,
+        total_volunteer_hours=10,
+        beneficiaries_count=50,
+        status='draft'
+    )
+
+
+@pytest.fixture
+def volunteer_contribution(db, project_report, volunteer_user):
+    """Create a test volunteer contribution."""
+    return VolunteerContribution.objects.create(
+        report=project_report,
+        volunteer=volunteer_user,
+        hours_contributed=10,
+        tasks_completed='Completed tasks',
+        impact_description='Great impact',
+        performance_rating=5,
+        feedback='Good job'
+    )
+

@@ -9,11 +9,45 @@ from apps.users.models import (
 class UserSerializer(serializers.ModelSerializer):
     """Базовый сериализатор для пользователей."""
     role_display = serializers.CharField(source='get_role_display', read_only=True)
+    volunteer_profile = serializers.SerializerMethodField()
+    organization_profile = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'role_display', 'is_active', 'avatar']
+        fields = [
+            'id', 'username', 'email', 'phone', 'first_name', 'last_name',
+            'role', 'role_display', 'is_active', 'avatar',
+            'volunteer_profile', 'organization_profile'
+        ]
         read_only_fields = ['id', 'role']
+
+    def get_volunteer_profile(self, obj):
+        if hasattr(obj, 'volunteer_profile'):
+            vp = obj.volunteer_profile
+            return {
+                'first_name': vp.first_name,
+                'last_name': vp.last_name,
+                'city': vp.city,
+                'skills': vp.skills,
+            }
+        return None
+
+    def get_organization_profile(self, obj):
+        if hasattr(obj, 'organization_profile'):
+            op = obj.organization_profile
+            return {
+                'name': op.name,
+                'organization_type': op.organization_type,
+            }
+        return None
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if ret.get('volunteer_profile') is None:
+            ret.pop('volunteer_profile', None)
+        if ret.get('organization_profile') is None:
+            ret.pop('organization_profile', None)
+        return ret
 
 
 class VolunteerProfileSerializer(serializers.ModelSerializer):
