@@ -19,3 +19,7 @@ backend/htmlcov/
 backend/logs/
 .claude/
 
+
+# virtualenvs committed earlier
+backend/venv/
+backend/test_env/

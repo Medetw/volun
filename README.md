@@ -37,8 +37,8 @@
 
 ```bash
 # Клонируйте репозиторий
-git clone https://github.com/Medeeet/volunteering-platform.git
-cd volunteering-platform
+git clone https://github.com/Medetw/volun.git
+cd volun
 
 # Настройте backend
 cd backend
